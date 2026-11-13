@@ -1,5 +1,13 @@
 # Project working agreement
 
+## Current Stage 8 showcase authorization
+
+The current task authorizes a personal engineering README, a complete Turkish account and small presentation assets under docs/showcase, based on the supplied design inputs and actual synthetic demo captures. This narrowly supersedes the Stage 7 publication-copy edit limit. Only README.md, new docs/showcase files, explicit showcase filenames in build_release.py and MANIFEST.in, and this task note may change. Preserve all earlier stage records below.
+
+Keep package 0.6.1, stage2-v2, schema 3, application code/assets, all 400 test identities and 34 test/fixture files, both test contracts, the financial reference, pins and workflow unchanged. Add no application behavior or production link-parser change. Run one small reproduction and one local sdist-to-wheel build; rely on the existing exact-commit remote CI for full suites and financial gates. Do not regenerate, train or final-evaluate the frozen main experiment.
+
+The task authorizes normal commits/pushes to the verified personal public repository and narrowly scoped About/topics updates. No force push, protection removal, visibility change, release/tag, PyPI publication, hosting, paid service or third-party message. Keep screenshot provenance, theme/viewport checks, actual last-commit CI and the final handoff outside Git in stage8-output. Never put the final SHA/run back into README to create another verification loop.
+
 ## Current Stage 7 publication authorization
 
 The current task authorizes publishing the verified 0.6.1 source to the verified user's personal public GitHub repository, making the necessary commits and normal pushes, and running the existing release workflow. This supersedes the earlier stages' historical no-remote-publication limits for this specific task. It does not authorize force pushes, repository deletion, release/tag or PyPI publication, hosting, paid infrastructure, or messages to third parties.

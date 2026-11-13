@@ -1,0 +1,76 @@
+{
+  "format": "showcase-assets-v1",
+  "scope": "Five explicitly packaged presentation files; this manifest excludes its own hash to avoid self-reference.",
+  "files": {
+    "README.tr.md": {
+      "bytes": 12492,
+      "sha256": "58f8427e37788ddeb496488fb9d109d981ec59719c7c13fa47dd8f3fce72406a"
+    },
+    "case-study.svg": {
+      "bytes": 2304,
+      "sha256": "0cff09ec210564d898b05cfb30ce1d3cf876b3466741f51de139fec29a9bf7a7"
+    },
+    "architecture.svg": {
+      "bytes": 2977,
+      "sha256": "cbee0ddbeb60d8a6ea747c64f11d4d1382267f82727a369bf303b463a7dd5502"
+    },
+    "demo-overview.png": {
+      "bytes": 56844,
+      "sha256": "f4bacd77ddb86d4bb615875e386af22ce4461602092b368363de16678d0a69ba"
+    }
+  },
+  "published_files": [
+    "README.tr.md",
+    "case-study.svg",
+    "architecture.svg",
+    "demo-overview.png",
+    "assets-manifest.json"
+  ],
+  "asset_bytes": 62125,
+  "package": "0.6.1",
+  "financial_rule": "stage2-v2",
+  "sqlite_schema": 3,
+  "diagram_origin": {
+    "input": "crypto_reconciliation_showcase_kit.zip/assets/case-study.svg",
+    "input_sha256": "2d49113ed9501957ee63ece81424f2ddca268e17a90f8ff162090dc181250e18",
+    "adaptation": "Compact explanatory SVGs with self-contained light backgrounds and larger labels for narrow GitHub views; not application screenshots."
+  },
+  "screenshot": {
+    "file": "demo-overview.png",
+    "source_command": "python3 scripts/reproduce_review.py --output NEW_OUTPUT_DIRECTORY",
+    "source_file": "NEW_OUTPUT_DIRECTORY/review/bundle/index.html",
+    "source_html": {
+      "bytes": 3075796,
+      "sha256": "d7d8c94572bd3615bde3a4ee0f70852e9fb295c8cfeb0c3b18699198580b688c"
+    },
+    "source_commit": "80d3f87a2fe397eebb67490bb7fa943b6c487719",
+    "scenario": "custody_difference",
+    "evaluation": "initial",
+    "asset": "ASSET_A",
+    "run_id": "db050c7ea9ce4aec4f0a99ea47ecd3e32d30b2d10ec209ff31c12e8cc139115b",
+    "balance_at": "2026-11-10T23:59:59.000000Z",
+    "knowledge_at": "2026-11-11T01:00:00.000000Z",
+    "viewport": {
+      "width": 1100,
+      "height": 1000
+    },
+    "captured_pixels": {
+      "width": 830,
+      "height": 557
+    },
+    "browser": "Chromium 157.0.8103.78",
+    "tool": "Playwright native locator.screenshot, scale=css",
+    "element": "#finding-panel; region labelled B · ASSET_A · customer_liability",
+    "capture_steps": [
+      "Open generated review/bundle/index.html",
+      "Select Source / case: Custody difference; Stored run: Initial knowledge",
+      "Filter Asset: ASSET_A",
+      "Click Inspect B ASSET_A customer_liability",
+      "Select Reasons & links",
+      "Capture actual finding-panel at 1100x1000 viewport"
+    ],
+    "postprocessing": "None: native element capture, no image editing or UI content/style modification",
+    "transport": "Unmodified generated HTML served read-only on loopback because the browser tool blocks file URLs; no public hosting or app was created"
+  },
+  "limits": "Synthetic amounts only. Findings do not prove a loss or a root cause. Hashes identify bytes, not external source authenticity."
+}

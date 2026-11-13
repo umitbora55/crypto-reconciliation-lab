@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="612" viewBox="0 0 480 612" role="img" aria-labelledby="title desc">
+  <title id="title">ASSET_A · custody_difference</title>
+  <desc id="desc">Synthetic initial evaluation. A compares ledger-derived investor balances with investor reports: I1 7 equals 7 and I2 4 equals 4, both COMPLETE and MATCHED. Customer liability is 7 plus 4 equals 11. B compares that liability with customer custody reports: platform 2 plus external 8 equals 10. B is COMPLETE and MISMATCH; expected minus reported is 11 minus 10 equals plus 1. No loss or cause is inferred.</desc>
+  <rect width="480" height="612" rx="8" fill="#ffffff"/>
+  <g font-family="Arial, sans-serif" fill="#273341">
+    <text x="24" y="38" font-size="24" font-weight="600">ASSET_A · custody_difference</text>
+    <text x="24" y="66" font-size="19" fill="#576471">Synthetic example · initial evaluation</text>
+    <path d="M24 88h432" stroke="#d7e0e5"/>
+    <text x="24" y="126" font-size="24" font-weight="600">A · Investor balances</text>
+    <text x="24" y="154" font-size="20" fill="#576471">Ledger → investor report</text>
+    <text x="24" y="201" font-size="31" font-weight="600">I1: 7 → 7</text>
+    <text x="254" y="201" font-size="31" font-weight="600">I2: 4 → 4</text>
+    <text x="24" y="238" font-size="21" font-weight="600" fill="#25695e">COMPLETE / MATCHED</text>
+    <text x="24" y="267" font-size="19" fill="#576471">Both investors, checked separately.</text>
+    <path d="M24 290h432" stroke="#d7e0e5"/>
+    <text x="24" y="326" font-size="22" font-weight="600">Ledger-derived customer liability</text>
+    <text x="24" y="369" font-size="31" font-weight="600">7 + 4 = 11</text>
+    <path d="M24 391h432" stroke="#d7e0e5"/>
+    <text x="24" y="428" font-size="24" font-weight="600">B · Customer custody</text>
+    <text x="24" y="459" font-size="20" fill="#576471">Platform 2 + external 8 = 10</text>
+    <text x="24" y="504" font-size="31" font-weight="600">11 − 10 = <tspan fill="#865e1f">+1</tspan></text>
+    <text x="24" y="542" font-size="21" font-weight="600" fill="#865e1f">COMPLETE / MISMATCH</text>
+    <path d="M24 563h432" stroke="#d7e0e5"/>
+    <text x="24" y="592" font-size="19" fill="#576471">Difference = expected − reported</text>
+  </g>
+</svg>

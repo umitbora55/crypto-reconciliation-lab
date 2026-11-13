@@ -37,6 +37,11 @@ DOCS = ("docs/model_contract.md", "docs/correction_semantics.md", "docs/problem_
         "docs/stage6/verification-guide.md", "docs/stage6/build-contract.md",
         "docs/stage6/ci.md", "docs/stage6/financial-reference.json",
         "docs/stage6_1/scope-contract.md", "docs/stage6_1/release-guide.md", "docs/stage6_1/financial-scope.md",
+        "docs/showcase/README.tr.md",
+        "docs/showcase/case-study.svg",
+        "docs/showcase/architecture.svg",
+        "docs/showcase/demo-overview.png",
+        "docs/showcase/assets-manifest.json",
         "contracts/release-tests-baseline-0.6.0.json", "contracts/release-test-scope-0.6.1.json")
 REQUIRED = {*TOP_FILES, *("scripts/" + name for name in SCRIPTS), *DOCS,
             "fixtures/stage1_history.json", "fixtures/stage3_3_schema2_history.json",

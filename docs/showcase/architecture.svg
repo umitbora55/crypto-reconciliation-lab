@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="678" viewBox="0 0 500 678" role="img" aria-labelledby="title desc">
+  <title id="title">From synthetic inputs to saved evidence</title>
+  <desc id="desc">Ledger events, opening balances, investor and custody reports, receipts and delivery manifests enter economic and knowledge time selection and completeness checks. Comparison A uses ledger balances per investor and investor reports. Independently, comparison B uses total ledger-derived customer liability and platform plus external customer custody reports. Findings and their evidence are saved in SQLite. The offline reviewer reads saved results without recomputing them. AI ranking is not part of this financial decision flow.</desc>
+  <rect width="500" height="678" rx="8" fill="#ffffff"/>
+  <g font-family="Arial, sans-serif" fill="#273341">
+    <text x="24" y="38" font-size="24" font-weight="600">Inputs → evaluation → review</text>
+    <rect x="24" y="61" width="452" height="124" rx="6" fill="#f4f7f9" stroke="#d7e0e5"/>
+    <text x="42" y="96" font-size="22" font-weight="600">Synthetic source records</text>
+    <text x="42" y="126" font-size="20">Ledger + opening balances</text>
+    <text x="42" y="151" font-size="20">Investor + custody reports</text>
+    <text x="42" y="176" font-size="20">Receipts + delivery manifests</text>
+    <path d="M250 186v26m-6-7 6 7 6-7" fill="none" stroke="#758995" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="24" y="218" width="452" height="100" rx="6" fill="#f4f7f9" stroke="#d7e0e5"/>
+    <text x="42" y="251" font-size="22" font-weight="600">Select and validate</text>
+    <text x="42" y="280" font-size="20">Economic cut + knowledge cut</text>
+    <text x="42" y="306" font-size="20">Report versions + data completeness</text>
+    <path d="M250 319v26m-6-7 6 7 6-7" fill="none" stroke="#758995" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="24" y="351" width="452" height="164" rx="6" fill="#f2f8f6" stroke="#a8c5bc"/>
+    <text x="42" y="382" font-size="22" font-weight="600" fill="#25695e">Independent comparisons</text>
+    <text x="42" y="413" font-size="21" font-weight="600">A · Each investor</text>
+    <text x="42" y="440" font-size="20">Ledger balance vs investor report</text>
+    <text x="42" y="473" font-size="21" font-weight="600">B · Customer custody</text>
+    <text x="42" y="500" font-size="20">Ledger total vs custody report total</text>
+    <path d="M250 516v26m-6-7 6 7 6-7" fill="none" stroke="#758995" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="24" y="548" width="452" height="106" rx="6" fill="#f4f7f9" stroke="#d7e0e5"/>
+    <text x="42" y="582" font-size="22" font-weight="600">Save findings + evidence</text>
+    <text x="42" y="611" font-size="20">SQLite evaluation snapshots</text>
+    <text x="42" y="639" font-size="20">→ Offline, read-only review</text>
+  </g>
+</svg>
