@@ -8,11 +8,15 @@ This is an engineering portfolio, not an official KVMKS client, production integ
 
 ## Run the small review
 
-From an extracted source release or sdist, with Python 3.12 or later:
+With Python 3.12 or later, clone the public source and run the small review:
 
 ```sh
+git clone https://github.com/umitbora55/crypto-reconciliation-lab.git
+cd crypto-reconciliation-lab
 python3 scripts/reproduce_review.py --output review-output-new
 ```
+
+From an extracted source release or sdist, run the same Python command from its root.
 
 Open `review-output-new/index.md`, then `review-output-new/review/bundle/index.html`. One command creates nine demos and 24 saved evaluations, exports a second read-only view, ranks a declared T-only subset with the existing JSON model, and verifies rejection of a contradictory future-source input. Use a **new output directory** each time. It never generates, trains or final-evaluates the frozen main experiment.
 
@@ -68,8 +72,19 @@ Read the [claim–evidence table](docs/stage6/claim-evidence.md), [Turkish techn
 
 ## CI status and limits
 
-The [prepared workflow](.github/workflows/release.yml) targets Ubuntu Python 3.12/3.14, separate AI/core checks and one full financial gate. Official actions use verified full commit SHAs and `contents: read` permissions.
+The [public repository](https://github.com/umitbora55/crypto-reconciliation-lab) uses the checked-in [Release verification workflow](.github/workflows/release.yml). Its [GitHub workflow page](https://github.com/umitbora55/crypto-reconciliation-lab/actions/workflows/release.yml) shows current runs. The workflow targets standard Ubuntu runners, uses pinned action commit SHAs and grants `contents: read` permissions.
 
-**GitHub execution: NOT_RUN.** No repository creation, push, dispatch, release/tag or PyPI upload occurred. Prepared targets are not passing CI results; there is no success badge. Actual local results accompany the separate Stage 6.1 review evidence and every portable verifier run. See [CI scope and references](docs/stage6/ci.md).
+**First publication verified on 2026-11-13:** [source commit 01cd3d2](https://github.com/umitbora55/crypto-reconciliation-lab/commit/01cd3d2720d788fb52f3380936d75f1f86065a58) passed [run 43444004783, attempt 1](https://github.com/umitbora55/crypto-reconciliation-lab/actions/runs/43444004783). All four jobs completed successfully; the three downloaded report artifacts were checked against that exact repository, run, job and commit.
+
+| Job in that run | Verified result |
+|---|---|
+| Validate workflow | Workflow checks passed |
+| Full wheel / Python 3.12 | Source and isolated installed suites each executed all 400 unique expected IDs once, with zero skips/xfails/errors/failures; 12+36 demo reports matched; matrix NOT_RUN as configured |
+| Full wheel / Python 3.14 | The same complete suites passed; 69 cases / 162 evaluations, ten named integer-zero counters and 325+12+36 = 373 matching financial files |
+| Core wheel / no AI / Python 3.14 | Clean no-dependency wheel installation; sklearn/NumPy/SciPy absent; nine scenarios / 24 evaluations, valid JSON ranking and H/T negative exit 2 with no queue |
+
+Both full jobs built wheels from safely extracted sdists and checked actual installed import origins. The pinned scope contains 400 test identities in 34 test/fixture files. The small source/installed reproductions also passed. The run links above remain historical evidence for the first publication commit; the workflow page shows later commits, including documentation updates.
+
+Historical Stage 6 and 6.1 documents retain the NOT_RUN statements recorded before this publication. See the preserved [CI scope and references](docs/stage6/ci.md). GitHub serves the HTML source; the offline demo is opened locally with the quickstart above. No hosted application, GitHub release/tag or PyPI upload is provided.
 
 The common Python minimum is 3.12 because pinned NumPy/SciPy require it; this is not a tested-all-versions/OS claim. No new UI, live integration, automatic payment/correction, heavy benchmark or main holdout rerun is included.
