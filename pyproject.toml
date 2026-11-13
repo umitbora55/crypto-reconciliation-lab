@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools==80.9.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "crypto-reconciliation-lab"
+version = "0.6.1"
+description = "Synthetic, evidence-driven crypto reconciliation using Decimal and SQLite"
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+authors = [{name = "crypto-reconciliation-lab contributors"}]
+dependencies = []
+
+[project.optional-dependencies]
+ai = ["scikit-learn==1.9.1"]
+
+[project.scripts]
+crypto-reconciliation-lab = "crypto_reconciliation_lab.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["crypto_reconciliation_lab*"]
+
+[tool.setuptools.package-data]
+"crypto_reconciliation_lab.review" = ["assets/*.html", "assets/*.css", "assets/*.js"]

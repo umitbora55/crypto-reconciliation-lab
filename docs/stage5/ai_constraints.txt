@@ -1,0 +1,10 @@
+# Actual optional training dependency versions from the verified Python 3.14.7 environment.
+# Install the local ai extra with: python -m pip install -c docs/stage5/ai_constraints.txt '.[ai]'
+# Core import and JSON scoring require none of these packages.
+scikit-learn==1.9.1
+numpy==2.5.4
+scipy==1.18.1
+joblib==1.6.0
+threadpoolctl==3.8.0
+narwhals==2.28.0
+cloudpickle==3.1.2

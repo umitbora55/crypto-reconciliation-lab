@@ -1,0 +1,219 @@
+{
+  "format": "stage6-ci-official-references-v1",
+  "checked_date": "2026-11-13",
+  "remote_workflow_status": "NOT_RUN",
+  "actions": [
+    {
+      "repository": "actions/checkout",
+      "tag": "v7.0.1",
+      "commit": "3d3c42e5aac5ba805825da76410c181273ba90b1",
+      "commit_date": "2026-07-17T18:45:11Z",
+      "release_date": "2026-07-20T15:10:05Z",
+      "release_url": "https://github.com/actions/checkout/releases/tag/v7.0.1",
+      "commit_url": "https://github.com/actions/checkout/commit/3d3c42e5aac5ba805825da76410c181273ba90b1",
+      "checked_at": "2026-11-13T07:53:36.164209+00:00",
+      "retrieved_source_responses": [
+        {
+          "url": "https://api.github.com/repos/actions/checkout/git/ref/tags/v7.0.1",
+          "bytes": 341,
+          "sha256": "2d93602db4d23c52722ac2e83e9553fa46d84b00dd83ed8557f32b39278fe62e"
+        },
+        {
+          "url": "https://api.github.com/repos/actions/checkout/releases/tags/v7.0.1",
+          "bytes": 2372,
+          "sha256": "8c81e64dda90d1f337e87d30fab6804b818d155630587358ebaa531b27f2d659"
+        },
+        {
+          "url": "https://api.github.com/repos/actions/checkout/git/commits/3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "bytes": 2741,
+          "sha256": "967dc9f673f6280830d4deb1334297ca377facceb8cd85c17f7227bb66241ac2"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/actions/checkout/3d3c42e5aac5ba805825da76410c181273ba90b1/action.yml",
+          "bytes": 5144,
+          "sha256": "d59219cb79590abdb877deaa14e3b65a00c05318bf5a6f3b989b9162b5d08c35"
+        }
+      ]
+    },
+    {
+      "repository": "actions/setup-python",
+      "tag": "v7.1.0",
+      "commit": "6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+      "commit_date": "2026-10-22T02:33:06Z",
+      "release_date": "2026-10-22T02:56:04Z",
+      "release_url": "https://github.com/actions/setup-python/releases/tag/v7.1.0",
+      "commit_url": "https://github.com/actions/setup-python/commit/6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+      "checked_at": "2026-11-13T07:53:36.164670+00:00",
+      "retrieved_source_responses": [
+        {
+          "url": "https://api.github.com/repos/actions/setup-python/git/ref/tags/v7.1.0",
+          "bytes": 349,
+          "sha256": "c2ef87874d821dfa666998e016cfbc6e1e68fbe33b19ada090cc289d0b22fdb3"
+        },
+        {
+          "url": "https://api.github.com/repos/actions/setup-python/releases/tags/v7.1.0",
+          "bytes": 4265,
+          "sha256": "c2e9cb59adb01472067bb52202236e8db59a4133501491abacf5514cb2294013"
+        },
+        {
+          "url": "https://api.github.com/repos/actions/setup-python/git/commits/6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+          "bytes": 2537,
+          "sha256": "403df378bc07b7e1ea87c14113d60b2c3eaa8c23d2269aba88cbd523641e24d3"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/actions/setup-python/6d4fd22b20465ccc0f7354476588e8df7c9ca0e0/action.yml",
+          "bytes": 3141,
+          "sha256": "0829b3f54d769f8b25cefd4d856c735bc8e097d6597835b838ebb4da497c838d"
+        }
+      ]
+    },
+    {
+      "repository": "actions/upload-artifact",
+      "tag": "v7.0.2",
+      "commit": "cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+      "commit_date": "2026-10-07T10:00:52Z",
+      "release_date": "2026-10-07T10:08:14Z",
+      "release_url": "https://github.com/actions/upload-artifact/releases/tag/v7.0.2",
+      "commit_url": "https://github.com/actions/upload-artifact/commit/cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+      "checked_at": "2026-11-13T07:53:36.164751+00:00",
+      "retrieved_source_responses": [
+        {
+          "url": "https://api.github.com/repos/actions/upload-artifact/git/ref/tags/v7.0.2",
+          "bytes": 355,
+          "sha256": "b3236df40ecab4cf18e1ea4f72bfb4cbf5745efc4936f5197f35409132ad3a40"
+        },
+        {
+          "url": "https://api.github.com/repos/actions/upload-artifact/releases/tags/v7.0.2",
+          "bytes": 2376,
+          "sha256": "1cd4b7da146610d5396bc37b83b7bf1ed46e0bbedfec232cd330e9d238baa05a"
+        },
+        {
+          "url": "https://api.github.com/repos/actions/upload-artifact/git/commits/cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+          "bytes": 2672,
+          "sha256": "b33f0f97bd4d57765151c53471d64a174a76ea5056cec00fdccbc741b3d5eacb"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/actions/upload-artifact/cf430e030ddbb5b0abf93d22962f4752f3646cd9/action.yml",
+          "bytes": 3603,
+          "sha256": "c5979822866a72362e609844b6ebe77d4b7e759af68cc1c2c425dcf51481fab4"
+        }
+      ]
+    }
+  ],
+  "actionlint": {
+    "repository": "rhysd/actionlint",
+    "tag": "v1.7.12",
+    "commit": "914e7df21a07ef503a81201c76d2b11c789d3fca",
+    "commit_date": "2026-03-30T17:47:17Z",
+    "release_date": "2026-03-30T17:49:21Z",
+    "release_url": "https://github.com/rhysd/actionlint/releases/tag/v1.7.12",
+    "assets": [
+      {
+        "name": "actionlint_1.7.12_checksums.txt",
+        "url": "https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_checksums.txt",
+        "digest": "sha256:433028cf0ba3c42163ea1a668dedce30fcdbe84fe912b1a5e288c006eab8a4f5",
+        "size": 1130
+      },
+      {
+        "name": "actionlint_1.7.12_darwin_arm64.tar.gz",
+        "url": "https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_darwin_arm64.tar.gz",
+        "digest": "sha256:aba9ced2dee8d27fecca3dc7feb1a7f9a52caefa1eb46f3271ea66b6e0e6953f",
+        "size": 2164202
+      },
+      {
+        "name": "actionlint_1.7.12_linux_amd64.tar.gz",
+        "url": "https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz",
+        "digest": "sha256:8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8",
+        "size": 2353908
+      }
+    ],
+    "local_binary_sha256": "8db11704dc296f096216db4db65d86cd7f0ebfdf4c38453a1da276b137b88388",
+    "actual_local_version_output": "1.7.12\ninstalled by downloading from release page\nbuilt with go1.26.1 compiler for darwin/arm64\n",
+    "downloaded_darwin_archive_and_official_checksum_match": true,
+    "linux_pin_matches_same_official_checksums": true
+  },
+  "build_tools": {
+    "build": {
+      "version": "1.6.1",
+      "requires_python": ">=3.10",
+      "url": "https://pypi.org/project/build/1.6.1/",
+      "metadata_url": "https://pypi.org/pypi/build/1.6.1/json",
+      "metadata_sha256": "064e9dcb80e948b5de7a841c3fd9b5644a980eb27bb644fb7f562b7d773b157b",
+      "checked_at": "2026-11-13T07:55:35.154093+00:00",
+      "release_files": [
+        {
+          "filename": "build-1.6.1-py3-none-any.whl",
+          "sha256": "ecd351a4be9d35a9eaaba244a7687143c9c7d4aea6ac964e7e7ddab20cbcf4e7",
+          "upload_time": "2026-09-10T07:55:59.148398Z"
+        },
+        {
+          "filename": "build-1.6.1.tar.gz",
+          "sha256": "51cc11666391ab6f092070437ac747002ff46f3e4113a3622177ee6b488bfc53",
+          "upload_time": "2026-09-10T07:56:00.417084Z"
+        }
+      ]
+    },
+    "packaging": {
+      "version": "26.3",
+      "requires_python": ">=3.9",
+      "url": "https://pypi.org/project/packaging/26.3/",
+      "metadata_url": "https://pypi.org/pypi/packaging/26.3/json",
+      "metadata_sha256": "4f190d2f0b312b3086058cee64ab4333bf3ce67fb78b4c2bdb43899049b29f4d",
+      "checked_at": "2026-11-13T07:55:35.210556+00:00",
+      "release_files": [
+        {
+          "filename": "packaging-26.3-py3-none-any.whl",
+          "sha256": "d7193f7c8e4e93f444fde0262bf90af30e16fa0ad0ad44cb553c87339b23cd1c",
+          "upload_time": "2026-08-04T18:15:27.159957Z"
+        },
+        {
+          "filename": "packaging-26.3.tar.gz",
+          "sha256": "94edc256424af38762eb31306eed28beb9f0efc50a8837492c9d6fd6004aed79",
+          "upload_time": "2026-08-04T18:15:28.737071Z"
+        }
+      ]
+    },
+    "pyproject-hooks": {
+      "version": "1.3.3",
+      "requires_python": ">=3.8",
+      "url": "https://pypi.org/project/pyproject-hooks/1.3.3/",
+      "metadata_url": "https://pypi.org/pypi/pyproject-hooks/1.3.3/json",
+      "metadata_sha256": "ef47170935f8a098c070a3cd65d637d5bbf646158d9559eebac9c465b83d0401",
+      "checked_at": "2026-11-13T07:55:35.384694+00:00",
+      "release_files": [
+        {
+          "filename": "pyproject_hooks-1.3.3-py3-none-any.whl",
+          "sha256": "5fc53fdac9f7bd63fbcdc868fb5f90b4784d78a53a3d3388cd738b807441a20b",
+          "upload_time": "2026-09-16T08:58:02.960279Z"
+        },
+        {
+          "filename": "pyproject_hooks-1.3.3.tar.gz",
+          "sha256": "defda19b854fa0d3bd4f76ea4ddcba8abd7dcfcdd585a6690ade050744fc5f43",
+          "upload_time": "2026-09-16T08:58:03.999217Z"
+        }
+      ]
+    },
+    "setuptools": {
+      "version": "80.9.0",
+      "requires_python": ">=3.9",
+      "url": "https://pypi.org/project/setuptools/80.9.0/",
+      "metadata_url": "https://pypi.org/pypi/setuptools/80.9.0/json",
+      "metadata_sha256": "e3188a9a8921b0bd16ae2728753269376a4b90ca3413f67b77f77417ab2e503e",
+      "checked_at": "2026-11-13T07:55:35.564798+00:00",
+      "release_files": [
+        {
+          "filename": "setuptools-80.9.0-py3-none-any.whl",
+          "sha256": "062d34222ad13e0cc312a4c02d73f059e86a4acbfbdea8f8f76b28c99f306922",
+          "upload_time": "2025-05-27T00:56:49.664463Z"
+        },
+        {
+          "filename": "setuptools-80.9.0.tar.gz",
+          "sha256": "f36b47402ecde768dbfafc46e8e4207b4360c654f1f3bb84475f0a28628fb19c",
+          "upload_time": "2025-05-27T00:56:51.443474Z"
+        }
+      ]
+    }
+  },
+  "policy_source": "https://docs.github.com/en/actions/reference/security/secure-use",
+  "claims": "Official tag-to-commit identity and release metadata verified; no GitHub workflow execution or remote publication."
+}

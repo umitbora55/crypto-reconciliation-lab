@@ -1,0 +1,102 @@
+[
+  [
+    "index",
+    "receipts_time",
+    "CREATE INDEX receipts_time ON receipts(received_at)"
+  ],
+  [
+    "index",
+    "records_key",
+    "CREATE INDEX records_key ON records(logical_key)"
+  ],
+  [
+    "table",
+    "configuration",
+    "CREATE TABLE configuration (id INTEGER PRIMARY KEY CHECK(id=1), payload TEXT NOT NULL)"
+  ],
+  [
+    "table",
+    "evidence",
+    "CREATE TABLE evidence (run_id TEXT NOT NULL REFERENCES runs(id), evidence_id TEXT NOT NULL, payload TEXT NOT NULL, PRIMARY KEY(run_id, evidence_id))"
+  ],
+  [
+    "table",
+    "findings",
+    "CREATE TABLE findings (run_id TEXT NOT NULL REFERENCES runs(id), ordinal INTEGER NOT NULL, payload TEXT NOT NULL, PRIMARY KEY(run_id, ordinal))"
+  ],
+  [
+    "table",
+    "receipts",
+    "CREATE TABLE receipts (\n id INTEGER PRIMARY KEY, receipt_hash TEXT NOT NULL, record_id TEXT REFERENCES records(id),\n received_at TEXT, raw TEXT NOT NULL, error TEXT, status TEXT NOT NULL\n)"
+  ],
+  [
+    "table",
+    "records",
+    "CREATE TABLE records (\n id TEXT PRIMARY KEY, logical_key TEXT NOT NULL, kind TEXT NOT NULL, payload TEXT NOT NULL\n)"
+  ],
+  [
+    "table",
+    "runs",
+    "CREATE TABLE runs (id TEXT PRIMARY KEY, balance_at TEXT NOT NULL, knowledge_at TEXT NOT NULL, payload TEXT NOT NULL)"
+  ],
+  [
+    "trigger",
+    "immutable_configuration_DELETE",
+    "CREATE TRIGGER immutable_configuration_DELETE BEFORE DELETE ON configuration BEGIN SELECT RAISE(ABORT, 'append-only table'); END"
+  ],
+  [
+    "trigger",
+    "immutable_configuration_UPDATE",
+    "CREATE TRIGGER immutable_configuration_UPDATE BEFORE UPDATE ON configuration BEGIN SELECT RAISE(ABORT, 'append-only table'); END"
+  ],
+  [
+    "trigger",
+    "immutable_evidence_DELETE",
+    "CREATE TRIGGER immutable_evidence_DELETE BEFORE DELETE ON evidence BEGIN SELECT RAISE(ABORT, 'append-only table'); END"
+  ],
+  [
+    "trigger",
+    "immutable_evidence_UPDATE",
+    "CREATE TRIGGER immutable_evidence_UPDATE BEFORE UPDATE ON evidence BEGIN SELECT RAISE(ABORT, 'append-only table'); END"
+  ],
+  [
+    "trigger",
+    "immutable_findings_DELETE",
+    "CREATE TRIGGER immutable_findings_DELETE BEFORE DELETE ON findings BEGIN SELECT RAISE(ABORT, 'append-only table'); END"
+  ],
+  [
+    "trigger",
+    "immutable_findings_UPDATE",
+    "CREATE TRIGGER immutable_findings_UPDATE BEFORE UPDATE ON findings BEGIN SELECT RAISE(ABORT, 'append-only table'); END"
+  ],
+  [
+    "trigger",
+    "immutable_receipts_DELETE",
+    "CREATE TRIGGER immutable_receipts_DELETE BEFORE DELETE ON receipts BEGIN SELECT RAISE(ABORT, 'append-only table'); END"
+  ],
+  [
+    "trigger",
+    "immutable_receipts_UPDATE",
+    "CREATE TRIGGER immutable_receipts_UPDATE BEFORE UPDATE ON receipts BEGIN SELECT RAISE(ABORT, 'append-only table'); END"
+  ],
+  [
+    "trigger",
+    "immutable_records_DELETE",
+    "CREATE TRIGGER immutable_records_DELETE BEFORE DELETE ON records BEGIN SELECT RAISE(ABORT, 'append-only table'); END"
+  ],
+  [
+    "trigger",
+    "immutable_records_UPDATE",
+    "CREATE TRIGGER immutable_records_UPDATE BEFORE UPDATE ON records BEGIN SELECT RAISE(ABORT, 'append-only table'); END"
+  ],
+  [
+    "trigger",
+    "immutable_runs_DELETE",
+    "CREATE TRIGGER immutable_runs_DELETE BEFORE DELETE ON runs BEGIN SELECT RAISE(ABORT, 'append-only table'); END"
+  ],
+  [
+    "trigger",
+    "immutable_runs_UPDATE",
+    "CREATE TRIGGER immutable_runs_UPDATE BEFORE UPDATE ON runs BEGIN SELECT RAISE(ABORT, 'append-only table'); END"
+  ]
+]

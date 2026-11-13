@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="@@CSP@@">
+  <title>Reconciliation Review · Crypto Reconciliation Lab</title>
+  <style>@@STYLE@@</style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to findings</a>
+  <header class="masthead">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">R</span><div><strong>Reconciliation Review</strong><span>Crypto Reconciliation Lab</span></div></div>
+    <span class="offline-tag"><span aria-hidden="true">●</span> Offline · stored results</span>
+  </header>
+  <div id="startup-error" class="fatal-error" role="alert" hidden></div>
+  <div class="workspace" id="workspace" hidden>
+    <aside class="sidebar" aria-label="Source and run selection">
+      <div class="eyebrow">Review workspace</div>
+      <h1>Follow the evidence.</h1>
+      <p class="muted">Inspect a saved result at its original knowledge cut.</p>
+      <div class="field"><label for="source-select">Source / case</label><select id="source-select"></select></div>
+      <div class="field"><label for="run-select">Stored run</label><select id="run-select"></select></div>
+      <p id="source-count" class="help"></p>
+      <nav class="section-nav" aria-label="Review sections"><a href="#findings-section">Findings</a><a href="#history-section">Historical comparison</a><a href="#bundle-details">Bundle details</a></nav>
+      <div class="sidebar-note"><strong>Read-only review</strong><p>This page displays saved values. It does not calculate balances or update a database.</p></div>
+    </aside>
+    <main id="main" tabindex="-1">
+      <section class="run-card" aria-labelledby="run-heading">
+        <div class="section-heading"><div><div class="eyebrow">Selected snapshot</div><h2 id="run-heading"></h2></div><span id="rule-version" class="rule-tag"></span></div>
+        <dl class="time-grid"><div><dt>Economic balance at · UTC</dt><dd id="balance-at"></dd></div><div><dt>Known by · UTC</dt><dd id="knowledge-at"></dd></div></dl>
+        <details class="technical"><summary>Run identity and original payload</summary><div class="technical-body"><p class="help">Stored payload identity matches. This is an export integrity check, not financial MATCHED or source authentication.</p><dl class="metadata-list"><div><dt>Run ID</dt><dd><code id="run-id"></code></dd></div><div><dt>Payload SHA-256</dt><dd><code id="payload-sha"></code></dd></div><div><dt>Schema</dt><dd id="schema-version"></dd></div></dl><div class="button-row"><button id="copy-run" type="button" class="secondary">Copy run ID</button><button id="download-run" type="button" class="secondary">Download original payload</button></div></div></details>
+      </section>
+      <div class="comparison-definitions"><div><span class="check-label">A</span><div><strong>Investor balance</strong><p>Ledger-derived investor balance versus that investor's report.</p></div></div><div><span class="check-label">B</span><div><strong>Customer custody</strong><p>Total customer liability versus platform customer custody plus external customer custody.</p></div></div></div>
+      <section id="findings-section" class="panel" aria-labelledby="findings-heading">
+        <div class="section-heading"><div><h2 id="findings-heading">Findings</h2><p id="finding-count" class="muted" aria-live="polite"></p></div><button id="reset-filters" type="button" class="text-button">Clear filters</button></div>
+        <details id="filter-controls" class="filters" open><summary>Filter findings <span id="active-filters" class="help"></span></summary><div class="filter-grid"><div class="field"><label for="filter-comparison">Comparison</label><select id="filter-comparison"></select></div><div class="field"><label for="filter-asset">Asset</label><select id="filter-asset"></select></div><div class="field"><label for="filter-scope">Scope</label><select id="filter-scope"></select></div><div class="field"><label for="filter-data">Data state</label><select id="filter-data"></select></div><div class="field"><label for="filter-reconciliation">Reconciliation</label><select id="filter-reconciliation"></select></div></div></details>
+        <p class="direction-note">Difference is <code>expected_minus_reported</code>. Amounts are stored text; unknown is not zero.</p>
+        <div class="table-region" tabindex="0" role="region" aria-label="Findings table"><table id="findings-table"><caption class="sr-only">Stored A and B findings, with independent data and reconciliation states</caption><thead><tr><th scope="col">Check / scope</th><th scope="col">Asset</th><th scope="col">Data state</th><th scope="col">Reconciliation</th><th scope="col">Provisional</th><th scope="col" class="amount">Expected</th><th scope="col" class="amount">Reported</th><th scope="col" class="amount">Difference</th><th scope="col"><span class="sr-only">Inspect finding</span></th></tr></thead><tbody id="finding-rows"></tbody></table></div>
+        <div id="no-findings" class="empty-state" hidden><strong>No findings match these filters.</strong><p>This is an empty view, not an “all matched” result. Clear filters to see the stored findings.</p></div>
+        <div id="finding-pagination" class="pagination"></div>
+      </section>
+      <section id="finding-panel" class="panel detail-panel" aria-labelledby="detail-heading" hidden><div class="section-heading"><div><div class="eyebrow">Saved finding detail</div><h2 id="detail-heading" tabindex="-1"></h2></div><button id="close-detail" type="button" class="secondary">Close detail</button></div><div id="detail-summary"></div><div class="tabs" role="tablist" aria-label="Finding evidence views" id="detail-tabs"></div><div id="detail-content" class="detail-content" role="tabpanel"></div></section>
+      <section id="history-section" class="panel" aria-labelledby="history-heading"><div class="section-heading"><div><div class="eyebrow">Two saved knowledge cuts</div><h2 id="history-heading">Historical comparison</h2></div></div><p class="muted">Compare stored fields side by side. Changed values do not establish a cause, and no new financial delta is calculated.</p><div class="history-controls"><div class="field"><label for="compare-select">Compare selected run with</label><select id="compare-select"></select></div><button id="compare-button" type="button">Compare snapshots</button></div><p id="compare-eligibility" class="help" aria-live="polite"></p><div id="comparison-output" hidden></div></section>
+      <details id="bundle-details" class="bundle-details"><summary>Bundle details and review limits</summary><div id="bundle-content"></div><p>Only each run's saved evidence is available here. Export checks do not authenticate a source or certify institutional compliance. This is a synthetic reference model.</p></details>
+      <footer>Crypto Reconciliation Lab · review-bundle-v1 · Offline, read-only evidence review</footer>
+    </main>
+  </div>
+  <div id="announcement" class="announcement" role="status" aria-live="polite"></div>
+  <dialog id="copy-dialog" aria-labelledby="copy-title"><h2 id="copy-title">Copy saved text</h2><p>Automatic clipboard access is unavailable. Select the text, then use your browser's Copy command or Ctrl/Cmd+C.</p><label class="sr-only" for="copy-text">Text to copy</label><textarea id="copy-text" readonly rows="8"></textarea><div class="button-row"><button id="select-copy" type="button">Select text</button><button id="close-copy" type="button" class="secondary">Close</button></div></dialog>
+  <noscript><p class="fatal-error">JavaScript is required for this offline review page. No application server or network connection is required.</p></noscript>
+  <script id="review-data" type="application/json">@@DATA@@</script>
+  <script>@@SCRIPT@@</script>
+</body>
+</html>

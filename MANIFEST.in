@@ -1,0 +1,32 @@
+# Deliberate portable source allowlist. Old work/output trees are not inputs.
+include README.md AGENTS.md LICENSE pyproject.toml MANIFEST.in .gitignore requirements-build.txt
+recursive-include crypto_reconciliation_lab *.py *.html *.css *.js
+recursive-include tests *.py
+include fixtures/stage1_history.json fixtures/stage3_3_schema2_history.json
+include scripts/build_release.py scripts/reproduce_review.py scripts/verify_release.py
+include scripts/release_test_scope.py scripts/release_financial_scope.py
+include contracts/release-tests-baseline-0.6.0.json contracts/release-test-scope-0.6.1.json
+include docs/stage6_1/scope-contract.md docs/stage6_1/release-guide.md
+include docs/stage6_1/financial-scope.md
+include scripts/run_ab_stage3_3.py scripts/ab_worker_stage3_3.py scripts/ab_retention_stage3_3.py scripts/measure_stage3_3.py
+include docs/model_contract.md docs/correction_semantics.md docs/problem_evidence.md
+include docs/stage2/baseline-schema.json
+include docs/stage5/experiment_contract.md docs/stage5/ai_constraints.txt
+include docs/stage6/five-minute-review.md docs/stage6/technical-presentation-tr.md
+include docs/stage6/claim-evidence.md docs/stage6/historical-evidence.md
+include docs/stage6/verification-guide.md docs/stage6/build-contract.md docs/stage6/ci.md
+include docs/stage6/financial-reference.json
+recursive-include docs/stage6/evidence *.json *.md
+recursive-include examples/triage-review *.json *.md
+recursive-include .github/workflows *.yml *.yaml
+global-exclude *.pyc *.pyo .DS_Store *.sqlite3 *.db *.sqlite3-* *.key *.pem .env .env.*
+prune .git
+prune .venv
+prune work
+prune build
+prune dist
+prune review
+prune stage5-output
+prune stage5_1-output
+prune stage6-output
+prune stage6_1-output

@@ -1,0 +1,119 @@
+name: Release verification
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  workflow:
+    name: Validate workflow
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Validate YAML and action/job references
+        shell: bash
+        run: |
+          curl --fail --location --proto '=https' --tlsv1.2 \
+            --output "$RUNNER_TEMP/actionlint.tar.gz" \
+            https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz
+          echo '8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8  actionlint.tar.gz' > "$RUNNER_TEMP/actionlint.sha256"
+          (cd "$RUNNER_TEMP" && sha256sum --check actionlint.sha256)
+          tar -xzf "$RUNNER_TEMP/actionlint.tar.gz" -C "$RUNNER_TEMP" actionlint
+          "$RUNNER_TEMP/actionlint" -version
+          "$RUNNER_TEMP/actionlint" -shellcheck= -pyflakes= .github/workflows/release.yml
+
+  full:
+    name: Full wheel / Python ${{ matrix.python }}
+    needs: workflow
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.12', '3.14']
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Select Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install pinned build tools
+        run: python -m pip install --requirement requirements-build.txt
+      - name: Verify sdist to wheel and full isolated AI suite
+        shell: bash
+        env:
+          PYTHON_VERSION: ${{ matrix.python }}
+        run: |
+          if [ "$PYTHON_VERSION" = '3.14' ]; then
+            python scripts/verify_release.py --profile full --financial --output "$RUNNER_TEMP/release-full"
+          else
+            python scripts/verify_release.py --profile full --output "$RUNNER_TEMP/release-full"
+          fi
+      - name: Retain bounded verification reports
+        if: ${{ always() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-full-python-${{ matrix.python }}
+          path: |
+            ${{ runner.temp }}/release-full/verification.json
+            ${{ runner.temp }}/release-full/verification.md
+            ${{ runner.temp }}/release-full/logs/*.txt
+            ${{ runner.temp }}/release-full/source-reproduction/index.md
+            ${{ runner.temp }}/release-full/source-reproduction/reproduction.json
+            ${{ runner.temp }}/release-full/source-reproduction/manifest.json
+            ${{ runner.temp }}/release-full/installed-reproduction/index.md
+            ${{ runner.temp }}/release-full/installed-reproduction/reproduction.json
+            ${{ runner.temp }}/release-full/installed-reproduction/manifest.json
+          if-no-files-found: error
+          retention-days: 7
+
+  core:
+    name: Core wheel / no AI / Python 3.14
+    needs: workflow
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Select Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.14'
+      - name: Install pinned build tools
+        run: python -m pip install --requirement requirements-build.txt
+      - name: Verify a clean core wheel installation and offline reproduction
+        run: python scripts/verify_release.py --profile core --output "$RUNNER_TEMP/release-core"
+      - name: Retain bounded verification reports
+        if: ${{ always() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-core-python-3.14
+          path: |
+            ${{ runner.temp }}/release-core/verification.json
+            ${{ runner.temp }}/release-core/verification.md
+            ${{ runner.temp }}/release-core/logs/*.txt
+            ${{ runner.temp }}/release-core/source-reproduction/index.md
+            ${{ runner.temp }}/release-core/source-reproduction/reproduction.json
+            ${{ runner.temp }}/release-core/source-reproduction/manifest.json
+            ${{ runner.temp }}/release-core/installed-reproduction/index.md
+            ${{ runner.temp }}/release-core/installed-reproduction/reproduction.json
+            ${{ runner.temp }}/release-core/installed-reproduction/manifest.json
+          if-no-files-found: error
+          retention-days: 7

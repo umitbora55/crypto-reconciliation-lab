@@ -1,0 +1,6 @@
+# Build/development tools only; application runtime remains standard-library-only.
+# Versions verified against official PyPI project metadata on 2026-11-13.
+build==1.6.1
+packaging==26.3
+pyproject-hooks==1.3.3
+setuptools==80.9.0

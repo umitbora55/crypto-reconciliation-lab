@@ -1,0 +1,49 @@
+{
+  "format": "stage6-historical-evidence-selection-v1",
+  "selected_at": "2026-11-13T07:58:42.430014+00:00",
+  "scope": "Selected historical reports only; not a complete experiment archive and not new measurements",
+  "files": [
+    {
+      "original_path": "docs/stage3_3/performance_interpretation.md",
+      "selected_path": "docs/stage6/evidence/stage3_3-performance_interpretation.md",
+      "bytes": 14805,
+      "sha256": "3ea0ed84da231ab83c2932d1e52512a7dcf01422461f5e5d83469e54d8f9372b",
+      "transformation": "none; byte-identical historical copy"
+    },
+    {
+      "original_path": "docs/stage3_3/performance_comparison.json",
+      "selected_path": "docs/stage6/evidence/stage3_3-performance_comparison.json",
+      "bytes": 204631,
+      "sha256": "2ebe4eea09cc46b8771b5fb5f62e4766b52ef91c55f8f9791402c295d0de0b61",
+      "transformation": "none; byte-identical historical copy"
+    },
+    {
+      "original_path": "stage5-output/experiment-001/main/model_card.md",
+      "selected_path": "docs/stage6/evidence/stage5-model_card.md",
+      "bytes": 1295,
+      "sha256": "439deb96661d6e4898aa225283c89125be686e8cc070d6c5a02779f688ef4ff4",
+      "transformation": "none; byte-identical historical copy"
+    },
+    {
+      "original_path": "stage5-output/experiment-001/main/evaluation.md",
+      "selected_path": "docs/stage6/evidence/stage5-evaluation.md",
+      "bytes": 6851,
+      "sha256": "f2352b9c1170db996e4dc606525ca264b70aeb3f2dabb8e5cbd5133d2c99bd48",
+      "transformation": "none; byte-identical historical copy"
+    },
+    {
+      "original_path": "stage5-output/experiment-001/main/metrics.json",
+      "selected_path": "docs/stage6/evidence/stage5-metrics.json",
+      "bytes": 410858,
+      "sha256": "e7caa0c943742f459536bbf0fbe98cfdc7a27ce6aa4bd11b1ee6633e05fb9a40",
+      "transformation": "none; byte-identical historical copy"
+    },
+    {
+      "original_path": "docs/stage5_1/verification_scope.md",
+      "selected_path": "docs/stage6/evidence/stage5_1-verification_scope.md",
+      "bytes": 5943,
+      "sha256": "89b9f09fad4d1dcc3b696604492d6f559984980d444654924a63c752c8c1b2d4",
+      "transformation": "none; byte-identical historical copy"
+    }
+  ]
+}
