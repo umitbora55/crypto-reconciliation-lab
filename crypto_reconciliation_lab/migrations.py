@@ -9,13 +9,95 @@ from pathlib import Path
 from .model import digest
 
 LEGACY_TABLES = ("configuration", "records", "receipts", "runs", "findings", "evidence")
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 4
 INDEX_NAME = "receipts_hash_lookup"
 INDEX_SQL = "CREATE INDEX receipts_hash_lookup ON receipts(receipt_hash)"
 MIGRATIONS = {
     2: "Add immutable correction groups/effects; retain all Stage 1 columns",
     3: "Add nonunique receipts_hash_lookup(receipt_hash); preserve all financial data",
+    4: "Add immutable admission streams, delivery effects and attempts; preserve financial history",
 }
+
+# These additive definitions deliberately leave every financial table/index alone.
+# Exact byte hashes are checked by the admission API; SQLite stores the original BLOB.
+ADMISSION_TABLES = {
+    'admission_streams': '''CREATE TABLE admission_streams (
+        stream_id TEXT PRIMARY KEY NOT NULL CHECK(typeof(stream_id)='text' AND length(stream_id) BETWEEN 1 AND 128
+            AND stream_id NOT GLOB '*[^A-Za-z0-9_.:-]*' AND substr(stream_id,1,1) GLOB '[A-Za-z0-9]'),
+        input_sha256 TEXT NOT NULL CHECK(typeof(input_sha256)='text' AND length(input_sha256)=64 AND input_sha256 NOT GLOB '*[^0-9a-f]*'),
+        input_bytes INTEGER NOT NULL CHECK(typeof(input_bytes)='integer' AND input_bytes BETWEEN 1 AND 16777216),
+        planned_lines INTEGER NOT NULL CHECK(typeof(planned_lines)='integer' AND planned_lines BETWEEN 1 AND 10000),
+        framing TEXT NOT NULL CHECK(framing='utf8-lf-jsonl-v1'),
+        plan_hash TEXT NOT NULL CHECK(typeof(plan_hash)='text' AND length(plan_hash)=64 AND plan_hash NOT GLOB '*[^0-9a-f]*'),
+        observed_at TEXT NOT NULL CHECK(typeof(observed_at)='text' AND length(observed_at) BETWEEN 1 AND 64))''',
+    'delivery_effects': '''CREATE TABLE delivery_effects (
+        stream_id TEXT NOT NULL REFERENCES admission_streams(stream_id),
+        sequence INTEGER NOT NULL CHECK(typeof(sequence)='integer' AND sequence BETWEEN 1 AND 10000),
+        payload BLOB NOT NULL CHECK(typeof(payload)='blob' AND length(payload) BETWEEN 1 AND 65536),
+        payload_sha256 TEXT NOT NULL CHECK(typeof(payload_sha256)='text' AND length(payload_sha256)=64 AND payload_sha256 NOT GLOB '*[^0-9a-f]*'),
+        core_receipt_id INTEGER UNIQUE REFERENCES receipts(id),
+        core_receipt_hash TEXT,
+        core_result TEXT,
+        disposition TEXT NOT NULL CHECK(disposition IN ('ACCEPTED','DUPLICATE','CONFLICT','INVALID','REJECTED_FRAME')),
+        reason TEXT CHECK(reason IS NULL OR typeof(reason)='text'),
+        observed_at TEXT NOT NULL CHECK(typeof(observed_at)='text' AND length(observed_at) BETWEEN 1 AND 64),
+        PRIMARY KEY(stream_id,sequence),
+        CHECK((disposition='REJECTED_FRAME' AND core_receipt_id IS NULL AND core_receipt_hash IS NULL AND core_result IS NULL)
+          OR (disposition<>'REJECTED_FRAME' AND typeof(core_receipt_id)='integer' AND core_receipt_id>0
+            AND typeof(core_receipt_hash)='text' AND length(core_receipt_hash)=64 AND core_receipt_hash NOT GLOB '*[^0-9a-f]*'
+            AND typeof(core_result)='text' AND length(core_result)>1)))''',
+    'delivery_attempts': '''CREATE TABLE delivery_attempts (
+        id INTEGER PRIMARY KEY,
+        stream_id TEXT NOT NULL CHECK(typeof(stream_id)='text' AND length(stream_id) BETWEEN 1 AND 128
+            AND stream_id NOT GLOB '*[^A-Za-z0-9_.:-]*' AND substr(stream_id,1,1) GLOB '[A-Za-z0-9]'),
+        sequence INTEGER NOT NULL CHECK(typeof(sequence)='integer' AND sequence BETWEEN 1 AND 10000),
+        payload BLOB NOT NULL CHECK(typeof(payload)='blob' AND length(payload) BETWEEN 1 AND 65536),
+        payload_sha256 TEXT NOT NULL CHECK(typeof(payload_sha256)='text' AND length(payload_sha256)=64 AND payload_sha256 NOT GLOB '*[^0-9a-f]*'),
+        plan_hash TEXT NOT NULL CHECK(typeof(plan_hash)='text' AND length(plan_hash)=64 AND plan_hash NOT GLOB '*[^0-9a-f]*'),
+        outcome TEXT NOT NULL CHECK(outcome IN ('COMMITTED','REPLAY','TRANSPORT_CONFLICT','PLAN_CONFLICT','BLOCKED','GAP','OUT_OF_RANGE')),
+        effect_stream_id TEXT,
+        effect_sequence INTEGER,
+        observed_at TEXT NOT NULL CHECK(typeof(observed_at)='text' AND length(observed_at) BETWEEN 1 AND 64),
+        reason TEXT CHECK(reason IS NULL OR typeof(reason)='text'),
+        FOREIGN KEY(effect_stream_id,effect_sequence) REFERENCES delivery_effects(stream_id,sequence),
+        CHECK((effect_stream_id IS NULL AND effect_sequence IS NULL)
+          OR (effect_stream_id IS NOT NULL AND effect_sequence IS NOT NULL
+            AND effect_stream_id=stream_id AND effect_sequence=sequence)),
+        CHECK(outcome NOT IN ('COMMITTED','REPLAY') OR effect_stream_id IS NOT NULL),
+        CHECK(outcome NOT IN ('GAP','OUT_OF_RANGE') OR effect_stream_id IS NULL))''',
+}
+ADMISSION_INDEXES = {
+    'delivery_attempts_stream_outcome': 'CREATE INDEX delivery_attempts_stream_outcome ON delivery_attempts(stream_id,outcome,id)',
+}
+ADMISSION_TRIGGERS = {
+    'delivery_effects_strict_next': '''CREATE TRIGGER delivery_effects_strict_next BEFORE INSERT ON delivery_effects BEGIN
+        SELECT CASE WHEN NEW.sequence <> COALESCE((SELECT MAX(sequence) FROM delivery_effects WHERE stream_id=NEW.stream_id),0)+1
+            THEN RAISE(ABORT,'delivery sequence is not strict next') END;
+        SELECT CASE WHEN NEW.sequence > (SELECT planned_lines FROM admission_streams WHERE stream_id=NEW.stream_id)
+            THEN RAISE(ABORT,'delivery exceeds immutable plan') END;
+        SELECT CASE WHEN EXISTS(SELECT 1 FROM delivery_attempts WHERE stream_id=NEW.stream_id
+            AND outcome IN ('TRANSPORT_CONFLICT','PLAN_CONFLICT'))
+            THEN RAISE(ABORT,'delivery stream is blocked') END;
+    END''',
+    'delivery_effects_receipt_link': '''CREATE TRIGGER delivery_effects_receipt_link BEFORE INSERT ON delivery_effects
+        WHEN NEW.disposition <> 'REJECTED_FRAME' BEGIN
+        SELECT CASE WHEN NOT EXISTS(SELECT 1 FROM receipts WHERE id=NEW.core_receipt_id
+            AND receipt_hash=NEW.core_receipt_hash AND status=NEW.disposition)
+            THEN RAISE(ABORT,'delivery core receipt identity/status differs') END;
+    END''',
+    'delivery_attempts_effect_link': '''CREATE TRIGGER delivery_attempts_effect_link BEFORE INSERT ON delivery_attempts
+        WHEN NEW.outcome IN ('COMMITTED','REPLAY') BEGIN
+        SELECT CASE WHEN NOT EXISTS(SELECT 1 FROM delivery_effects e JOIN admission_streams s ON s.stream_id=e.stream_id
+            WHERE e.stream_id=NEW.effect_stream_id AND e.sequence=NEW.effect_sequence
+            AND e.payload=NEW.payload AND e.payload_sha256=NEW.payload_sha256 AND s.plan_hash=NEW.plan_hash)
+            THEN RAISE(ABORT,'delivery attempt differs from original effect/plan') END;
+    END''',
+}
+for _table in ADMISSION_TABLES:
+    for _action in ('UPDATE', 'DELETE'):
+        _name = f'immutable_{_table}_{_action}'
+        ADMISSION_TRIGGERS[_name] = (f"CREATE TRIGGER {_name} BEFORE {_action} ON {_table} "
+                                   "BEGIN SELECT RAISE(ABORT, 'append-only table'); END")
 
 
 def inject(fault, point):
@@ -64,13 +146,15 @@ def _cell(value):
     return ['text', value]
 
 
-def table_snapshot(db, table, *, exclude_new_migration=False):
+def table_snapshot(db, table, *, exclude_new_migration=False, migration_through=None):
     columns = [list(r) for r in db.execute('PRAGMA table_xinfo(' + quoted(table) + ')')]
     names = [r[1] for r in columns if r[6] != 1]
     order = ','.join('typeof(' + quoted(n) + '),' + quoted(n) + ' COLLATE BINARY' for n in names)
     sql = 'SELECT * FROM ' + quoted(table)
     if exclude_new_migration:
         sql += ' WHERE version<>3'
+    elif migration_through is not None:
+        sql += ' WHERE version<=' + str(int(migration_through))
     if order:
         sql += ' ORDER BY ' + order
     h = hashlib.sha256()
@@ -101,7 +185,8 @@ def assert_preserved(db, before):
         require(tuple(obj) in current_objects, 'migration changed an existing schema object: ' + obj[1])
     preserved = {}
     for name, expected in before['tables'].items():
-        actual = table_snapshot(db, name, exclude_new_migration=(name == 'schema_migrations' and before['user_version'] == 2))
+        actual = table_snapshot(db, name,
+            migration_through=before['user_version'] if name == 'schema_migrations' else None)
         require(actual == expected, 'migration changed existing rows/columns/foreign keys: ' + name)
         preserved[name] = actual
     return preserved
@@ -141,8 +226,19 @@ def _validate_metadata(db, version):
     require(set(LEGACY_TABLES) | {'schema_migrations', 'correction_groups', 'correction_effects'} <= tables,
             'SCHEMA_INVALID: required application tables are missing')
     rows = [tuple(r) for r in db.execute('SELECT version,description FROM schema_migrations ORDER BY version')]
-    wanted = [(n, MIGRATIONS[n]) for n in (2, 3) if n <= version]
+    wanted = [(n, MIGRATIONS[n]) for n in (2, 3, 4) if n <= version]
     require(rows == wanted, 'SCHEMA_INVALID: migration metadata differs from physical version')
+
+
+def validate_admission_schema(db):
+    """Reject missing/altered schema-4 guards; never repair during ordinary open."""
+    for kind, definitions in (('table', ADMISSION_TABLES), ('index', ADMISSION_INDEXES), ('trigger', ADMISSION_TRIGGERS)):
+        for name, expected in definitions.items():
+            row = db.execute('SELECT type,sql FROM sqlite_master WHERE name=?', (name,)).fetchone()
+            require(row is not None and row[0] == kind and row[1] is not None
+                    and ' '.join(row[1].split()) == ' '.join(expected.split()),
+                    'SCHEMA_INVALID: admission schema object differs: ' + name)
+    return True
 
 
 def validate_current(db):
@@ -150,14 +246,18 @@ def validate_current(db):
             'MIGRATION_REQUIRED: use migrate with a backup directory before creating new evaluations')
     _validate_metadata(db, SCHEMA_VERSION)
     validate_index(db)
+    validate_admission_schema(db)
     return True
 
 
 def validate_open(db):
     version = db.execute('PRAGMA user_version').fetchone()[0]
-    require(version in (0, 2, 3), 'unsupported schema version: ' + str(version))
-    if version == 3:
+    require(version in (0, 2, 3, 4), 'unsupported schema version: ' + str(version))
+    if version == 4:
         validate_current(db)
+    elif version == 3:
+        _validate_metadata(db, 3)
+        validate_index(db)
     elif version == 2:
         _validate_metadata(db, 2)
     return version
@@ -184,12 +284,24 @@ def _stage2(db, fault):
     inject(fault, 'migration_after_schema2')
 
 
+def _stage4(db, fault):
+    inject(fault, 'migration_before_admission')
+    for sql in ADMISSION_TABLES.values():
+        db.execute(sql)
+    inject(fault, 'migration_after_admission_tables')
+    for sql in (*ADMISSION_INDEXES.values(), *ADMISSION_TRIGGERS.values()):
+        db.execute(sql)
+    db.execute('INSERT INTO schema_migrations VALUES (?,?)', (4, MIGRATIONS[4]))
+    db.execute('PRAGMA user_version=4')
+    inject(fault, 'migration_after_schema4')
+
+
 def migrate_connection(db, fault=None, *, timings=None, expected_snapshot=None):
     current = db.execute('PRAGMA user_version').fetchone()[0]
     if current == SCHEMA_VERSION:
         validate_current(db)
         return False
-    require(current in (0, 2), 'unsupported schema version: ' + str(current))
+    require(current in (0, 2, 3), 'unsupported schema version: ' + str(current))
     require(not db.in_transaction, 'nested transaction not supported')
     timings = {} if timings is None else timings
     started = time.perf_counter()
@@ -199,19 +311,25 @@ def migrate_connection(db, fault=None, *, timings=None, expected_snapshot=None):
         before = application_snapshot(db)
         if expected_snapshot is not None:
             require(before == expected_snapshot, 'source changed after verified backup')
-        if current == 2:
-            _validate_metadata(db, 2)
+        if current in (2, 3):
+            _validate_metadata(db, current)
+        if current == 3:
+            validate_index(db)
         timings['preservation_before_seconds'] = time.perf_counter() - phase
         if current == 0:
             _stage2(db, fault)
-        inject(fault, 'migration_before_index')
+        if current < 3:
+            inject(fault, 'migration_before_index')
+            phase = time.perf_counter()
+            if not validate_index(db, required=False):
+                db.execute(INDEX_SQL)
+            timings['index_create_seconds'] = time.perf_counter() - phase
+            inject(fault, 'migration_after_index')
+            db.execute('INSERT INTO schema_migrations VALUES (?,?)', (3, MIGRATIONS[3]))
+            db.execute('PRAGMA user_version=3')
         phase = time.perf_counter()
-        if not validate_index(db, required=False):
-            db.execute(INDEX_SQL)
-        timings['index_create_seconds'] = time.perf_counter() - phase
-        inject(fault, 'migration_after_index')
-        db.execute('INSERT INTO schema_migrations VALUES (?,?)', (3, MIGRATIONS[3]))
-        db.execute('PRAGMA user_version=3')
+        _stage4(db, fault)
+        timings['admission_create_seconds'] = time.perf_counter() - phase
         phase = time.perf_counter()
         assert_preserved(db, before)
         validate_current(db)
@@ -257,7 +375,7 @@ def migrate_database(path, backup_dir, fault=None):
             return dict(status='ALREADY_CURRENT', schema_version=version, logical_digest=digest(before), timings=timings)
         folder.mkdir(parents=True, exist_ok=True)
         prefix = f'{path.stem}-{digest(before)[:16]}'
-        backup = folder / (prefix + ('.stage1.sqlite3' if version == 0 else '.schema2.sqlite3'))
+        backup = folder / (prefix + ('.stage1.sqlite3' if version == 0 else f'.schema{version}.sqlite3'))
         phase = time.perf_counter()
         if not backup.exists():
             backup_database(path, backup)

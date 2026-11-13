@@ -32,6 +32,7 @@ def release_helper(name):
 
 TEST_SCOPE = release_helper('release_test_scope')
 FINANCIAL_SCOPE = release_helper('release_financial_scope')
+ADMISSION_SCOPE = release_helper('release_admission_scope')
 
 
 def digest(path):
@@ -175,7 +176,7 @@ class Verification:
                     for p in (source / 'crypto_reconciliation_lab').rglob('*')
                     if p.is_file() and '__pycache__' not in p.parts and p.suffix != '.pyc'}
         require(result['package_files'] == expected, 'installed/source package module or asset bytes differ')
-        require(result['rule'] == 'stage2-v2' and result['schema'] == 3, 'financial rule/schema changed')
+        require(result['rule'] == 'stage2-v2' and result['schema'] == 4, 'financial rule/schema changed')
         require(result['review_format'] == 'review-bundle-v1' and result['experiment_format'] == 'triage-experiment-v1'
                 and result['feature_format'] == 'triage-features-v1', 'saved review/triage v1 format changed')
         require(result['contract_sha256'] == 'd532627546c49a582397fcb700ad723269fafe45ac25af7f162eded5f85d7428',
@@ -212,6 +213,7 @@ def validate_tests(result, scope=None):
 def preflight(source):
     # Both profiles bind the same immutable scopes before external operations.
     scope = TEST_SCOPE.validate_test_files(source)
+    ADMISSION_SCOPE.load_scope(source)
     reference = FINANCIAL_SCOPE.load_financial_reference(source / 'docs/stage6/financial-reference.json')
     return scope, reference
 
@@ -234,7 +236,7 @@ def validate_core_probe(probe):
     require(not installed.intersection({'scikit-learn', 'numpy', 'scipy'}), 'core installation contains an optional dependency distribution')
 
 
-def wheel_manifest(wheel, version='0.6.1'):
+def wheel_manifest(wheel, version='0.7.0'):
     with zipfile.ZipFile(wheel) as archive:
         members = archive.infolist()
         require(len(members) <= 1000 and sum(item.file_size for item in members) <= 32 * 1024**2, 'wheel member/size limit exceeded')
@@ -282,6 +284,26 @@ def reproduce(gate, python, source, mode, reference, core):
     gate.persist()
 
 
+def recovery(gate, python, source, mode):
+    """Exercise the finite process-crash plan in the actual source/wheel context."""
+    target = gate.output / (mode + '-recovery')
+    flags = ['-I'] if mode == 'installed' else []
+    gate.run(mode + '-recovery', [python, '-B', *flags, '-m', 'crypto_reconciliation_lab',
+             'demo-recovery', '--output', target, '--seed', '19'],
+             None if mode == 'installed' else source)
+    summary = target / 'delivery-summary.json'
+    schedule = target / 'schedule.json'
+    result = json.loads(summary.read_text(encoding='utf-8'))
+    validation = ADMISSION_SCOPE.validate_report(result, ADMISSION_SCOPE.load_scope(source),
+                                               schedule_sha256=digest(schedule)['sha256'])
+    origin = Path(result['environment']['import_origin']).resolve()
+    package_root = Path(gate.record[mode + '_import']['origin']).resolve().parent
+    require(origin.is_relative_to(package_root), 'recovery imported a different source/package')
+    gate.record[mode + '_recovery'] = {'status': 'PASS', 'path': str(target), 'scope': validation,
+                                     'summary': digest(summary), 'schedule': digest(schedule), 'result': result}
+    gate.persist()
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--profile', choices=('full', 'core'), required=True)
@@ -303,7 +325,8 @@ def main(argv=None):
         preflight_root = args.source.resolve() if args.source else Path(__file__).resolve().parents[1]
         file_scope, reference = preflight(preflight_root)
         gate.record['preflight'] = {'status': 'PASS', 'source': str(preflight_root),
-                                    'test_scope': file_scope, 'financial_reference': FINANCIAL_SCOPE.reference_identity()}
+                                    'test_scope': file_scope, 'financial_reference': FINANCIAL_SCOPE.reference_identity(),
+                                    'admission_scope': ADMISSION_SCOPE.identity()}
         gate.persist()
         if args.source:
             source = args.source.resolve()
@@ -353,7 +376,9 @@ def main(argv=None):
             installed_tests = gate.tests('installed_tests', python, source, True)
             require(source_tests['executed'] == installed_tests['executed'], 'source and installed test count differ')
             reproduce(gate, python, source, 'source', reference, False)
+            recovery(gate, python, source, 'source')
         reproduce(gate, python, source, 'installed', reference, args.profile == 'core')
+        recovery(gate, python, source, 'installed')
         if args.financial:
             inputs, outputs = gate.output / 'financial-input', gate.output / 'financial-matrix'
             generated = json.loads(gate.run('financial-generate', [python, '-B', '-I', '-m', 'crypto_reconciliation_lab', 'lab-generate', '--output', inputs,
@@ -375,6 +400,7 @@ def main(argv=None):
             f"Installed origin: `{installed['origin']}`. Python: `{installed['python']}`.\n\n"
             f"Full-suite tests: {tests.get('executed', 'NOT_RUN (core profile)')}; skips: {tests.get('skips', 'not applicable')}. "
             f"Financial matrix: {gate.record['financial_matrix']['status']}.\n\n"
+            f"Admission recovery: {gate.record['installed_recovery']['scope']['executed_count']} fixed scenarios, observed crash barriers and negative controls PASS.\n\n"
             "All commands, actual exits, import origins, dependency versions, byte proofs and logs are in verification.json. "
             "No main triage generation, training, or final holdout evaluation was invoked by this gate.\n", encoding='utf-8')
         print(json.dumps({'status': 'PASS', 'profile': args.profile, 'report': str(gate.output / 'verification.json')}))

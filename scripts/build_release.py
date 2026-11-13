@@ -25,10 +25,10 @@ from urllib.parse import unquote
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = "0.6.1"
+VERSION = "0.7.0"
 TOP_FILES = ("README.md", "AGENTS.md", "LICENSE", "pyproject.toml", "MANIFEST.in", ".gitignore", "requirements-build.txt")
 SCRIPTS = ("build_release.py", "reproduce_review.py", "verify_release.py",
-           "release_test_scope.py", "release_financial_scope.py",
+           "release_test_scope.py", "release_financial_scope.py", "release_admission_scope.py",
            "run_ab_stage3_3.py", "ab_worker_stage3_3.py", "ab_retention_stage3_3.py", "measure_stage3_3.py")
 DOCS = ("docs/model_contract.md", "docs/correction_semantics.md", "docs/problem_evidence.md",
         "docs/stage2/baseline-schema.json", "docs/stage5/experiment_contract.md", "docs/stage5/ai_constraints.txt",
@@ -42,7 +42,10 @@ DOCS = ("docs/model_contract.md", "docs/correction_semantics.md", "docs/problem_
         "docs/showcase/architecture.svg",
         "docs/showcase/demo-overview.png",
         "docs/showcase/assets-manifest.json",
-        "contracts/release-tests-baseline-0.6.0.json", "contracts/release-test-scope-0.6.1.json")
+        "contracts/release-tests-baseline-0.6.0.json", "contracts/release-test-scope-0.6.1.json",
+        "contracts/release-test-scope-0.7.0.json", "contracts/admission-recovery-scope-v1.json",
+        "docs/stage9/admission-contract.md", "docs/stage9/decisions.md",
+        "docs/stage9/recovery-report.md", "docs/stage9/fixture-changes.md", "docs/stage9/HANDOFF.md")
 REQUIRED = {*TOP_FILES, *("scripts/" + name for name in SCRIPTS), *DOCS,
             "fixtures/stage1_history.json", "fixtures/stage3_3_schema2_history.json",
             "tests/review_fixtures.py", "tests/triage_model_fixtures.py", "tests/triage_scope_fixtures.py"}
@@ -123,7 +126,8 @@ def selected_files(root):
 def check_links(root):
     checked = []
     paths = [Path(root) / "README.md", *(Path(root) / "docs/stage6").glob("*.md"),
-             *(Path(root) / "docs/stage6_1").glob("*.md")]
+             *(Path(root) / "docs/stage6_1").glob("*.md"),
+             *(Path(root) / "docs/stage9").glob("*.md")]
     for path in paths:
         for target in re.findall(r"\]\(([^)]+)\)", path.read_text(encoding="utf-8")):
             if re.match(r"[A-Za-z][A-Za-z0-9+.-]*:", target) or target.startswith("#"):

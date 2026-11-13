@@ -458,7 +458,7 @@ class MigrationTests(unittest.TestCase):
         self.assertEqual(result['before_digest'], result['after_digest'])
         db = sqlite3.connect(self.path)
         self.assert_legacy(db)
-        self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0], 3)
+        self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0], 4)
         self.assertEqual(db.execute('PRAGMA foreign_key_check').fetchall(), [])
         db.close()
         store = Store(self.path)

@@ -35,3 +35,9 @@ prune stage5-output
 prune stage5_1-output
 prune stage6-output
 prune stage6_1-output
+
+# Stage 9 finite admission, fixed release/recovery scope and bounded documentation.
+include scripts/release_admission_scope.py
+include contracts/release-test-scope-0.7.0.json contracts/admission-recovery-scope-v1.json
+include docs/stage9/admission-contract.md docs/stage9/decisions.md
+include docs/stage9/recovery-report.md docs/stage9/fixture-changes.md docs/stage9/HANDOFF.md

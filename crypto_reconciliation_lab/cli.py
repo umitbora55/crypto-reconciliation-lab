@@ -62,7 +62,7 @@ def main(argv=None):
     demo.add_argument("--later-knowledge-at", default=LATER_KNOWLEDGE_AT)
     correction_demo = commands.add_parser("demo-corrections", help="verify five Stage 2 correction demos")
     correction_demo.add_argument("--output", default="stage2-output/demos")
-    migration = commands.add_parser("migrate", help="back up, test on a copy, then migrate physical schema to v3")
+    migration = commands.add_parser("migrate", help="back up, test on a copy, then migrate physical schema to v4")
     migration.add_argument("--db", required=True)
     migration.add_argument("--backup-dir", required=True)
     init = commands.add_parser("init", help="create an immutable-config SQLite store")
@@ -71,6 +71,17 @@ def main(argv=None):
     ingest = commands.add_parser("ingest", help="append JSONL envelopes, retaining invalid records")
     ingest.add_argument("--db", required=True)
     ingest.add_argument("--input", required=True)
+    feed = commands.add_parser("ingest-feed", help="admit/replay a bounded immutable JSONL snapshot; no reconciliation")
+    feed.add_argument("--db", required=True)
+    feed.add_argument("--input", required=True)
+    feed.add_argument("--stream-id", required=True)
+    feed.add_argument("--busy-timeout-ms", type=int, default=250)
+    feed_status = commands.add_parser("feed-status", help="read committed transport scope and delivery history")
+    feed_status.add_argument("--db", required=True)
+    feed_status.add_argument("--stream-id", required=True)
+    recovery = commands.add_parser("demo-recovery", help="run the bounded real-process interruption and replay experiment")
+    recovery.add_argument("--output", required=True)
+    recovery.add_argument("--seed", type=int, default=19)
     run = commands.add_parser("reconcile", help="create a knowledge-bounded evaluation")
     run.add_argument("--db", required=True)
     run.add_argument("--balance-at", required=True)
@@ -105,6 +116,11 @@ def main(argv=None):
     args = parser.parse_args(argv)
     store = None
     try:
+        if args.command == "demo-recovery":
+            from .admission.recovery import run_demo
+            result = run_demo(args.output, seed=args.seed)
+            print(json.dumps(result, sort_keys=True))
+            return 0 if result["status"] == "PASS" else 2
         if args.command.startswith("triage-"):
             if args.command == "triage-generate":
                 from .triage.world import generate_bundle
@@ -186,7 +202,16 @@ def main(argv=None):
             return 0
         if not Path(args.db).is_file():
             raise ValueError("database does not exist; run init first")
-        store = Store(args.db)
+        store = Store(args.db, busy_timeout_ms=args.busy_timeout_ms if args.command == "ingest-feed" else None)
+        if args.command == "ingest-feed":
+            from .admission.feed import ingest_feed
+            result = ingest_feed(store, args.input, args.stream_id, busy_timeout_ms=args.busy_timeout_ms)
+            print(json.dumps(result, sort_keys=True))
+            state = result["delivery_status"]
+            return 0 if result["status"] == "COMPLETE" and not state["core_invalid_count"] and not state["frame_rejected_count"] and not any(e["disposition"] == "CONFLICT" for e in state["effects"]) else 1
+        if args.command == "feed-status":
+            print(json.dumps(store.feed_status(args.stream_id), sort_keys=True))
+            return 0
         if args.command == "ingest":
             counts = {}
             with Path(args.input).open() as source:
@@ -207,6 +232,15 @@ def main(argv=None):
         print(result["run_id"])
         return 0 if all(r["data_state"] == "COMPLETE" and r["reconciliation_state"] == "MATCHED" for r in result["findings"]) else 1
     except (ValueError, OSError, sqlite3.Error, DecimalException) as exc:
+        if (args.command == "ingest-feed" and isinstance(exc, sqlite3.OperationalError)
+                and getattr(exc, "sqlite_errorcode", 0) & 255 in (sqlite3.SQLITE_BUSY, sqlite3.SQLITE_LOCKED)):
+            from .admission.feed import unknown_status
+            print(json.dumps({"format": "feed-admission-v1", "stream_id": args.stream_id,
+                              "status": "INCOMPLETE", "outcome": "RETRYABLE_BUSY", "ack": False,
+                              "durable": False, "responses": [],
+                              "delivery_status": unknown_status(args.stream_id, str(exc)),
+                              "financial_evaluation": "NOT_RUN"}, sort_keys=True))
+            return 1
         print(f"Application/configuration error: {exc}", file=sys.stderr)
         return 2
     finally:

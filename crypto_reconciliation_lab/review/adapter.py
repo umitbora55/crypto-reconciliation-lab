@@ -168,8 +168,8 @@ def _schema(db):
     tables = {row[1] for row in objects if row[0] == 'table'}
     if db.execute('PRAGMA encoding').fetchone()[0] != 'UTF-8':
         raise ReviewError('SCHEMA_UNSUPPORTED', 'only UTF-8 SQLite snapshot encoding is supported')
-    if version not in (0, 2, 3):
-        raise ReviewError('SCHEMA_UNSUPPORTED', 'supported physical schema versions are 0, 2 and 3')
+    if version not in (0, 2, 3, 4):
+        raise ReviewError('SCHEMA_UNSUPPORTED', 'supported physical schema versions are 0, 2, 3 and 4')
     if 'runs' not in tables:
         raise ReviewError('SCHEMA_UNSUPPORTED', 'runs must be a real table')
     for name, required in (('runs', {'id', 'balance_at', 'knowledge_at', 'payload'}),

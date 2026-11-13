@@ -1,5 +1,22 @@
 # Project working agreement
 
+## Current Stage 9 restartable admission authorization
+
+The explicit Stage 9 task authorizes a finite local JSONL admission protocol, shared
+core transaction body, additive schema 4, package 0.7.0, narrow read-only adapter
+compatibility, new tests and fixed release scope, necessary allowlist/CI updates,
+and documented schema/version fixture changes. Earlier Stage 7/8 freeze notes below
+are historical and do not prohibit these changes. Preserve all 400 old test IDs,
+financial assertions, stage2-v2, existing v1 financial contracts, fixed 373-file
+reference and the Stage 8 showcase. Do not run the frozen main experiment.
+
+Work in a task-owned clone and branch. Keep original projects, historical databases,
+distributions and old evidence untouched. Record actual process barriers, exits,
+source/installed test identities, migration and release proofs in stage9-output.
+Current design and decisions belong in docs/stage9. Normal task-branch pushes and a
+draft PR are authorized; never merge into main, force push or alter repo protection.
+No new service, dependency, source authentication, payment or AI feature is planned.
+
 ## Current Stage 8 showcase authorization
 
 The current task authorizes a personal engineering README, a complete Turkish account and small presentation assets under docs/showcase, based on the supplied design inputs and actual synthetic demo captures. This narrowly supersedes the Stage 7 publication-copy edit limit. Only README.md, new docs/showcase files, explicit showcase filenames in build_release.py and MANIFEST.in, and this task note may change. Preserve all earlier stage records below.
