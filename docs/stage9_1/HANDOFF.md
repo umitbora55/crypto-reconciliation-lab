@@ -47,7 +47,7 @@ From a source checkout, use fresh output directories:
 
 ```sh
 python3 -B -m crypto_reconciliation_lab demo-recovery --output recovery-new --seed 19
-python3 -B scripts/verify_release.py --check-recovery recovery-new --output evidence-check-new
+python3 -B scripts/verify_release.py --profile core --check-recovery recovery-new --output evidence-check-new
 python3 -B scripts/verify_release.py --profile full --financial --output release-full-new
 python3 -B scripts/verify_release.py --profile core --output release-core-new
 ```
