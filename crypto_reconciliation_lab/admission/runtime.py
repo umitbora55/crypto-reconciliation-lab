@@ -37,7 +37,8 @@ def _envelope(payload):
         value = {}
         for key, item in pairs:
             if key in value:
-                raise ValueError("duplicate JSON key: " + key)
+                # JSON escapes keep even lone surrogates safe in SQLite TEXT diagnostics.
+                raise ValueError("duplicate JSON key: " + json.dumps(key, ensure_ascii=True))
             value[key] = item
         return value
     def nonfinite(value):

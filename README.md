@@ -4,7 +4,7 @@ Personal project by Ümit Bora Günaydın
 
 I built this project to study reconciliation when records arrive late or are corrected after an evaluation. It uses synthetic ledger, investor and custody data, and keeps earlier findings available for inspection.
 
-Python and SQLite · Package **0.7.0** · Financial rule `stage2-v2` · SQLite schema `4`
+Python and SQLite · Package **0.7.1** · Financial rule `stage2-v2` · SQLite schema `4`
 
 [Example](#example) · [Run locally](#run-locally) · [Design notes](docs/model_contract.md) · [Türkçe](docs/showcase/README.tr.md)
 
@@ -77,6 +77,10 @@ Run `python3 -m crypto_reconciliation_lab demo-recovery --output recovery-output
 to inspect the fixed process-crash and replay experiment. ACK records a durable
 delivery result; it does not assert financial validity or MATCHED. See the
 [recovery report](docs/stage9/recovery-report.md) and [decisions](docs/stage9/decisions.md).
+Stage 9.1 preserves malformed-frame rejection diagnostics with escaped Unicode
+and requires independent per-scenario work and evidence in the recovery v2 gate.
+See the [maintenance handoff](docs/stage9_1/HANDOFF.md) for the two repairs,
+same-test RED/GREEN evidence, fixture exceptions and unchanged financial contracts.
 The Stage 8 diagrams, real screenshot and Turkish account remain the historical
 0.6.1 showcase; their financial example is unchanged.
 

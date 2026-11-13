@@ -25,17 +25,24 @@ def main():
     parser.add_argument('--request', type=Path, required=True)
     args = parser.parse_args()
     request = json.loads(args.request.read_text())
+    store = Store(request['db'])
+
+    def settings():
+        return {'journal_mode': store.db.execute('PRAGMA journal_mode').fetchone()[0],
+                'synchronous': store.db.execute('PRAGMA synchronous').fetchone()[0],
+                'busy_timeout_ms': store.db.execute('PRAGMA busy_timeout').fetchone()[0]}
+
     emit({'type': 'READY', 'pid': os.getpid(), 'interpreter': sys.executable,
-          'import_origin': str(Path(__file__).resolve()), 'sqlite': sqlite3.sqlite_version})
+          'import_origin': str(Path(__file__).resolve()), 'sqlite': sqlite3.sqlite_version,
+          'writer_connection': settings()})
     command('GO')
     barrier = request.get('barrier')
 
     def fault(point):
         if barrier and point == barrier:
-            emit({'type': 'BARRIER', 'point': point, 'pid': os.getpid()})
+            emit({'type': 'BARRIER', 'point': point, 'pid': os.getpid(), 'writer_connection': settings()})
             command('CONTINUE')
 
-    store = Store(request['db'])
     try:
         action = request['action']
         if action == 'delivery':
@@ -50,7 +57,7 @@ def main():
             result = reconcile(store, request['balance_at'], request['knowledge_at'], fault=fault if barrier else None)
         else:
             raise ValueError('unknown recovery child action')
-        emit({'type': 'RESULT', 'pid': os.getpid(), 'result': result})
+        emit({'type': 'RESULT', 'pid': os.getpid(), 'result': result, 'writer_connection': settings()})
     finally:
         store.close()
 

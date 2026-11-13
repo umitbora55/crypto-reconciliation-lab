@@ -236,7 +236,7 @@ def validate_core_probe(probe):
     require(not installed.intersection({'scikit-learn', 'numpy', 'scipy'}), 'core installation contains an optional dependency distribution')
 
 
-def wheel_manifest(wheel, version='0.7.0'):
+def wheel_manifest(wheel, version='0.7.1'):
     with zipfile.ZipFile(wheel) as archive:
         members = archive.infolist()
         require(len(members) <= 1000 and sum(item.file_size for item in members) <= 32 * 1024**2, 'wheel member/size limit exceeded')
@@ -257,7 +257,9 @@ def wheel_manifest(wheel, version='0.7.0'):
                     and not name.endswith(('.db', '.sqlite', '.sqlite3', '.pyc', '.pem', '.key', '.zip', '.whl', '-wal', '-shm', '-journal')),
                     'wheel contains excluded artifact')
             if name.startswith('crypto_reconciliation_lab/'):
-                require(PurePosixPath(name).suffix in ('.py', '.html', '.css', '.js'), 'wheel contains unexpected package data')
+                require(PurePosixPath(name).suffix in ('.py', '.html', '.css', '.js')
+                        or name == 'crypto_reconciliation_lab/admission/recovery_scope_v2.json',
+                        'wheel contains unexpected package data')
             data = archive.read(item)
             require(len(data) == item.file_size, 'wheel member size mismatch')
             result[name] = {'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()}
@@ -284,6 +286,40 @@ def reproduce(gate, python, source, mode, reference, core):
     gate.persist()
 
 
+def accept_recovery_evidence(source, target):
+    """The same pinned semantic gate for executed and separately supplied reports.
+
+    This validates completeness/consistency, not authenticity or re-execution.
+    """
+    source, target = Path(source).resolve(), Path(target).resolve()
+    summary, schedule = target / 'delivery-summary.json', target / 'schedule.json'
+    for path in (summary, schedule):
+        require(path.is_file() and not path.is_symlink() and path.stat().st_size <= 16 * 1024 * 1024,
+                'ADMISSION_SCOPE: bounded regular recovery evidence required')
+    before = {'summary': digest(summary), 'schedule': digest(schedule)}
+    def unique(pairs):
+        value = {}
+        for key, item in pairs:
+            require(key not in value, 'ADMISSION_SCOPE: duplicate evidence JSON key')
+            value[key] = item
+        return value
+    def read_json(path):
+        return json.loads(path.read_text(encoding='utf-8'), object_pairs_hook=unique,
+                          parse_constant=lambda value: (_ for _ in ()).throw(ValueError('ADMISSION_SCOPE: nonfinite evidence JSON')))
+    result, plan = read_json(summary), read_json(schedule)
+    scope = ADMISSION_SCOPE.load_scope(source)
+    ADMISSION_SCOPE.validate_schedule(plan, scope)
+    validation = ADMISSION_SCOPE.validate_report(result, scope,
+                                               schedule_sha256=before['schedule']['sha256'])
+    expected_plans = {row['id']: row for row in plan['scenarios']}
+    require(all(row['expected'] == expected_plans[row['id']] for row in result['scenarios']),
+            'ADMISSION_SCOPE: executed case plans differ from saved schedule')
+    require(before == {'summary': digest(summary), 'schedule': digest(schedule)},
+            'ADMISSION_SCOPE: evidence changed during validation')
+    return {'status': 'PASS', 'path': str(target), 'scope': validation,
+            **before, 'result': result}
+
+
 def recovery(gate, python, source, mode):
     """Exercise the finite process-crash plan in the actual source/wheel context."""
     target = gate.output / (mode + '-recovery')
@@ -291,16 +327,12 @@ def recovery(gate, python, source, mode):
     gate.run(mode + '-recovery', [python, '-B', *flags, '-m', 'crypto_reconciliation_lab',
              'demo-recovery', '--output', target, '--seed', '19'],
              None if mode == 'installed' else source)
-    summary = target / 'delivery-summary.json'
-    schedule = target / 'schedule.json'
-    result = json.loads(summary.read_text(encoding='utf-8'))
-    validation = ADMISSION_SCOPE.validate_report(result, ADMISSION_SCOPE.load_scope(source),
-                                               schedule_sha256=digest(schedule)['sha256'])
+    evidence = accept_recovery_evidence(source, target)
+    result = evidence['result']
     origin = Path(result['environment']['import_origin']).resolve()
     package_root = Path(gate.record[mode + '_import']['origin']).resolve().parent
     require(origin.is_relative_to(package_root), 'recovery imported a different source/package')
-    gate.record[mode + '_recovery'] = {'status': 'PASS', 'path': str(target), 'scope': validation,
-                                     'summary': digest(summary), 'schedule': digest(schedule), 'result': result}
+    gate.record[mode + '_recovery'] = evidence
     gate.persist()
 
 
@@ -310,8 +342,11 @@ def main(argv=None):
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--source', type=Path)
     parser.add_argument('--wheel', type=Path)
+    parser.add_argument('--check-recovery', type=Path, help='validate existing recovery evidence through the release gate only; no build, install or application execution')
     parser.add_argument('--financial', action='store_true', help='run the 69-case/162-evaluation financial matrix exactly once; full only')
     args = parser.parse_args(argv)
+    if args.check_recovery and (args.source or args.wheel or args.financial):
+        parser.error('--check-recovery cannot be combined with source/wheel/financial execution')
     if bool(args.source) != bool(args.wheel):
         parser.error('--source and --wheel must be supplied together')
     if args.financial and args.profile != 'full':
@@ -328,6 +363,18 @@ def main(argv=None):
                                     'test_scope': file_scope, 'financial_reference': FINANCIAL_SCOPE.reference_identity(),
                                     'admission_scope': ADMISSION_SCOPE.identity()}
         gate.persist()
+        if args.check_recovery:
+            gate.record['recovery_evidence_check'] = accept_recovery_evidence(preflight_root, args.check_recovery)
+            gate.record.update(status='PASS', exit_code=0, execution_scope='RECOVERY_EVIDENCE_ONLY',
+                               source_tests={'status': 'NOT_RUN'}, installed_tests={'status': 'NOT_RUN'},
+                               financial_matrix={'status': 'NOT_RUN'},
+                               note='Existing report completeness and internal consistency only; no application executed and no authenticity claim.')
+            gate.persist()
+            (gate.output / 'verification.md').write_text(
+                '# Recovery evidence verification\n\nStatus: PASS. Existing report only; no build, installation, suite or matrix executed.\n',
+                encoding='utf-8')
+            print(json.dumps({'status': 'PASS', 'mode': 'RECOVERY_EVIDENCE_ONLY', 'report': str(gate.output / 'verification.json')}))
+            return 0
         if args.source:
             source = args.source.resolve()
             wheel = args.wheel.resolve()

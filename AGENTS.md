@@ -1,5 +1,26 @@
 # Project working agreement
 
+## Current Stage 9.1 maintenance authorization
+
+The explicit Stage 9.1 task authorizes only the S9-F1 malformed-frame diagnostic
+repair and S9-F2 independent semantic recovery coverage repair. Target package
+0.7.1 preserves stage2-v2, schema 4, financial/review/triage v1 formats, all 451
+previous test identities and the immutable 373-file financial reference. Do not
+run the frozen main experiment or change financial normalization/calculation.
+
+Keep docs/stage9, prior source snapshots, contracts and evidence unchanged.
+Current decisions and fixture diffs belong in docs/stage9_1; execution evidence
+belongs outside Git in stage9_1-output. Preserve actual same-test RED/GREEN logs.
+The task explicitly allows the named report_fixture conversion, its listed fixture
+mutation paths and necessary version/path/format metadata; bind each old/new hash
+and focused diff. Do not remove assertions or broadly permit old-test rewrites.
+New recovery v2 evidence must not relabel historical v1 reports as v2 success.
+
+Use the task-owned clone; normal commits/pushes to stage9/restartable-admission
+and an updated draft PR #1 are authorized. Do not merge main, force push, change
+protection/visibility, publish releases/tags/PyPI, or send third-party messages.
+Observe actual writer settings without changing PRAGMAs; no migration is needed.
+
 ## Current Stage 9 restartable admission authorization
 
 The explicit Stage 9 task authorizes a finite local JSONL admission protocol, shared

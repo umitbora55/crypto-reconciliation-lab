@@ -13,24 +13,12 @@ SPEC.loader.exec_module(scope_gate)
 
 
 def report_fixture(scope):
-    """A small declared verifier input; actual process runs have separate evidence."""
-    rows = []
-    for name in scope['scenario_ids']:
-        processes = []
-        if name in scope['crash_barriers']:
-            processes.append({'barrier': scope['crash_barriers'][name], 'barrier_reached': True,
-                              'exit_code': -9, 'sender_result': 'UNKNOWN'})
-        if name in scope['writer_scenarios']:
-            processes.extend({'pid': pid, 'joined': True, 'exit_code': 0} for pid in (101, 102))
-        rows.append({'id': name, 'status': 'PASS', 'checks': [{'passed': True}], 'processes': processes})
-    return {'format': 'admission-recovery-v1', 'status': 'PASS',
-            'planned_scenario_ids': list(scope['scenario_ids']), 'executed_scenario_ids': list(scope['scenario_ids']),
-            'schedule_sha256': 'a' * 64, 'scenarios': rows,
-            'negative_control': {'status': 'EXPECTED_FAILURE', 'models': [
-                {'name': 'premature_ack', 'observed_status': 'FAIL'},
-                {'name': 'empty_cursor', 'observed_status': 'FAIL'}]},
-            'environment': {'python': 'fixture', 'interpreter': '/fixture/python', 'import_origin': '/fixture/package',
-                            'sqlite': 'fixture', 'platform': 'fixture', 'journal_mode': 'delete', 'synchronous': 2}}
+    """Synthetic complete verifier input; never evidence of an executed process."""
+    import json
+    value = json.loads((ROOT / 'tests/fixtures/admission-semantic-report-v2.json').read_text())
+    if not value['fixture_notice'].startswith('SYNTHETIC VERIFIER INPUT.'):
+        raise ValueError('fixture provenance missing')
+    return value
 
 
 class AdmissionReleaseTests(unittest.TestCase):

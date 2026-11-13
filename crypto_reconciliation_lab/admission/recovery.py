@@ -20,6 +20,7 @@ from ..correction_demo import correction_fixtures, T3
 from ..engine import reconcile
 from ..store import Store
 from .feed import snapshot_feed, ingest_feed
+from .scope import load_scope, validate_plan, validate_schedule, validate_case, validate_report
 from .oracle import check, observed, delivery_checks, financial_checks, negative_control, record_inventory_checks
 
 SCENARIO_IDS = (
@@ -36,6 +37,33 @@ BARRIERS = {'crash_after_record': 'ingest_before_receipt',
 PROCESS_TIMEOUT_SECONDS = 15
 BUSY_TIMEOUT_MS = 100
 RETRY_BUDGET = 2
+_WRITER_OBSERVATIONS = []
+
+
+def _writer(store, operation):
+    observation = {"pid": os.getpid(), "operation": operation,
+        "journal_mode": store.db.execute("PRAGMA journal_mode").fetchone()[0],
+        "synchronous": store.db.execute("PRAGMA synchronous").fetchone()[0],
+        "busy_timeout_ms": store.db.execute("PRAGMA busy_timeout").fetchone()[0]}
+    _WRITER_OBSERVATIONS.append(observation)
+
+
+def _phase(checks, name):
+    return [{**c, "name": name + ":" + c["name"]} for c in checks]
+
+
+def _state_proof(actual):
+    def proof(rows):
+        def safe(v):
+            if isinstance(v, bytes): return {"bytes": len(v), "sha256": hashlib.sha256(v).hexdigest()}
+            if isinstance(v, dict): return {k:safe(x) for k,x in v.items()}
+            if isinstance(v, (tuple,list)): return [safe(x) for x in v]
+            return v
+        data = json.dumps(safe(rows), sort_keys=True, separators=(",", ":")).encode()
+        return {"rows":len(rows),"bytes":len(data),"sha256":hashlib.sha256(data).hexdigest()}
+    return {"core_tables":{k:proof(actual[k]) for k in ("streams","effects","attempts","receipts","records")},
+            "run_tables":{k:proof(rows) for k,rows in actual["run_tables"].items()},
+            "run_payload_hashes":{k:hashlib.sha256(v.encode()).hexdigest() for k,v in actual["runs"].items()}}
 
 
 def encoded(value):
@@ -52,6 +80,7 @@ def input_bytes(rows):
 
 def _initialize(path, config):
     store = Store(path, config)
+    _writer(store, "initialize")
     store.close()
 
 
@@ -65,6 +94,7 @@ def _reopen(path):
 def _feed(path, input_path, stream='feed'):
     store = Store(path)
     try:
+        _writer(store, "feed")
         return ingest_feed(store, input_path, stream, busy_timeout_ms=BUSY_TIMEOUT_MS)
     finally:
         store.close()
@@ -73,6 +103,7 @@ def _feed(path, input_path, stream='feed'):
 def _delivery(path, stream, sequence, payload, plan, *, timeout=BUSY_TIMEOUT_MS):
     store = Store(path)
     try:
+        _writer(store, "delivery")
         return store.ingest_delivery(stream, sequence, payload, plan, busy_timeout_ms=timeout)
     finally:
         store.close()
@@ -81,6 +112,7 @@ def _delivery(path, stream, sequence, payload, plan, *, timeout=BUSY_TIMEOUT_MS)
 def _evaluate(path, variant='clean', knowledge=KNOWLEDGE_AT):
     store = Store(path)
     try:
+        _writer(store, "reconcile")
         result = reconcile(store, BALANCE_AT, knowledge)
     finally:
         store.close()
@@ -147,7 +179,8 @@ def _compact_response(value):
         'response_count': len(value['responses']),
         'response_outcomes': dict(Counter(r['outcome'] for r in value['responses'])),
         'last_response': value['responses'][-1] if value['responses'] else None,
-        'committed_prefix': state['committed_prefix'], 'blocked': state['blocked']}
+        'committed_prefix': state['committed_prefix'], 'blocked': state['blocked'],
+        'state_observation': state['status']}
 
 
 def _finish(child, *, kill=False, result=None, barrier=None):
@@ -215,6 +248,11 @@ def _compact(actual):
             'attempt_outcomes': dict(Counter(r['outcome'] for r in actual['attempts'])),
             'core_statuses': dict(Counter(r['status'] for r in actual['receipts'])),
             'core_receipts': len(actual['receipts']), 'unique_records': len(actual['records']),
+            'receipt_links': [[r['id'],r['receipt_hash'],r['record_id'],r['status']] for r in actual['receipts']],
+            'run_table_counts': {k:len(v) for k,v in actual['run_tables'].items()},
+            'run_rows': [{'run_id':rid,'payload_sha256':hashlib.sha256(payload.encode()).hexdigest(),
+                          'findings':len(json.loads(payload)['findings']), 'evidence':len(json.loads(payload)['evidence'])}
+                         for rid,payload in sorted(actual['runs'].items())],
             'record_ids': [r['id'] for r in actual['records']], 'run_ids': sorted(actual['runs']),
             'run_payload_hashes': {rid: hashlib.sha256(payload.encode()).hexdigest() for rid, payload in actual['runs'].items()},
             'integrity_check': actual['integrity_check'], 'foreign_key_check': actual['foreign_key_check']}
@@ -234,6 +272,10 @@ def _plan_item(identifier, input_name, line_count):
 
 
 def _case(identifier, folder, config, input_path, item):
+    scope = load_scope()
+    validate_plan(identifier, item, scope)
+    _WRITER_OBSERVATIONS.clear()
+    boundaries = {}
     db = folder / 'evidence.sqlite3'
     _initialize(db, config)
     snapshot = snapshot_feed(input_path)
@@ -259,10 +301,11 @@ def _case(identifier, folder, config, input_path, item):
             checks.append(check('terminal_rejected_frame', observed(db)['effects'][-1]['disposition'], 'REJECTED_FRAME'))
     elif identifier == 'transport_replay':
         responses.append(_feed(db, input_path))
-        old_run, cs = _evaluate(db); checks += cs
+        old_run, cs = _evaluate(db); checks += _phase(cs, 'initial_financial')
         before = observed(db)
         responses.append(_feed(db, input_path))
         after = observed(db)
+        boundaries = {'before': _state_proof(before), 'after_replay': _state_proof(after)}
         checks += [check('replay_core_receipts_unchanged', after['receipts'], before['receipts']),
                    check('replay_first_effects_unchanged', after['effects'], before['effects']),
                    check('replay_old_saved_payload_unchanged', after['runs'], before['runs'])]
@@ -298,9 +341,10 @@ def _case(identifier, folder, config, input_path, item):
         processes.append(_crash_child(folder, 'crashed-delivery', _delivery_request(db, snapshot, 9), BARRIERS[identifier]))
         _reopen(db)
         after = observed(db)
+        boundaries = {'before': _state_proof(before), 'after_crash': _state_proof(after)}
         expected_after = 9 if identifier == 'lost_ack' else 8
-        checks += delivery_checks(after, {stream: lines[:expected_after]}, receipt_count=expected_after,
-                                  record_count=expected_after, core_statuses={'ACCEPTED': expected_after})
+        checks += _phase(delivery_checks(after, {stream: lines[:expected_after]}, receipt_count=expected_after,
+                                  record_count=expected_after, core_statuses={'ACCEPTED': expected_after}), 'interrupted')
         if identifier != 'lost_ack':
             checks += [check('precommit_all_core_and_transport_rollback',
                              [after[k] for k in ('streams', 'effects', 'attempts', 'receipts', 'records')],
@@ -308,6 +352,7 @@ def _case(identifier, folder, config, input_path, item):
         else:
             persisted = after['effects'][-1]
             retry = _delivery(db, stream, 9, lines[8], plan); responses.append(retry)
+            boundaries['after_retry'] = _state_proof(observed(db))
             checks += [check('unknown_retry_returns_original', retry['core_result'], json.loads(persisted['core_result'])),
                        check('unknown_retry_reuses_receipt_row', retry['core_receipt_row_id'], persisted['core_receipt_id']),
                        check('unknown_retry_is_replay', retry['outcome'], 'REPLAY')]
@@ -316,7 +361,7 @@ def _case(identifier, folder, config, input_path, item):
         processes.append(_normal_child(folder, 'acknowledged', _delivery_request(db, snapshot, 1)))
         checks.append(check('ack_response_delivered', processes[-1]['result']['ack'], True))
         _reopen(db)
-        checks += delivery_checks(observed(db), {stream: lines[:1]}, receipt_count=1, record_count=1, core_statuses={'ACCEPTED': 1})
+        checks += _phase(delivery_checks(observed(db), {stream: lines[:1]}, receipt_count=1, record_count=1, core_statuses={'ACCEPTED': 1}), 'ack_reopen')
         responses.append(_feed(db, input_path))
     elif identifier in ('writers_same_stream', 'writers_separate_stream'):
         stream_ids = ('feed', 'feed') if identifier == 'writers_same_stream' else ('feed', 'other')
@@ -381,12 +426,13 @@ def _case(identifier, folder, config, input_path, item):
         initial_path = input_path.parent / 'save_run_initial.jsonl'
         corrections_path = input_path.parent / 'save_run_corrections.jsonl'
         initial = snapshot_feed(initial_path); corrections = snapshot_feed(corrections_path)
-        responses.append(_feed(db, initial_path)); old_run, cs = _evaluate(db); checks += cs
+        responses.append(_feed(db, initial_path)); old_run, cs = _evaluate(db); checks += _phase(cs, 'initial_financial')
         responses.append(_feed(db, corrections_path, 'corrections'))
         before = observed(db); old_tables = before['run_tables']
         processes.append(_crash_child(folder, 'crashed-save-run', {'action': 'reconcile', 'db': str(db),
             'balance_at': BALANCE_AT, 'knowledge_at': T3}, BARRIERS[identifier]))
         _reopen(db); after = observed(db)
+        boundaries = {'before': _state_proof(before), 'after_crash': _state_proof(after)}
         checks.append(check('save_crash_all_run_tables_rollback', after['run_tables'], old_tables))
         expected_streams = {stream: tuple(initial_path.read_bytes().splitlines(keepends=True)),
                             'corrections': tuple(corrections_path.read_bytes().splitlines(keepends=True))}
@@ -405,7 +451,7 @@ def _case(identifier, folder, config, input_path, item):
     elif identifier == 'new_receipt_economic_parity':
         responses.append(_feed(db, input_path))
         same_cut = '2026-11-11T03:00:00Z'
-        old_run, cs = _evaluate(db, knowledge=same_cut); checks += cs
+        old_run, cs = _evaluate(db, knowledge=same_cut); checks += _phase(cs, 'initial_financial')
         later_path = input_path.parent / 'late_receipt.jsonl'
         later = snapshot_feed(later_path)
         responses.append(_feed(db, later_path, 'late'))
@@ -454,6 +500,7 @@ def _case(identifier, folder, config, input_path, item):
         knowledge = T3 if identifier == 'save_run_crash' else ('2026-11-11T03:00:00Z' if identifier == 'new_receipt_economic_parity' else KNOWLEDGE_AT)
         result, cs = _evaluate(db, variant, knowledge); checks += cs
         financial = {'status': 'EVALUATED', 'variant': variant, 'run_id': result['run_id'],
+                     'ledgers': {a: {k:result['ledgers'][a][k] for k in ('investor_balances','liability','custody_rollforward','data_state')} for a in ('ASSET_A','ASSET_B')},
                      'findings': [{k: f[k] for k in ('asset', 'comparison', 'scope', 'data_state', 'reconciliation_state', 'difference')}
                                   for f in result['findings']]}
         write_json(folder / 'financial-result.json', result)
@@ -489,8 +536,16 @@ def _case(identifier, folder, config, input_path, item):
     report = {'id': identifier, 'status': status, 'expected': item,
               'observed': _compact(final), 'checks': checks, 'processes': processes,
               'responses': [_compact_response(r) for r in responses], 'financial': financial,
+              'boundaries': boundaries, 'writer_connections': list(_WRITER_OBSERVATIONS),
+              'readback_connection': {'journal_mode':final['journal_mode'], 'synchronous':final['synchronous'], 'role':'new read-only observation connection'},
               'environment': {'journal_mode': final['journal_mode'], 'synchronous': final['synchronous'],
                               'busy_timeout_ms': BUSY_TIMEOUT_MS, 'retry_budget': RETRY_BUDGET}}
+    if status == 'PASS':
+        try:
+            validate_case(report, scope)
+        except ValueError as exc:
+            report['status'] = 'FAILED'
+            report['semantic_error'] = str(exc)
     write_json(folder / 'result.json', report)
     return report
 
@@ -535,7 +590,7 @@ def run_recovery(output, seed=9):
         input_proofs[name] = {'path': str(path.relative_to(root)), 'bytes': len(data),
                              'sha256': hashlib.sha256(data).hexdigest(), 'planned_lines': len(lines)}
     write_json(inputs / 'config.json', config)
-    schedule = {'format': 'admission-recovery-schedule-v1', 'seed': seed,
+    schedule = {'format': 'admission-recovery-schedule-v2', 'seed': seed,
                 'seed_scope': 'Fixed declared scenario and barrier program; OS and disk timing are not deterministic.',
                 'inputs': input_proofs, 'scenarios': [],
                 'fault_model': 'Initialized local rollback-journal SQLite; application-process SIGKILL and bounded writer contention only.',
@@ -552,6 +607,8 @@ def run_recovery(output, seed=9):
                   'transport_conflict': ['transport_conflict_payload']}.get(identifier, [])
         item['auxiliary_inputs'] = [input_proofs[n]['path'] for n in extras]
         schedule['scenarios'].append(item)
+    scope = load_scope()
+    validate_schedule(schedule, scope)
     write_json(root / 'schedule.json', schedule)
     schedule_hash = hashlib.sha256((root / 'schedule.json').read_bytes()).hexdigest()
     write_json(root / 'invocation.json', {'argv': sys.argv, 'cwd': str(Path.cwd()),
@@ -577,18 +634,24 @@ def run_recovery(output, seed=9):
     complete = [r['id'] for r in results] == list(SCENARIO_IDS) and len(set(r['id'] for r in results)) == len(SCENARIO_IDS)
     status = ('PASS' if complete and all(r['status'] == 'PASS' for r in results) and negative['status'] == 'EXPECTED_FAILURE'
               else 'INCOMPLETE' if any(r['status'] == 'INCOMPLETE' for r in results) else 'FAILED')
-    summary = {'format': 'admission-recovery-v1', 'status': status, 'seed': seed,
+    summary = {'format': 'admission-recovery-v2', 'status': status, 'seed': seed,
         'planned_scenario_ids': list(SCENARIO_IDS), 'executed_scenario_ids': [r['id'] for r in results],
         'scenarios': results, 'negative_control': negative, 'schedule_sha256': schedule_hash,
         'environment': {'python': sys.version, 'interpreter': sys.executable, 'import_origin': str(Path(__file__).resolve()),
-                        'sqlite': sqlite3.sqlite_version, 'platform': platform.platform(), 'journal_mode': 'delete',
-                        'synchronous': 2, 'busy_timeout_ms': BUSY_TIMEOUT_MS, 'retry_budget': RETRY_BUDGET},
+                        'sqlite': sqlite3.sqlite_version, 'platform': platform.platform(),
+                        'settings_provenance': 'Per-case writer_connections and child READY/BARRIER/RESULT; separate readback_connection', 'busy_timeout_ms': BUSY_TIMEOUT_MS, 'retry_budget': RETRY_BUDGET},
         'seconds': time.monotonic() - started,
         'equality_contract': ['legacy fixed reference: 373 financial files (release verification)',
             'identical transport replay: same core receipt inventory, financial payload and run ID',
             'new core receipt history: economic equality does not require evidence/run ID equality'],
         'not_run': ['frozen main generation', 'frozen main training', 'final holdout', 'heavy benchmark'],
         'fault_model': schedule['fault_model'], 'excluded': schedule['excluded']}
+    if status == 'PASS':
+        try:
+            validate_report(summary, scope, schedule_sha256=schedule_hash)
+        except ValueError as exc:
+            status = summary['status'] = 'FAILED'
+            summary['semantic_error'] = str(exc)
     write_json(root / 'delivery-summary.json', summary)
     lines = ['# Recovery experiment', '', 'Status: **' + status + '**. Synthetic inputs; no capacity or recovery-time guarantee.', '',
              '| Scenario | Expected terminal | Financial reference | Actual acceptance |', '|---|---|---|---|']

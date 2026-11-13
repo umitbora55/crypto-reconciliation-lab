@@ -1,23 +1,28 @@
 """Pinned release test scope; ordinary verification never regenerates expectations."""
 from __future__ import annotations
 
+import ast
 import hashlib
 import json
 from pathlib import Path, PurePosixPath
 import re
 import stat
 
-RELEASE = '0.7.0'
+RELEASE = '0.7.1'
 ANCHOR_PATH = 'contracts/release-tests-baseline-0.6.0.json'
 ANCHOR_BYTES = 42896
 ANCHOR_SHA256 = 'd69bb489b06f94643ef9b6def46e0723d0533c08a263c4d0c81ca6ee8bc919e1'
-BASELINE_PATH = 'contracts/release-test-scope-0.6.1.json'
-BASELINE_BYTES = 51611
-BASELINE_SHA256 = 'c8d2e637950658ca71d5f2674d122fedc93c9888c4976af81a6607d5a5f3635f'
-CONTRACT_PATH = 'contracts/release-test-scope-0.7.0.json'
+HISTORICAL_PATH = 'contracts/release-test-scope-0.6.1.json'
+HISTORICAL_BYTES = 51611
+HISTORICAL_SHA256 = 'c8d2e637950658ca71d5f2674d122fedc93c9888c4976af81a6607d5a5f3635f'
+BASELINE_PATH = 'contracts/release-test-scope-0.7.0.json'
+BASELINE_BYTES = 63100
+BASELINE_SHA256 = '0d163bd86cd3ecc8f57cf32c4619f245becd600ae01c8f1f7f752c04bf8dfb4d'
+CONTRACT_PATH = 'contracts/release-test-scope-0.7.1.json'
+SEMANTIC_FIXTURE_PATH = 'tests/fixtures/admission-semantic-report-v2.json'
 # Frozen only after reviewed additions and explicit metadata fixture exceptions.
-CONTRACT_BYTES = 63100
-CONTRACT_SHA256 = '0d163bd86cd3ecc8f57cf32c4619f245becd600ae01c8f1f7f752c04bf8dfb4d'
+CONTRACT_BYTES = 64724
+CONTRACT_SHA256 = '2e21ae9f60ec7163af140d9f8e2eb91f33d3492e6b3edb1b3b4a86430a736a7e'
 
 
 def require(condition, message):
@@ -61,7 +66,8 @@ def checked_document(root, name, size, sha):
 
 
 def safe_file(name):
-    require(type(name) is str and re.fullmatch(r'tests/[A-Za-z0-9_/]+\.py', name) is not None
+    require(type(name) is str and (re.fullmatch(r'tests/[A-Za-z0-9_/]+\.py', name) is not None
+            or name == SEMANTIC_FIXTURE_PATH)
             and all(part not in ('', '.', '..') for part in name.split('/'))
             and not PurePosixPath(name).is_absolute(), 'unsafe test file path')
 
@@ -83,24 +89,93 @@ def check_ids(ids, label):
     require(len(ids) == len(set(ids)), label + ' has duplicate identities')
 
 
+
+def named_fixture_block(text):
+    """Only the one explicitly authorized top-level report_fixture function."""
+    try:
+        tree = ast.parse(text)
+    except SyntaxError as error:
+        raise ValueError('TEST_SCOPE: malformed fixture source') from error
+    matches = [node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == 'report_fixture']
+    require(len(matches) == 1 and not matches[0].decorator_list,
+            'authorized report_fixture function missing or duplicated')
+    node = matches[0]
+    require([a.arg for a in node.args.args] == ['scope'] and not node.args.vararg
+            and not node.args.kwarg and not node.args.kwonlyargs and not node.args.posonlyargs
+            and not node.args.defaults, 'report_fixture signature changed')
+    return ''.join(text.splitlines(keepends=True)[node.lineno-1:node.end_lineno])
+
+
+def validate_fixture_exception(exception):
+    """Metadata lines, or exactly one pinned named-function fixture replacement."""
+    edits = exception['changes']
+    kind = exception.get('kind', 'metadata-lines-v1')
+    if kind == 'report-fixture-function-v1':
+        require(exception['path'] == 'tests/test_admission_release.py'
+                and exception.get('function') == 'report_fixture' and len(edits) == 1,
+                'named fixture exception exceeds report_fixture authorization')
+        edit = edits[0]
+        require(set(edit) == {'old_text', 'new_text', 'count'} and edit['count'] == 1
+                and type(edit['old_text']) is str and type(edit['new_text']) is str
+                and edit['old_text'] != edit['new_text'], 'invalid named fixture replacement')
+        for label, text in [('original_block', edit['old_text']), ('current_block', edit['new_text'])]:
+            require(text == named_fixture_block(text) and len(ast.parse(text).body) == 1,
+                    'named fixture replacement includes code outside the authorized function')
+            require(exception.get(label) == byte_identity(text.encode('utf-8')),
+                    'named fixture block identity differs')
+        return
+    require(kind == 'metadata-lines-v1', 'unsupported fixture exception kind')
+    for edit in edits:
+        require(set(edit) == {'old_text', 'new_text', 'count'}
+                and type(edit['old_text']) is str and type(edit['new_text']) is str
+                and edit['old_text'] and edit['new_text'] and edit['old_text'] != edit['new_text']
+                and '\n' not in edit['old_text'] and '\n' not in edit['new_text']
+                and type(edit['count']) is int and edit['count'] > 0,
+                'fixture exception must be an explicit single-line metadata replacement')
+
+
+def restore_fixture_source(data, exception):
+    """Reversal proves every byte outside the listed fixture changes is intact."""
+    validate_fixture_exception(exception)
+    require(byte_identity(data) == exception['current'], 'current fixture file identity differs')
+    original = data.decode('utf-8')
+    if exception.get('kind') == 'report-fixture-function-v1':
+        require(named_fixture_block(original) == exception['changes'][0]['new_text'],
+                'actual report_fixture differs from authorized block')
+    for edit in reversed(exception['changes']):
+        require(original.count(edit['new_text']) == edit['count'],
+                'authorized fixture expression missing/duplicated: ' + exception['path'])
+        original = original.replace(edit['new_text'], edit['old_text'], edit['count'])
+    require(byte_identity(original.encode('utf-8')) == exception['original'],
+            'fixture change exceeds authorized expressions: ' + exception['path'])
+    return original.encode('utf-8')
+
+
 def load_test_scope(root):
-    """Retain the independent anchor and all 400 prior release identities."""
+    """Retain the independent anchor and all 451 prior release identities."""
     root = Path(root).resolve()
     try:
         anchor = checked_document(root, ANCHOR_PATH, ANCHOR_BYTES, ANCHOR_SHA256)
+        historical = checked_document(root, HISTORICAL_PATH, HISTORICAL_BYTES, HISTORICAL_SHA256)
         prior = checked_document(root, BASELINE_PATH, BASELINE_BYTES, BASELINE_SHA256)
         scope = checked_document(root, CONTRACT_PATH, CONTRACT_BYTES, CONTRACT_SHA256)
         require(anchor['format'] == 'independent-stage6-baseline-test-inventory-v1'
                 and anchor['package'] == '0.6.0' and anchor['test_count'] == 375
                 and anchor['file_count'] == 31, 'independent anchor metadata differs')
-        require(prior['format'] == 'release-test-scope-v1' and prior['release'] == '0.6.1'
-                and prior['current']['test_count'] == 400 and prior['current']['file_count'] == 34,
+        require(historical['format'] == 'release-test-scope-v1' and historical['release'] == '0.6.1'
+                and historical['current']['test_count'] == 400 and historical['current']['file_count'] == 34,
                 'historical 0.6.1 contract metadata differs')
+        require(prior['format'] == 'release-test-scope-v1' and prior['release'] == '0.7.0'
+                and prior['current']['test_count'] == 451 and prior['current']['file_count'] == 38
+                and prior['baseline'] == {'path': HISTORICAL_PATH, 'bytes': HISTORICAL_BYTES,
+                                          'sha256': HISTORICAL_SHA256},
+                'historical 0.7.0 contract metadata/binding differs')
         check_files(anchor['files']); check_ids(anchor['test_ids'], 'independent anchor')
         baseline = prior['current']
         check_files(baseline['files']); check_ids(baseline['test_ids'], 'baseline')
-        require(len(baseline['files']) == 34 and len(baseline['test_ids']) == 400
-                and set(anchor['test_ids']) <= set(baseline['test_ids']), 'baseline roster differs')
+        require(len(baseline['files']) == 38 and len(baseline['test_ids']) == 451
+                and set(anchor['test_ids']) <= set(historical['current']['test_ids']) <= set(baseline['test_ids']),
+                'baseline roster differs')
         require(scope['format'] == 'release-test-scope-v1' and scope['release'] == RELEASE,
                 'current contract format/release differs')
         require(scope['baseline'] == {'path': BASELINE_PATH, 'bytes': BASELINE_BYTES, 'sha256': BASELINE_SHA256},
@@ -125,18 +200,12 @@ def load_test_scope(root):
             edits = exception['changes']
             require(type(edits) is list and edits and type(exception['reason']) is str and exception['reason'],
                     'fixture metadata changes/reason missing')
-            for edit in edits:
-                require(set(edit) == {'old_text', 'new_text', 'count'}
-                        and type(edit['old_text']) is str and type(edit['new_text']) is str
-                        and edit['old_text'] and edit['new_text'] and edit['old_text'] != edit['new_text']
-                        and '\n' not in edit['old_text'] and '\n' not in edit['new_text']
-                        and type(edit['count']) is int and edit['count'] > 0,
-                        'fixture exception must be an explicit single-line metadata replacement')
+            validate_fixture_exception(exception)
             amended[name] = exception['current']
         require(current['files'] == baseline['files'] | additions['files'] | amended,
                 'current files do not preserve the prior release')
         require(set(current['test_ids']) == set(baseline['test_ids']) | set(additions['test_ids']),
-                'current identities do not preserve all 400 old identities')
+                'current identities do not preserve all 451 old identities')
         require(type(current['file_count']) is int and current['file_count'] == len(current['files'])
                 and type(current['test_count']) is int and current['test_count'] == len(current['test_ids']),
                 'declared current counts differ')
@@ -160,7 +229,7 @@ def validate_test_files(root, scope=None):
         actual = {}
         for path in folder.rglob('*'):
             require(not path.is_symlink(), 'symlink in test source')
-            if path.suffix == '.py':
+            if path.suffix == '.py' or path.relative_to(root).as_posix() == SEMANTIC_FIXTURE_PATH:
                 require(path.is_file(), 'non-file in Python test inventory')
                 name = path.relative_to(root).as_posix()
                 actual[name] = byte_identity(file_bytes(path))
@@ -170,14 +239,7 @@ def validate_test_files(root, scope=None):
         changed = sorted(name for name in expected if actual[name] != expected[name])
         require(not changed, 'test file bytes differ: ' + repr(changed))
         for exception in scope['fixture_exceptions']:
-            current = file_bytes(root / exception['path']).decode('utf-8')
-            original = current
-            for edit in reversed(exception['changes']):
-                require(original.count(edit['new_text']) == edit['count'],
-                        'authorized fixture expression missing/duplicated: ' + exception['path'])
-                original = original.replace(edit['new_text'], edit['old_text'], edit['count'])
-            require(byte_identity(original.encode('utf-8')) == exception['original'],
-                    'fixture change exceeds authorized metadata expressions: ' + exception['path'])
+            restore_fixture_source(file_bytes(root / exception['path']), exception)
         return {'status': 'PASS', 'scope_identity': identity(), 'baseline': scope['baseline'],
                 'expected_count': scope['current']['test_count'], 'file_count': len(actual),
                 'files': actual, 'expected_ids': scope['current']['test_ids'],
