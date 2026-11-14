@@ -84,7 +84,9 @@ class Store:
         self.db.close()
 
     def ingest(self, raw, received_at, *, fault=None):
+        from .source_auth.schema import reject_unsigned
         with transaction(self.db):
+            reject_unsigned(self.db)
             result, _ = self._ingest_in_transaction(raw, received_at, fault=fault)
         return result
 

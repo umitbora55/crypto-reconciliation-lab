@@ -25,8 +25,8 @@ from urllib.parse import unquote
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = "0.7.1"
-TOP_FILES = ("README.md", "AGENTS.md", "LICENSE", "pyproject.toml", "MANIFEST.in", ".gitignore", "requirements-build.txt")
+VERSION = "0.8.2"
+TOP_FILES = ("README.md", "AGENTS.md", "LICENSE", "pyproject.toml", "MANIFEST.in", ".gitignore", "requirements-build.txt", "requirements-auth.txt")
 SCRIPTS = ("build_release.py", "reproduce_review.py", "verify_release.py",
            "release_test_scope.py", "release_financial_scope.py", "release_admission_scope.py",
            "run_ab_stage3_3.py", "ab_worker_stage3_3.py", "ab_retention_stage3_3.py", "measure_stage3_3.py")
@@ -50,7 +50,13 @@ DOCS = ("docs/model_contract.md", "docs/correction_semantics.md", "docs/problem_
         "crypto_reconciliation_lab/admission/recovery_scope_v2.json",
         "tests/fixtures/admission-semantic-report-v2.json",
         "docs/stage9_1/S9-F1.md", "docs/stage9_1/S9-F2.md", "docs/stage9_1/decisions.md",
-        "docs/stage9_1/fixture-changes.md", "docs/stage9_1/HANDOFF.md")
+        "docs/stage9_1/fixture-changes.md", "docs/stage9_1/HANDOFF.md",
+        "contracts/release-test-scope-0.8.0.json",
+        "contracts/release-test-scope-0.8.1.json",
+        "contracts/release-test-scope-0.8.2.json",
+        "docs/stage10/fixture-changes.md",
+        "contracts/source-auth-scope-v1.json",
+        "crypto_reconciliation_lab/source_auth/experiment_scope_v1.json")
 REQUIRED = {*TOP_FILES, *("scripts/" + name for name in SCRIPTS), *DOCS,
             "fixtures/stage1_history.json", "fixtures/stage3_3_schema2_history.json",
             "tests/review_fixtures.py", "tests/triage_model_fixtures.py", "tests/triage_scope_fixtures.py"}
@@ -112,6 +118,9 @@ def selected_files(root):
     patterns = (("crypto_reconciliation_lab", {".py", ".html", ".css", ".js"}),
                 ("tests", {".py"}), ("examples/triage-review", {".json", ".md"}),
                 ("docs/stage6/evidence", {".json", ".md"}),
+                ("docs/stage10", {".md"}),
+                ("docs/stage10_1", {".md"}),
+                ("docs/stage10_2", {".md"}),
                 (".github/workflows", {".yml", ".yaml"}))
     for folder, suffixes in patterns:
         for path in (root / folder).rglob("*"):
@@ -133,7 +142,10 @@ def check_links(root):
     paths = [Path(root) / "README.md", *(Path(root) / "docs/stage6").glob("*.md"),
              *(Path(root) / "docs/stage6_1").glob("*.md"),
              *(Path(root) / "docs/stage9").glob("*.md"),
-             *(Path(root) / "docs/stage9_1").glob("*.md")]
+             *(Path(root) / "docs/stage9_1").glob("*.md"),
+             *(Path(root) / "docs/stage10").glob("*.md"),
+             *(Path(root) / "docs/stage10_1").glob("*.md"),
+             *(Path(root) / "docs/stage10_2").glob("*.md")]
     for path in paths:
         for target in re.findall(r"\]\(([^)]+)\)", path.read_text(encoding="utf-8")):
             if re.match(r"[A-Za-z][A-Za-z0-9+.-]*:", target) or target.startswith("#"):
@@ -240,7 +252,9 @@ def inspect_wheel(path, source):
         if meta["Version"] != VERSION or meta["Requires-Python"] != ">=3.12" or meta["Name"] != "crypto-reconciliation-lab":
             raise ValueError("WHEEL_METADATA: version/minimum Python mismatch")
         dependencies = meta.get_all("Requires-Dist", [])
-        if dependencies != ['scikit-learn==1.9.1; extra == "ai"']:
+        if dependencies != ['scikit-learn==1.9.1; extra == "ai"',
+                            'cryptography==50.0.2; extra == "auth"',
+                            'cffi==2.1.1; extra == "auth"', 'pycparser==3.12; extra == "auth"']:
             raise ValueError("WHEEL_METADATA: runtime dependency contract changed: " + repr(dependencies))
         entrypoints = archive.read(f"crypto_reconciliation_lab-{VERSION}.dist-info/entry_points.txt").decode()
         if "crypto-reconciliation-lab = crypto_reconciliation_lab.cli:main" not in entrypoints:

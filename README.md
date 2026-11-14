@@ -4,7 +4,7 @@ Personal project by Ümit Bora Günaydın
 
 I built this project to study reconciliation when records arrive late or are corrected after an evaluation. It uses synthetic ledger, investor and custody data, and keeps earlier findings available for inspection.
 
-Python and SQLite · Package **0.7.1** · Financial rule `stage2-v2` · SQLite schema `4`
+Python and SQLite · Package **0.8.2** · Financial rule `stage2-v2` · SQLite schema `5`
 
 [Example](#example) · [Run locally](#run-locally) · [Design notes](docs/model_contract.md) · [Türkçe](docs/showcase/README.tr.md)
 
@@ -71,6 +71,40 @@ Expected synthetic `MISMATCH` and `INCOMPLETE` findings are not application fail
 
 ## Verification
 
+In 0.8.2 I closed two remaining SQL inventory gaps in the source-auth evidence
+reader. Persistent keys must match the activated policy history, and every stream
+and owner must be explained by its original committed effect. The earlier response,
+receipt and worker checks remain in place. Valid 0.8.0 and 0.8.1 evidence stays
+readable; admission and financial calculation are unchanged. The
+[maintenance record](docs/stage10_2/HANDOFF.md) separates these repairs and their
+regressions from the historical experiment.
+
+Stage 10 adds an opt-in source admission boundary. In a newly protected local
+database, each new receipt from the public ingestion path is committed with the
+authorized publisher, exact signed file and policy epoch that permitted it. A
+rejected request cannot reserve or block a legitimate stream. Revocation stops
+new effects while previously committed receipts remain available through exact
+historical replay; another authorized key for the same publisher can resume.
+
+I kept source authority separate from financial correctness: the signed wrong
+custody example still produces MISMATCH. The bounded experiment includes real
+SIGKILL barriers, policy rotation and independent evidence mutations. Its trust
+anchor and keys are explicitly TEST-ONLY. See the [usage](docs/stage10/usage.md),
+[admission boundary](docs/stage10/admission.md), [signing profile](docs/stage10/signing.md)
+and [fixed experiment](docs/stage10/experiment.md).
+
+```sh
+python3 -m venv .venv-auth
+.venv-auth/bin/python -m pip install '.[auth]'
+.venv-auth/bin/python -m crypto_reconciliation_lab demo-source-auth --output auth-demo-new --seed 19
+.venv-auth/bin/python -m crypto_reconciliation_lab verify-source-auth --bundle auth-demo-new --anchor demo-test-only
+```
+
+Auth is optional and does not require NumPy, SciPy or sklearn. Core installation
+remains standard-library-only. The local operator, selected policy, database owner
+and Python process are trusted. This is not external institutional identity
+certification, clock attestation or protection against storage rollback.
+
 Stage 9 adds [restartable finite JSONL admission](docs/stage9/admission-contract.md):
 an immutable input plan, exact delivery identities and a committed attempt history.
 Run `python3 -m crypto_reconciliation_lab demo-recovery --output recovery-output-new --seed 19`
@@ -103,6 +137,7 @@ python3 -m venv .venv-release
 .venv-release/bin/python -m pip install -r requirements-build.txt
 .venv-release/bin/python scripts/verify_release.py --profile full --financial --output release-check-new
 .venv-release/bin/python scripts/verify_release.py --profile core --output core-check-new
+.venv-release/bin/python scripts/verify_release.py --profile auth-only --output auth-check-new
 ```
 
 The verifier builds an allowlisted source distribution, safely extracts it, and builds the wheel from that extraction. Installed tests use an outside working directory, `-I` and actual site-packages imports. Fixed test and financial contracts reject incomplete coverage before expensive work. Initial builds may download pinned dependencies; installed core operation is offline.
@@ -121,6 +156,11 @@ That result is retained in the [historical evaluation](docs/stage6/evidence/stag
 
 This is a synthetic reference project, not an official KVMKS client, live institutional integration, compliance certificate or production-system claim. It is not evidence of a current institutional deficiency. The [source register](docs/problem_evidence.md) separates documented concepts and dates from prototype assumptions.
 
-Input times and delivery manifests are synthetic source assertions; hashes and manifests do not authenticate an external source. Preserved SQLite history does not provide adversarial tamper protection. Production concurrency, crash recovery, institutional conformance and broad operating-system support have not been established by the checks above.
+Input times and delivery manifests remain synthetic source assertions. Optional
+signed admission verifies a key against an operator-selected local policy; it does
+not establish institutional identity or financial truth. Preserved SQLite history
+does not provide adversarial tamper protection. The named process-kill checks cover
+defined local transaction boundaries, not disk/power loss, production capacity or
+broad operating-system support.
 
 [MIT license](LICENSE) · [Türkçe anlatım](docs/showcase/README.tr.md)
