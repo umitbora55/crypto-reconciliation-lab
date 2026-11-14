@@ -4,7 +4,7 @@ Personal project by Ümit Bora Günaydın
 
 I built this project to study reconciliation when records arrive late or are corrected after an evaluation. It uses synthetic ledger, investor and custody data, and keeps earlier findings available for inspection.
 
-Python and SQLite · Package **0.8.1** · Financial rule `stage2-v2` · SQLite schema `5`
+Python and SQLite · Package **0.8.2** · Financial rule `stage2-v2` · SQLite schema `5`
 
 [Example](#example) · [Run locally](#run-locally) · [Design notes](docs/model_contract.md) · [Türkçe](docs/showcase/README.tr.md)
 
@@ -71,13 +71,13 @@ Expected synthetic `MISMATCH` and `INCOMPLETE` findings are not application fail
 
 ## Verification
 
-In 0.8.1 I repaired an independent-review finding in the source-auth evidence
-reader: complete response coverage, exact attempt/decision/effect/receipt links,
-unique SQL identities and worker results must agree. Rehashed contradictory
-reports are rejected while valid 0.8.0 evidence remains readable. This maintenance
-change preserves the admission runtime and financial calculation. The
-[repair record](docs/stage10_1/HANDOFF.md) separates regression evidence from the
-historical Stage 10 experiment.
+In 0.8.2 I closed two remaining SQL inventory gaps in the source-auth evidence
+reader. Persistent keys must match the activated policy history, and every stream
+and owner must be explained by its original committed effect. The earlier response,
+receipt and worker checks remain in place. Valid 0.8.0 and 0.8.1 evidence stays
+readable; admission and financial calculation are unchanged. The
+[maintenance record](docs/stage10_2/HANDOFF.md) separates these repairs and their
+regressions from the historical experiment.
 
 Stage 10 adds an opt-in source admission boundary. In a newly protected local
 database, each new receipt from the public ingestion path is committed with the

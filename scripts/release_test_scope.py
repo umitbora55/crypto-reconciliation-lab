@@ -8,7 +8,7 @@ from pathlib import Path, PurePosixPath
 import re
 import stat
 
-RELEASE = '0.8.1'
+RELEASE = '0.8.2'
 ANCHOR_PATH = 'contracts/release-tests-baseline-0.6.0.json'
 ANCHOR_BYTES = 42896
 ANCHOR_SHA256 = 'd69bb489b06f94643ef9b6def46e0723d0533c08a263c4d0c81ca6ee8bc919e1'
@@ -24,11 +24,14 @@ BASELINE_SHA256 = '2e21ae9f60ec7163af140d9f8e2eb91f33d3492e6b3edb1b3b4a86430a736
 PREVIOUS_PATH = 'contracts/release-test-scope-0.8.0.json'
 PREVIOUS_BYTES = 80521
 PREVIOUS_SHA256 = '7dc06a3a89c2756f1574479cd288cec1bef65fe13925bfa5703a3be829311ec5'
-CONTRACT_PATH = 'contracts/release-test-scope-0.8.1.json'
+REVIEWED_PATH = 'contracts/release-test-scope-0.8.1.json'
+REVIEWED_BYTES = 88456
+REVIEWED_SHA256 = 'eaff707f9241792ee5041dae82821f5dd79589468849d8c7e38155590c7f531a'
+CONTRACT_PATH = 'contracts/release-test-scope-0.8.2.json'
 SEMANTIC_FIXTURE_PATH = 'tests/fixtures/admission-semantic-report-v2.json'
 # Frozen only after reviewed additions and explicit metadata fixture exceptions.
-CONTRACT_BYTES = 88456
-CONTRACT_SHA256 = 'eaff707f9241792ee5041dae82821f5dd79589468849d8c7e38155590c7f531a'
+CONTRACT_BYTES = 93087
+CONTRACT_SHA256 = '2191421a231dff4b560e3c0c6b3469a4f097fe277009a56f1e48ed4a7d7aa592'
 
 
 def require(condition, message):
@@ -167,7 +170,7 @@ def restore_fixture_source(data, exception):
 
 
 def load_test_scope(root):
-    """Retain the historical anchor and the separate 540-ID reviewed release."""
+    """Retain historical anchors and the separately pinned 564-ID reviewed release."""
     root = Path(root).resolve()
     try:
         anchor = checked_document(root, ANCHOR_PATH, ANCHOR_BYTES, ANCHOR_SHA256)
@@ -175,6 +178,7 @@ def load_test_scope(root):
         stage9 = checked_document(root, STAGE9_PATH, STAGE9_BYTES, STAGE9_SHA256)
         prior = checked_document(root, BASELINE_PATH, BASELINE_BYTES, BASELINE_SHA256)
         previous = checked_document(root, PREVIOUS_PATH, PREVIOUS_BYTES, PREVIOUS_SHA256)
+        reviewed = checked_document(root, REVIEWED_PATH, REVIEWED_BYTES, REVIEWED_SHA256)
         scope = checked_document(root, CONTRACT_PATH, CONTRACT_BYTES, CONTRACT_SHA256)
         require(anchor['format'] == 'independent-stage6-baseline-test-inventory-v1'
                 and anchor['package'] == '0.6.0' and anchor['test_count'] == 375
@@ -256,6 +260,33 @@ def load_test_scope(root):
         require(all(current['files'].get(name) == previous_amendments.get(name, proof)
                     for name, proof in previous['current']['files'].items()),
                 'previous release test files differ outside metadata exceptions')
+        # Preserve the actual 0.8.1 reviewed source without advancing either
+        # historical BASELINE (0.7.1) or PREVIOUS (0.8.0) anchor.
+        require(reviewed['format'] == 'release-test-scope-v1' and reviewed['release'] == '0.8.1'
+                and reviewed['baseline'] == scope['baseline']
+                and reviewed['current']['test_count'] == 564,
+                'reviewed 0.8.1 release metadata differs')
+        binding = scope['reviewed_release']
+        require(type(binding) is dict and set(binding) == {'path', 'bytes', 'sha256', 'fixture_exceptions'}
+                and {key: binding[key] for key in ('path', 'bytes', 'sha256')}
+                == {'path': REVIEWED_PATH, 'bytes': REVIEWED_BYTES, 'sha256': REVIEWED_SHA256},
+                'reviewed 0.8.1 release binding differs')
+        check_files(reviewed['current']['files']); check_ids(reviewed['current']['test_ids'], 'reviewed 0.8.1 release')
+        require(set(reviewed['current']['test_ids']) <= set(current['test_ids']),
+                'current identities do not preserve all 564 reviewed identities')
+        reviewed_amendments = {}
+        require(type(binding['fixture_exceptions']) is list, 'reviewed release exceptions must be explicit')
+        for exception in binding['fixture_exceptions']:
+            name = exception['path']
+            require(name in ('tests/test_release_test_scope.py', 'tests/test_source_auth_release.py')
+                    and name not in reviewed_amendments
+                    and exception['original'] == reviewed['current']['files'][name],
+                    'reviewed release exception exceeds current metadata authorization')
+            validate_fixture_exception(exception)
+            reviewed_amendments[name] = exception['current']
+        require(all(current['files'].get(name) == reviewed_amendments.get(name, proof)
+                    for name, proof in reviewed['current']['files'].items()),
+                'reviewed 0.8.1 test files differ outside metadata exceptions')
         return scope
     except (OSError, UnicodeError, ValueError, KeyError, TypeError) as error:
         if str(error).startswith('TEST_SCOPE:'):
@@ -288,6 +319,8 @@ def validate_test_files(root, scope=None):
         for exception in scope['fixture_exceptions']:
             restore_fixture_source(file_bytes(root / exception['path']), exception)
         for exception in scope['previous_release']['fixture_exceptions']:
+            restore_fixture_source(file_bytes(root / exception['path']), exception)
+        for exception in scope['reviewed_release']['fixture_exceptions']:
             restore_fixture_source(file_bytes(root / exception['path']), exception)
         return {'status': 'PASS', 'scope_identity': identity(), 'baseline': scope['baseline'],
                 'expected_count': scope['current']['test_count'], 'file_count': len(actual),

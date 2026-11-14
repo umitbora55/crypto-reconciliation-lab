@@ -1,5 +1,20 @@
 # Project working agreement
 
+## Current Stage 10.2 maintenance authorization
+
+The explicit task authorizes only S10-F2 persistent-key and stream inventory
+consistency in the evidence reader, package 0.8.2 metadata, new regressions and
+current release scope. Preserve all 564 old test identities/assertions, financial
+core, runtime/policy/crypto/schema 5, auth v1, recovery v2, workflow/dependency pins,
+the 373-file reference and frozen main experiment. Keep historical BASELINE 0.7.1
+and PREVIOUS 0.8.0 anchors and add the separate 0.8.1 preservation binding.
+Only the three named current metadata expressions in two old tests may change;
+record exact reversible diffs/hashes under docs/stage10_2. Preserve earlier docs.
+Use stage10/source-auth; normal commit/push and draft PR #2 updates are authorized.
+No merge, force push, tag/release, PyPI, separate OBSERVE fixes or scope expansion.
+Store actual commands, RED/GREEN, distribution/CI/artifact/archive evidence outside
+Git in stage10_2-output. Do not create a final-CI documentation commit loop.
+
 ## Current Stage 10.1 maintenance authorization
 
 The explicit maintenance task authorizes only S10-F1 evidence-reader consistency,

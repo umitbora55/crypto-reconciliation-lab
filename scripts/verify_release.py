@@ -293,7 +293,7 @@ def source_auth(gate, python, source, mode):
     gate.persist()
 
 
-def wheel_manifest(wheel, version='0.8.1'):
+def wheel_manifest(wheel, version='0.8.2'):
     with zipfile.ZipFile(wheel) as archive:
         members = archive.infolist()
         require(len(members) <= 1000 and sum(item.file_size for item in members) <= 32 * 1024**2, 'wheel member/size limit exceeded')

@@ -59,3 +59,7 @@ recursive-include docs/stage10 *.md
 # Stage 10.1 verifier-only maintenance; old scope remains immutable.
 include contracts/release-test-scope-0.8.1.json
 recursive-include docs/stage10_1 *.md
+
+# Stage 10.2 SQL inventory maintenance; historical scopes remain immutable.
+include contracts/release-test-scope-0.8.2.json
+recursive-include docs/stage10_2 *.md

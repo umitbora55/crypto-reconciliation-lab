@@ -442,6 +442,11 @@ def _check_operation(op, cid, index, claim):
         _fail('unexplained operation normalized record')
     if set(delta['delivery_effects']) != new_effects or set(delta['auth_delivery_links']) != new_effects:
         _fail('operation effects not explained by responses')
+    # First COMMITTED effects create the stream and owner together. Replays,
+    # BLOCKED responses and denied operations cannot add an unrelated pair.
+    new_streams = {(stream,) for stream,sequence in new_effects} - {(r['stream_id'],) for r in before['admission_streams']}
+    if set(delta['admission_streams']) != new_streams or set(delta['auth_streams']) != new_streams:
+        _fail('operation stream inventory not explained by committed effects')
     if {key[0] for key in delta['receipts']} != {effects[k]['core_receipt_id'] for k in new_effects if effects[k]['core_receipt_id'] is not None}:
         _fail('operation receipts not explained by effects')
     if status == 'BLOCKED' and (not responses or responses[-1]['blocked'] is not True or responses[-1]['ack'] is not False):
@@ -536,17 +541,24 @@ def _check_sql(state,claims,anchor,case_id):
     streams=_index(_rows(state,'admission_streams'),'stream_id')
     attempts=_index(_rows(state,'delivery_attempts'),'id')
     if set(effects)!=set(links) or set(owners)!=set(streams):_fail('every effect/stream needs immutable authorization linkage')
+    if set(streams)!={stream for stream,sequence in effects}:
+        _fail('stream inventory lacks original committed effect')
     if set(epochs)!=set(range(1,len(epochs)+1)):_fail('policy epoch gap')
     protected=_rows(state,'auth_configuration')
     if len(protected)!=1 or protected[0]['id']!=1 or protected[0]['receiver']!=anchor['receiver'] or protected[0]['configuration_digest']!=anchor['configuration_digest']:_fail('protected binding')
     if not epochs or protected[0]['initial_policy_hash']!=epochs[1]['policy_hash']:_fail('initial policy binding')
-    previous_keys={}
+    previous_keys={};expected_keys={}
     for epoch,row in sorted(epochs.items()):
         if row['policy_hash'] not in policies:_fail('activation without policy')
         p=_json(policies[row['policy_hash']]['payload'].encode())
         if not _same(p,_expected_policy(case_id,epoch>1)):_fail('policy differs from independent case fixture')
         if epoch>2 or (epoch==2 and case_id not in ('revoked_replay','new_key_resume','policy_race','stale_policy')):_fail('unexpected policy epoch')
         current_keys={k['key_id']:k for k in p['keys']}
+        # Accumulate only activated, independently validated policies. Rotation
+        # changes status; it does not rewrite the persistent first-seen epoch.
+        for kid,key in current_keys.items():
+            expected_keys.setdefault(kid, {**{name:key[name] for name in ('source','public_key','fingerprint')},
+                                           'first_epoch':epoch})
         for kid,old in previous_keys.items():
             new=current_keys.get(kid)
             if not new or any(old[k]!=new[k] for k in ('public_key','fingerprint','source')) or (old['status']=='revoked' and new['status']!='revoked'):_fail('historical key identity/revocation')
@@ -561,9 +573,11 @@ def _check_sql(state,claims,anchor,case_id):
             if not fixed or any(key[k]!=fixed[k] for k in ('source','public_key','fingerprint')):_fail('policy outside operator key anchor')
         for source in p['sources']:
             if anchor['namespaces'].get(source['source'])!=source['namespace']:_fail('policy namespace anchor')
+    if set(keys)!=set(expected_keys):_fail('persistent key inventory differs from activated policies')
     for kid,key in keys.items():
         fixed=anchor['keys'].get(kid)
-        if not fixed or any(key[k]!=fixed[k] for k in ('source','public_key','fingerprint')) or key['first_epoch']!=1:_fail('historical key anchor')
+        if not fixed or any(key[k]!=fixed[k] for k in ('source','public_key','fingerprint')):_fail('historical key anchor')
+        _fields(key,expected_keys[kid],'historical key anchor')
     for eid,end in endorsements.items():
         matching=[c for c in claims if c['envelope'].hex()==end['envelope'] and c['payload'].hex()==end['payload']]
         if not matching:_fail('endorsement lacks independently verified exact input')
@@ -574,6 +588,9 @@ def _check_sql(state,claims,anchor,case_id):
         if eid!=expected_id:_fail('endorsement identity')
         for name,want in (('source',s['source']),('key_id',c['key_id']),('fingerprint',c['fingerprint']),('statement_hash',_hash(c['payload'])),('snapshot_hash',_hash(c['snapshot'])),('plan_hash',_hash(_canonical(s['plan'])))):
             if end[name]!=want:_fail('endorsement '+name+' mismatch')
+        key=keys.get(end['key_id'])
+        if key is None or any(not _same(end[name],key[name]) for name in ('source','fingerprint')):
+            _fail('endorsement persistent key linkage')
     for did,d in decisions.items():
         if d['epoch'] not in epochs or epochs[d['epoch']]['policy_hash']!=d['policy_hash'] or d['endorsement_id'] not in endorsements:_fail('decision policy/endorsement link')
         e=endorsements[d['endorsement_id']];p=_json(policies[d['policy_hash']]['payload'].encode())

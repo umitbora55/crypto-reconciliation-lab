@@ -67,7 +67,7 @@ class SourceAuthReleaseTests(unittest.TestCase):
                         verify.wheel_manifest(archive)
 
     def test_auth_contract_and_pins_are_required_source_inputs(self):
-        required = {'requirements-auth.txt', 'contracts/release-test-scope-0.8.1.json',
+        required = {'requirements-auth.txt', 'contracts/release-test-scope-0.8.2.json',
                     'contracts/source-auth-scope-v1.json',
                     'crypto_reconciliation_lab/source_auth/experiment_scope_v1.json'}
         self.assertLessEqual(required, build.REQUIRED)
