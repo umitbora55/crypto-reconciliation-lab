@@ -1,0 +1,5 @@
+# Actual CPython 3.14 resolution recorded in Stage 10 auth-install-report.json.
+# Optional auth only; existing AI and build pins are unchanged.
+cryptography==50.0.2
+cffi==2.1.1
+pycparser==3.12

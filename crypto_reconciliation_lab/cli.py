@@ -62,7 +62,7 @@ def main(argv=None):
     demo.add_argument("--later-knowledge-at", default=LATER_KNOWLEDGE_AT)
     correction_demo = commands.add_parser("demo-corrections", help="verify five Stage 2 correction demos")
     correction_demo.add_argument("--output", default="stage2-output/demos")
-    migration = commands.add_parser("migrate", help="back up, test on a copy, then migrate physical schema to v4")
+    migration = commands.add_parser("migrate", help="back up, test on a copy, then migrate physical schema to v5")
     migration.add_argument("--db", required=True)
     migration.add_argument("--backup-dir", required=True)
     init = commands.add_parser("init", help="create an immutable-config SQLite store")
@@ -82,6 +82,27 @@ def main(argv=None):
     recovery = commands.add_parser("demo-recovery", help="run the bounded real-process interruption and replay experiment")
     recovery.add_argument("--output", required=True)
     recovery.add_argument("--seed", type=int, default=19)
+    auth_demo = commands.add_parser("demo-source-auth", help="run bounded signed-admission and real interruption evidence")
+    auth_demo.add_argument("--output", required=True)
+    auth_demo.add_argument("--seed", type=int, default=19)
+    auth_verify = commands.add_parser("verify-source-auth", help="independently verify source-auth evidence against a local anchor")
+    auth_verify.add_argument("--bundle", required=True)
+    auth_verify.add_argument("--anchor", required=True, help="local operator anchor JSON or explicit demo-test-only")
+    protect = commands.add_parser("auth-enable", help="atomically protect an empty schema-5 database using local operator policy")
+    protect.add_argument("--db", required=True)
+    protect.add_argument("--receiver", required=True)
+    protect.add_argument("--policy", required=True)
+    policy = commands.add_parser("auth-activate-policy", help="append a local policy epoch using compare-and-swap")
+    policy.add_argument("--db", required=True)
+    policy.add_argument("--policy", required=True)
+    policy.add_argument("--expected-epoch", required=True, type=int)
+    policy.add_argument("--expected-hash", required=True)
+    signed = commands.add_parser("ingest-signed", help="authenticate one immutable publisher snapshot; no reconciliation")
+    signed.add_argument("--db", required=True)
+    signed.add_argument("--input", required=True)
+    signed.add_argument("--envelope", required=True)
+    auth_status = commands.add_parser("auth-status", help="read protected mode and immutable policy/admission history")
+    auth_status.add_argument("--db", required=True)
     run = commands.add_parser("reconcile", help="create a knowledge-bounded evaluation")
     run.add_argument("--db", required=True)
     run.add_argument("--balance-at", required=True)
@@ -116,6 +137,21 @@ def main(argv=None):
     args = parser.parse_args(argv)
     store = None
     try:
+        if args.command in ("demo-source-auth", "verify-source-auth", "auth-enable", "auth-activate-policy", "ingest-signed"):
+            from .source_auth.crypto import require_auth
+            require_auth()  # Before creating any output or opening a mutable database.
+        if args.command == "demo-source-auth":
+            from .source_auth.demo import demo_source_auth
+            result = demo_source_auth(args.output, seed=args.seed)
+            print(json.dumps(result, sort_keys=True))
+            return 0 if result["status"] == "PASSED" else 2
+        if args.command == "verify-source-auth":
+            from .source_auth.verifier import verify_bundle
+            from .source_auth.fixtures import operator_anchor
+            anchor = operator_anchor() if args.anchor == "demo-test-only" else strict_loads(Path(args.anchor).read_text(encoding="utf-8"))
+            result = verify_bundle(args.bundle, operator_anchor=anchor)
+            print(json.dumps(result, sort_keys=True))
+            return 0 if result["status"] == "PASSED" else 2
         if args.command == "demo-recovery":
             from .admission.recovery import run_demo
             result = run_demo(args.output, seed=args.seed)
@@ -203,6 +239,32 @@ def main(argv=None):
         if not Path(args.db).is_file():
             raise ValueError("database does not exist; run init first")
         store = Store(args.db, busy_timeout_ms=args.busy_timeout_ms if args.command == "ingest-feed" else None)
+        if args.command == "auth-enable":
+            from .source_auth.runtime import enable_protection
+            from .source_auth.crypto import strict_json
+            result = enable_protection(store, args.receiver, strict_json(Path(args.policy).read_bytes()))
+            print(json.dumps(result, sort_keys=True))
+            return 0
+        if args.command == "auth-activate-policy":
+            from .source_auth.runtime import activate_policy
+            from .source_auth.crypto import strict_json
+            result = activate_policy(store, strict_json(Path(args.policy).read_bytes()),
+                                     expected_epoch=args.expected_epoch, expected_hash=args.expected_hash)
+            print(json.dumps(result, sort_keys=True))
+            return 0
+        if args.command == "ingest-signed":
+            from .admission.feed import snapshot_feed
+            from .source_auth.runtime import ingest_signed
+            snapshot = snapshot_feed(args.input)
+            with Path(args.envelope).open("rb") as source:
+                envelope = source.read(262145)
+            result = ingest_signed(store, b"".join(snapshot.lines), envelope)
+            print(json.dumps(result, sort_keys=True))
+            return 0 if result["status"] == "COMPLETE" else 1
+        if args.command == "auth-status":
+            from .source_auth.runtime import auth_status
+            print(json.dumps(auth_status(store), sort_keys=True))
+            return 0
         if args.command == "ingest-feed":
             from .admission.feed import ingest_feed
             result = ingest_feed(store, args.input, args.stream_id, busy_timeout_ms=args.busy_timeout_ms)

@@ -1,5 +1,46 @@
 # Project working agreement
 
+## Current Stage 10.2 maintenance authorization
+
+The explicit task authorizes only S10-F2 persistent-key and stream inventory
+consistency in the evidence reader, package 0.8.2 metadata, new regressions and
+current release scope. Preserve all 564 old test identities/assertions, financial
+core, runtime/policy/crypto/schema 5, auth v1, recovery v2, workflow/dependency pins,
+the 373-file reference and frozen main experiment. Keep historical BASELINE 0.7.1
+and PREVIOUS 0.8.0 anchors and add the separate 0.8.1 preservation binding.
+Only the three named current metadata expressions in two old tests may change;
+record exact reversible diffs/hashes under docs/stage10_2. Preserve earlier docs.
+Use stage10/source-auth; normal commit/push and draft PR #2 updates are authorized.
+No merge, force push, tag/release, PyPI, separate OBSERVE fixes or scope expansion.
+Store actual commands, RED/GREEN, distribution/CI/artifact/archive evidence outside
+Git in stage10_2-output. Do not create a final-CI documentation commit loop.
+
+## Current Stage 10.1 maintenance authorization
+
+The explicit maintenance task authorizes only S10-F1 evidence-reader consistency,
+new rejection regressions and package 0.8.1 metadata. Preserve stage2-v2, schema 5,
+the auth v1 scope/producer/worker and runtime, recovery v2, the 373-file reference,
+all 540 previous test identities/assertions and the frozen main experiment.
+Only the named current-release fields in two old tests may change; record reversible
+hashes/diffs under docs/stage10_1. Keep the historical 0.7.1 test-scope anchor.
+Use the current stage10/source-auth task worktree. Normal commits/pushes and draft
+PR #2 updates are authorized; no merge, force push, release/tag or PyPI publication.
+Retain same-test RED/GREEN, actual CLI exits, local gates, final CI and archive
+proof outside Git in stage10_1-output. Do not commit final CI/SHA evidence back
+into source. Historical docs/stage10 and all earlier evidence remain unchanged.
+
+## Current Stage 10 authorization
+
+The explicit Stage 10 task authorizes optional pinned Ed25519/DSSE source admission,
+additive schema 5, package 0.8.0, current release scopes and CI, and a new task branch
+with a draft PR. Preserve the financial core, stage2-v2, all v1 formats, the 472 old
+test identities/assertions, recovery v2 resource/reader bytes and 373-file reference.
+Only specified version/schema metadata and genuine historical-schema fixture setup
+may change in old tests; document exact diffs under docs/stage10. Do not run the
+frozen main experiment. No main merge, force push, tag/release or protection change.
+Store actual execution evidence outside Git in stage10-output; do not commit final
+CI/SHA evidence back into source. Earlier stage restrictions below are historical.
+
 ## Current Stage 9.1 maintenance authorization
 
 The explicit Stage 9.1 task authorizes only the S9-F1 malformed-frame diagnostic

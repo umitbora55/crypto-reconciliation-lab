@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "crypto-reconciliation-lab"
-version = "0.7.1"
+version = "0.8.2"
 description = "Synthetic, evidence-driven crypto reconciliation using Decimal and SQLite"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -14,6 +14,7 @@ dependencies = []
 
 [project.optional-dependencies]
 ai = ["scikit-learn==1.9.1"]
+auth = ["cryptography==50.0.2", "cffi==2.1.1", "pycparser==3.12"]
 
 [project.scripts]
 crypto-reconciliation-lab = "crypto_reconciliation_lab.cli:main"
@@ -24,3 +25,4 @@ include = ["crypto_reconciliation_lab*"]
 [tool.setuptools.package-data]
 "crypto_reconciliation_lab.review" = ["assets/*.html", "assets/*.css", "assets/*.js"]
 "crypto_reconciliation_lab.admission" = ["recovery_scope_v2.json"]
+"crypto_reconciliation_lab.source_auth" = ["experiment_scope_v1.json"]

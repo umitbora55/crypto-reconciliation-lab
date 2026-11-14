@@ -89,6 +89,65 @@ def _response(db, stream_id, sequence, outcome, attempt_id, effect, reason):
             "core_result": json.loads(effect["core_result"]) if effect is not None and effect["core_result"] is not None else None}
 
 
+def _ingest_delivery_in_transaction(store, stream_id, sequence, payload, plan, *, observed_at=None, fault=None):
+    """Private shared body: the guarded caller owns one atomic write transaction."""
+    db = store.db
+    if not db.in_transaction:
+        raise ValueError("delivery body requires an owned transaction")
+    validate_stream(stream_id)
+    plan_hash = validate_plan(plan)
+    if type(sequence) is not int or not 1 <= sequence <= MAX_LINES:
+        raise ValueError("DELIVERY_INPUT: positive bounded integer sequence required")
+    if type(payload) is not bytes or not 0 < len(payload) <= MAX_LINE_BYTES:
+        raise ValueError("DELIVERY_INPUT: nonempty bounded exact bytes required")
+    observed = timestamp(observed_at if observed_at is not None else datetime.now(timezone.utc).isoformat())
+    payload_hash = hashlib.sha256(payload).hexdigest()
+    validate_current(db)
+    stream = db.execute("SELECT * FROM admission_streams WHERE stream_id=?", (stream_id,)).fetchone()
+    effect = _effect(db, stream_id, sequence)
+    prefix = _prefix(db, stream_id)
+    reason = None
+    if _blocked(db, stream_id):
+        outcome, reason = "BLOCKED", "stream has a permanent transport/plan conflict"
+    elif stream is not None and (stream["plan_hash"] != plan_hash or
+            any(stream[k] != plan[k] for k in ("input_sha256", "input_bytes", "planned_lines", "framing"))):
+        outcome, reason = "PLAN_CONFLICT", "snapshot differs from the stream's first immutable plan"
+    elif effect is not None:
+        if bytes(effect["payload"]) == payload and effect["payload_sha256"] == payload_hash:
+            outcome = "REPLAY"
+        else:
+            outcome, reason = "TRANSPORT_CONFLICT", "same delivery identity has different exact bytes"
+    elif sequence > plan["planned_lines"]:
+        outcome, reason = "OUT_OF_RANGE", "sequence exceeds the immutable planned scope"
+    elif sequence != prefix + 1:
+        outcome, reason = "GAP", "expected sequence " + str(prefix + 1)
+    else:
+        if stream is None:
+            db.execute("""INSERT INTO admission_streams
+                (stream_id,input_sha256,input_bytes,planned_lines,framing,plan_hash,observed_at)
+                VALUES (?,?,?,?,?,?,?)""", (stream_id, plan["input_sha256"], plan["input_bytes"],
+                plan["planned_lines"], plan["framing"], plan_hash, observed))
+        core, row_id, receipt_hash = None, None, None
+        try:
+            envelope = _envelope(payload)
+        except (ValueError, UnicodeError, RecursionError) as exc:
+            disposition, reason = "REJECTED_FRAME", str(exc)
+        else:
+            core, row_id = store._ingest_in_transaction(envelope["record"], envelope["received_at"], fault=fault)
+            receipt_hash, disposition = core["receipt_id"], core["status"]
+            inject(fault, "delivery_after_receipt")
+        db.execute("""INSERT INTO delivery_effects
+            (stream_id,sequence,payload,payload_sha256,core_receipt_id,core_receipt_hash,core_result,disposition,reason,observed_at)
+            VALUES (?,?,?,?,?,?,?,?,?,?)""", (stream_id, sequence, payload, payload_hash, row_id,
+            receipt_hash, dumps(core) if core is not None else None, disposition, reason, observed))
+        effect = _effect(db, stream_id, sequence)
+        outcome = "COMMITTED"
+    attempt_id = _attempt(db, stream_id, sequence, payload, payload_hash, plan_hash, outcome, effect, observed, reason)
+    result = _response(db, stream_id, sequence, outcome, attempt_id, effect, reason)
+    inject(fault, "delivery_before_commit")
+    return result
+
+
 def ingest_delivery(store, stream_id, sequence, payload, plan, *, observed_at=None, busy_timeout_ms=250, fault=None):
     validate_stream(stream_id)
     plan_hash = validate_plan(plan)
@@ -105,49 +164,10 @@ def ingest_delivery(store, stream_id, sequence, payload, plan, *, observed_at=No
     db.execute(f"PRAGMA busy_timeout={busy_timeout_ms}")
     try:
         with transaction(db):
-            validate_current(db)
-            stream = db.execute("SELECT * FROM admission_streams WHERE stream_id=?", (stream_id,)).fetchone()
-            effect = _effect(db, stream_id, sequence)
-            prefix = _prefix(db, stream_id)
-            reason = None
-            if _blocked(db, stream_id):
-                outcome, reason = "BLOCKED", "stream has a permanent transport/plan conflict"
-            elif stream is not None and (stream["plan_hash"] != plan_hash or
-                    any(stream[k] != plan[k] for k in ("input_sha256", "input_bytes", "planned_lines", "framing"))):
-                outcome, reason = "PLAN_CONFLICT", "snapshot differs from the stream's first immutable plan"
-            elif effect is not None:
-                if bytes(effect["payload"]) == payload and effect["payload_sha256"] == payload_hash:
-                    outcome = "REPLAY"
-                else:
-                    outcome, reason = "TRANSPORT_CONFLICT", "same delivery identity has different exact bytes"
-            elif sequence > plan["planned_lines"]:
-                outcome, reason = "OUT_OF_RANGE", "sequence exceeds the immutable planned scope"
-            elif sequence != prefix + 1:
-                outcome, reason = "GAP", "expected sequence " + str(prefix + 1)
-            else:
-                if stream is None:
-                    db.execute("""INSERT INTO admission_streams
-                        (stream_id,input_sha256,input_bytes,planned_lines,framing,plan_hash,observed_at)
-                        VALUES (?,?,?,?,?,?,?)""", (stream_id, plan["input_sha256"], plan["input_bytes"],
-                        plan["planned_lines"], plan["framing"], plan_hash, observed))
-                core, row_id, receipt_hash = None, None, None
-                try:
-                    envelope = _envelope(payload)
-                except (ValueError, UnicodeError, RecursionError) as exc:
-                    disposition, reason = "REJECTED_FRAME", str(exc)
-                else:
-                    core, row_id = store._ingest_in_transaction(envelope["record"], envelope["received_at"], fault=fault)
-                    receipt_hash, disposition = core["receipt_id"], core["status"]
-                    inject(fault, "delivery_after_receipt")
-                db.execute("""INSERT INTO delivery_effects
-                    (stream_id,sequence,payload,payload_sha256,core_receipt_id,core_receipt_hash,core_result,disposition,reason,observed_at)
-                    VALUES (?,?,?,?,?,?,?,?,?,?)""", (stream_id, sequence, payload, payload_hash, row_id,
-                    receipt_hash, dumps(core) if core is not None else None, disposition, reason, observed))
-                effect = _effect(db, stream_id, sequence)
-                outcome = "COMMITTED"
-            attempt_id = _attempt(db, stream_id, sequence, payload, payload_hash, plan_hash, outcome, effect, observed, reason)
-            result = _response(db, stream_id, sequence, outcome, attempt_id, effect, reason)
-            inject(fault, "delivery_before_commit")
+            from ..source_auth.schema import reject_unsigned
+            reject_unsigned(db)
+            result = _ingest_delivery_in_transaction(store, stream_id, sequence, payload, plan,
+                                                     observed_at=observed, fault=fault)
         inject(fault, "delivery_after_commit")
         return result
     except sqlite3.OperationalError as exc:
