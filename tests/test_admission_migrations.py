@@ -113,13 +113,13 @@ class AdmissionMigrationTests(unittest.TestCase):
         self.assertTrue(before['correction_effects'])
         self.assertTrue(migrate_connection(db))
         validate_current(db)
-        self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0], 4)
+        self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0], 5)
         self.assertLessEqual(objects, set(db.execute('SELECT type,name,tbl_name,sql FROM sqlite_master')))
         after = old_rows(db)
         for name, rows in before.items():
             actual = [row for row in after[name] if row[0] <= 3] if name == 'schema_migrations' else after[name]
             self.assertEqual(actual, rows, name)
-        self.assertEqual(db.execute('SELECT version FROM schema_migrations ORDER BY version').fetchall(), [(2,), (3,), (4,)])
+        self.assertEqual(db.execute('SELECT version FROM schema_migrations ORDER BY version').fetchall(), [(2,), (3,), (4,), (5,)])
         self.assertEqual(set(fixture['run_ids']), {row[0] for row in after['runs']})
         self.assertEqual(db.execute('PRAGMA foreign_key_check').fetchall(), [])
         self.assertEqual(db.execute('PRAGMA integrity_check').fetchone()[0], 'ok')
@@ -159,7 +159,7 @@ class AdmissionMigrationTests(unittest.TestCase):
         backup_bytes = saved.read_bytes()
         report = migrate_database(path, self.root / 'backups')
         self.assertEqual(report['from_version'], 3)
-        self.assertEqual(report['schema_version'], 4)
+        self.assertEqual(report['schema_version'], 5)
         self.assertEqual(report['before_digest'], report['after_digest'])
         for field in ('all_old_columns_equal', 'all_old_tables_equal', 'all_old_objects_equal',
                       'copy_rollback_verified', 'copy_restore_verified', 'idempotency_verified'):
@@ -175,7 +175,8 @@ class AdmissionMigrationTests(unittest.TestCase):
         path = self.root / 'historical.sqlite3'
         db, fixture = schema3_history(path)
         expected = dict(db.execute('SELECT id,payload FROM runs'))
-        migrate_connection(db)
+        from source_auth_legacy_fixtures import install_historical_schema4
+        install_historical_schema4(db)
         db.close()
         before = path.read_bytes()
         selected = Selection((SourceSelection('history', path, tuple(fixture['run_ids']), 'History', {}),))

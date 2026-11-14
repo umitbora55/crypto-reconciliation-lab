@@ -48,3 +48,10 @@ include crypto_reconciliation_lab/admission/recovery_scope_v2.json
 include docs/stage9_1/S9-F1.md docs/stage9_1/S9-F2.md docs/stage9_1/decisions.md
 include docs/stage9_1/fixture-changes.md docs/stage9_1/HANDOFF.md
 include tests/fixtures/admission-semantic-report-v2.json
+
+# Stage 10 optional source authentication and fixed reviewed test roster.
+include requirements-auth.txt contracts/release-test-scope-0.8.0.json
+include docs/stage10/fixture-changes.md
+include contracts/source-auth-scope-v1.json
+include crypto_reconciliation_lab/source_auth/experiment_scope_v1.json
+recursive-include docs/stage10 *.md

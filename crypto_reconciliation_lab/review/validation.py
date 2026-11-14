@@ -4,7 +4,7 @@ import hashlib
 import json
 import re
 
-RULE_SCHEMAS = {0: frozenset({'stage1-v1'}), 2: frozenset({'stage1-v1', 'stage2-v1', 'stage2-v2'}), 3: frozenset({'stage1-v1', 'stage2-v1', 'stage2-v2'}), 4: frozenset({'stage1-v1', 'stage2-v1', 'stage2-v2'})}
+RULE_SCHEMAS = {0: frozenset({'stage1-v1'}), 2: frozenset({'stage1-v1', 'stage2-v1', 'stage2-v2'}), 3: frozenset({'stage1-v1', 'stage2-v1', 'stage2-v2'}), 4: frozenset({'stage1-v1', 'stage2-v1', 'stage2-v2'}), 5: frozenset({'stage1-v1', 'stage2-v1', 'stage2-v2'})}
 AMOUNT = re.compile(r'-?[0-9]+(?:\.[0-9]+)?\Z')
 UTC_TIME = re.compile(r'\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d{1,6})?(?:Z|\+00:00)\Z')
 

@@ -9,13 +9,14 @@ from pathlib import Path
 from .model import digest
 
 LEGACY_TABLES = ("configuration", "records", "receipts", "runs", "findings", "evidence")
-SCHEMA_VERSION = 4
+SCHEMA_VERSION = 5
 INDEX_NAME = "receipts_hash_lookup"
 INDEX_SQL = "CREATE INDEX receipts_hash_lookup ON receipts(receipt_hash)"
 MIGRATIONS = {
     2: "Add immutable correction groups/effects; retain all Stage 1 columns",
     3: "Add nonunique receipts_hash_lookup(receipt_hash); preserve all financial data",
     4: "Add immutable admission streams, delivery effects and attempts; preserve financial history",
+    5: "Add immutable source authority, policy epochs and atomic admission links; preserve financial history",
 }
 
 # These additive definitions deliberately leave every financial table/index alone.
@@ -226,7 +227,7 @@ def _validate_metadata(db, version):
     require(set(LEGACY_TABLES) | {'schema_migrations', 'correction_groups', 'correction_effects'} <= tables,
             'SCHEMA_INVALID: required application tables are missing')
     rows = [tuple(r) for r in db.execute('SELECT version,description FROM schema_migrations ORDER BY version')]
-    wanted = [(n, MIGRATIONS[n]) for n in (2, 3, 4) if n <= version]
+    wanted = [(n, MIGRATIONS[n]) for n in (2, 3, 4, 5) if n <= version]
     require(rows == wanted, 'SCHEMA_INVALID: migration metadata differs from physical version')
 
 
@@ -247,14 +248,20 @@ def validate_current(db):
     _validate_metadata(db, SCHEMA_VERSION)
     validate_index(db)
     validate_admission_schema(db)
+    from .source_auth.schema import validate_auth_schema
+    validate_auth_schema(db)
     return True
 
 
 def validate_open(db):
     version = db.execute('PRAGMA user_version').fetchone()[0]
-    require(version in (0, 2, 3, 4), 'unsupported schema version: ' + str(version))
-    if version == 4:
+    require(version in (0, 2, 3, 4, 5), 'unsupported schema version: ' + str(version))
+    if version == 5:
         validate_current(db)
+    elif version == 4:
+        _validate_metadata(db, 4)
+        validate_index(db)
+        validate_admission_schema(db)
     elif version == 3:
         _validate_metadata(db, 3)
         validate_index(db)
@@ -296,12 +303,25 @@ def _stage4(db, fault):
     inject(fault, 'migration_after_schema4')
 
 
+def _stage5(db, fault):
+    from .source_auth.schema import AUTH_TABLES, AUTH_TRIGGERS
+    inject(fault, 'migration_before_auth')
+    for sql in AUTH_TABLES.values():
+        db.execute(sql)
+    inject(fault, 'migration_after_auth_tables')
+    for sql in AUTH_TRIGGERS.values():
+        db.execute(sql)
+    db.execute('INSERT INTO schema_migrations VALUES (?,?)', (5, MIGRATIONS[5]))
+    db.execute('PRAGMA user_version=5')
+    inject(fault, 'migration_after_schema5')
+
+
 def migrate_connection(db, fault=None, *, timings=None, expected_snapshot=None):
     current = db.execute('PRAGMA user_version').fetchone()[0]
     if current == SCHEMA_VERSION:
         validate_current(db)
         return False
-    require(current in (0, 2, 3), 'unsupported schema version: ' + str(current))
+    require(current in (0, 2, 3, 4), 'unsupported schema version: ' + str(current))
     require(not db.in_transaction, 'nested transaction not supported')
     timings = {} if timings is None else timings
     started = time.perf_counter()
@@ -311,10 +331,12 @@ def migrate_connection(db, fault=None, *, timings=None, expected_snapshot=None):
         before = application_snapshot(db)
         if expected_snapshot is not None:
             require(before == expected_snapshot, 'source changed after verified backup')
-        if current in (2, 3):
+        if current in (2, 3, 4):
             _validate_metadata(db, current)
-        if current == 3:
+        if current >= 3:
             validate_index(db)
+        if current == 4:
+            validate_admission_schema(db)
         timings['preservation_before_seconds'] = time.perf_counter() - phase
         if current == 0:
             _stage2(db, fault)
@@ -328,8 +350,12 @@ def migrate_connection(db, fault=None, *, timings=None, expected_snapshot=None):
             db.execute('INSERT INTO schema_migrations VALUES (?,?)', (3, MIGRATIONS[3]))
             db.execute('PRAGMA user_version=3')
         phase = time.perf_counter()
-        _stage4(db, fault)
+        if current < 4:
+            _stage4(db, fault)
         timings['admission_create_seconds'] = time.perf_counter() - phase
+        phase = time.perf_counter()
+        _stage5(db, fault)
+        timings['auth_create_seconds'] = time.perf_counter() - phase
         phase = time.perf_counter()
         assert_preserved(db, before)
         validate_current(db)

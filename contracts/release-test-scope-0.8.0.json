@@ -1,0 +1,1000 @@
+{
+  "additions": {
+    "files": {
+      "tests/source_auth_legacy_fixtures.py": {
+        "bytes": 7794,
+        "sha256": "6cff62713e50b786d8894f8e76e608e7f3a01d0d47ae2006f3f82de3a1753027"
+      },
+      "tests/test_source_auth_cli.py": {
+        "bytes": 3558,
+        "sha256": "7e5645714e5aabba76993a6b312c0e66b9b9b1ee39d95e5cbfa2e8991801072a"
+      },
+      "tests/test_source_auth_crypto.py": {
+        "bytes": 5851,
+        "sha256": "dabdd2bacb9b94d6b94a974d67e52e569af0ddfdd903473c2fac71c646a7dace"
+      },
+      "tests/test_source_auth_experiment.py": {
+        "bytes": 11146,
+        "sha256": "1267b6fcf5ff7ea3cac8b681a1bb50c803513f095178cf4c0d7d0ffc9c3f21f5"
+      },
+      "tests/test_source_auth_migrations.py": {
+        "bytes": 6808,
+        "sha256": "760dce83418595a3e09fe3ab75184447d543f1854c84ed322b281775cb6482e5"
+      },
+      "tests/test_source_auth_release.py": {
+        "bytes": 6238,
+        "sha256": "ad19b5d877e9749a08fde94745db0621242160a05364729e1112470e306802ba"
+      },
+      "tests/test_source_auth_runtime.py": {
+        "bytes": 15868,
+        "sha256": "248a89103d7e569c9c060477a7c100dec2d07e953321fb6c946b66a78e1b7839"
+      }
+    },
+    "test_ids": [
+      "test_source_auth_cli.SourceAuthCliTests.test_operator_and_signed_cli_keep_financial_evaluation_explicit",
+      "test_source_auth_cli.SourceAuthCliTests.test_unsigned_ingest_and_feed_cli_refused_before_and_after_binding",
+      "test_source_auth_crypto.SourceAuthCryptoTests.test_literal_pae_counts_bytes_and_separates_type",
+      "test_source_auth_crypto.SourceAuthCryptoTests.test_profile_rejects_bad_base64_multiple_signature_and_payload_type",
+      "test_source_auth_crypto.SourceAuthCryptoTests.test_rfc8032_public_empty_message_vector",
+      "test_source_auth_crypto.SourceAuthCryptoTests.test_rfc8032_public_one_byte_vector_and_wrong_key",
+      "test_source_auth_crypto.SourceAuthCryptoTests.test_snapshot_limits_and_required_single_publisher",
+      "test_source_auth_crypto.SourceAuthCryptoTests.test_statement_rejects_bool_integer_unknown_fields_and_false_scope",
+      "test_source_auth_crypto.SourceAuthCryptoTests.test_strict_json_rejects_duplicates_surrogates_nonfinite_depth",
+      "test_source_auth_crypto.SourceAuthCryptoTests.test_verified_payload_keeps_exact_bytes_not_canonical_reconstruction",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_actual_complete_bundle",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_decision_stream_must_equal_signed_stream",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_denied_families_require_independent_invalid_input_or_policy_denial",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_denied_pass_flag_cannot_hide_committed_actual",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_extra_information_is_accepted",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_false_financial_payload_not_equal_saved_run",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_fixed_literal_financial_outputs_and_paired_core_rows",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_historical_replay_requires_revoked_key_and_original_approval",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_initial_policy_hash_is_bound_to_first_epoch",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_kill_requires_real_pid_barrier_join_unknown",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_manifest_rehash_does_not_replace_operator_anchor",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_missing_attempt_authorization_rejected",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_missing_financial_report_file_rejected",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_mutation_campaign_all_six_rejections_and_extra_information",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_policy_cannot_change_grants_in_report",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_policy_race_requires_actual_result_and_no_new_receipt",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_precommit_half_authorization_rejected",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_removed_decision_and_its_references_rejected",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_removed_required_family_rejected_after_rehash",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_same_count_scope_with_valid_signature_rejected",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_signed_mismatch_cannot_be_relabelled_matched",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_snapshot_receipt_membership_exact_bytes",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_wrong_key_binding_rejected",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_wrong_receipt_binding_rejected",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_wrong_source_binding_rejected",
+      "test_source_auth_migrations.SourceAuthMigrationTests.test_every_schema5_fault_rolls_back_entire_upgrade",
+      "test_source_auth_migrations.SourceAuthMigrationTests.test_guard_requires_write_transaction_and_marker_cannot_be_removed",
+      "test_source_auth_migrations.SourceAuthMigrationTests.test_missing_schema5_guard_is_rejected_without_repair",
+      "test_source_auth_migrations.SourceAuthMigrationTests.test_module_and_store_delivery_paths_cannot_bypass_guard",
+      "test_source_auth_migrations.SourceAuthMigrationTests.test_new_database_chain_and_no_implicit_protection",
+      "test_source_auth_migrations.SourceAuthMigrationTests.test_populated_schema4_explicit_backup_restore_and_preservation",
+      "test_source_auth_migrations.SourceAuthMigrationTests.test_schema4_open_read_is_byte_and_logically_unchanged",
+      "test_source_auth_migrations.SourceAuthMigrationTests.test_store_unsigned_guard_is_before_first_financial_receipt",
+      "test_source_auth_release.SourceAuthReleaseTests.test_auth_contract_and_pins_are_required_source_inputs",
+      "test_source_auth_release.SourceAuthReleaseTests.test_auth_only_requires_pinned_transitives_without_ai",
+      "test_source_auth_release.SourceAuthReleaseTests.test_auth_resource_is_allowlisted_but_arbitrary_json_is_not",
+      "test_source_auth_release.SourceAuthReleaseTests.test_core_auth_absence_requires_availability_and_distribution_absence",
+      "test_source_auth_release.SourceAuthReleaseTests.test_core_missing_auth_cannot_claim_success_after_creating_output",
+      "test_source_auth_release.SourceAuthReleaseTests.test_current_scope_retains_all_472_prior_identities",
+      "test_source_auth_release.SourceAuthReleaseTests.test_historical_recovery_bytes_and_release_remain_pinned",
+      "test_source_auth_release.SourceAuthReleaseTests.test_historical_schema4_exception_cannot_change_assertions",
+      "test_source_auth_runtime.SourceAuthRuntimeTests.test_accept_replay_and_restart_preserve_receipt_and_original_links",
+      "test_source_auth_runtime.SourceAuthRuntimeTests.test_all_six_kind_scopes_and_correction_target_binding",
+      "test_source_auth_runtime.SourceAuthRuntimeTests.test_authorized_plan_conflict_stays_blocked_even_for_revoked_exact_replay",
+      "test_source_auth_runtime.SourceAuthRuntimeTests.test_busy_reports_retryable_without_false_durable_rejection",
+      "test_source_auth_runtime.SourceAuthRuntimeTests.test_clear_scope_invalid_amount_uses_core_quarantine",
+      "test_source_auth_runtime.SourceAuthRuntimeTests.test_every_transaction_rechecks_epoch_after_preflight_and_between_lines",
+      "test_source_auth_runtime.SourceAuthRuntimeTests.test_exception_before_commit_rolls_back_auth_receipt_stream_and_links",
+      "test_source_auth_runtime.SourceAuthRuntimeTests.test_invalid_last_line_authority_rejects_before_first_core_write",
+      "test_source_auth_runtime.SourceAuthRuntimeTests.test_namespace_receiver_and_configuration_rejection_do_not_poison_live_stream",
+      "test_source_auth_runtime.SourceAuthRuntimeTests.test_new_same_source_key_resumes_suffix_preserving_old_epoch",
+      "test_source_auth_runtime.SourceAuthRuntimeTests.test_policy_stale_update_alias_reactivation_and_namespace_changes_rejected",
+      "test_source_auth_runtime.SourceAuthRuntimeTests.test_revoked_different_statement_cannot_borrow_existing_sequence",
+      "test_source_auth_runtime.SourceAuthRuntimeTests.test_revoked_exact_prefix_replays_but_unseen_suffix_is_denied",
+      "test_source_auth_runtime.SourceAuthRuntimeTests.test_same_count_scope_substitution_and_cartesian_grant_are_denied",
+      "test_source_auth_runtime.SourceAuthRuntimeTests.test_unknown_embedded_wrong_and_corrupt_keys_do_not_reserve_stream",
+      "test_source_auth_runtime.SourceAuthRuntimeTests.test_unsigned_public_paths_fail_before_first_stream_and_legacy_survives",
+      "test_source_auth_runtime.SourceAuthRuntimeTests.test_whole_scope_is_reauthorized_for_every_new_effect"
+    ]
+  },
+  "baseline": {
+    "bytes": 64724,
+    "path": "contracts/release-test-scope-0.7.1.json",
+    "sha256": "2e21ae9f60ec7163af140d9f8e2eb91f33d3492e6b3edb1b3b4a86430a736a7e"
+  },
+  "current": {
+    "file_count": 51,
+    "files": {
+      "tests/fixtures/admission-semantic-report-v2.json": {
+        "bytes": 458825,
+        "sha256": "258ae421f180151c8ff056e716d0e37513f8461b464af73524244d23e347127e"
+      },
+      "tests/review_fixtures.py": {
+        "bytes": 3683,
+        "sha256": "e4754bc7deacbb92a248ced3e180dcde535c2003debaffbe2ff745f057590aaf"
+      },
+      "tests/source_auth_legacy_fixtures.py": {
+        "bytes": 7794,
+        "sha256": "6cff62713e50b786d8894f8e76e608e7f3a01d0d47ae2006f3f82de3a1753027"
+      },
+      "tests/test_ab_stage3_3.py": {
+        "bytes": 15646,
+        "sha256": "0e43c04030d7d020975d7f06600570ef15e0019b121e2c93f9c178cebdc2fc7e"
+      },
+      "tests/test_admission.py": {
+        "bytes": 16711,
+        "sha256": "1d85c0d42222fcd16952a406526a3416b06baa956432f2ac68751b092986e2b1"
+      },
+      "tests/test_admission_busy_evidence.py": {
+        "bytes": 3291,
+        "sha256": "dc673d9543b61296e43ed83a19a2d18815f06ca9367d9621f7afc87c54791faf"
+      },
+      "tests/test_admission_diagnostics.py": {
+        "bytes": 7655,
+        "sha256": "3be5dbcf6b389d858fc3e1bc00892a91b53051b57fc94fad64786c6583717f22"
+      },
+      "tests/test_admission_maintenance_release.py": {
+        "bytes": 4013,
+        "sha256": "1880fddbdbc45f2176c9eecb033152d4ba2cb1283a63839fe348bd76f4615a7c"
+      },
+      "tests/test_admission_migrations.py": {
+        "bytes": 14669,
+        "sha256": "b2056652dffbf442b813ee0a3c1a4fd792d0c97968ddc1f3cd643bef6d404561"
+      },
+      "tests/test_admission_provenance.py": {
+        "bytes": 2236,
+        "sha256": "f45c8124914aeba3a44c738eb6b06ec942dee0479b6a1d39ef5ac3f18607525c"
+      },
+      "tests/test_admission_recovery.py": {
+        "bytes": 8325,
+        "sha256": "ca7ac19daf1743ec029b96ce5050c4964d3e68fa122549517c592171a1f81e77"
+      },
+      "tests/test_admission_release.py": {
+        "bytes": 4101,
+        "sha256": "61ca0e801c8dad63d12d76348679baeb35dee975fcf583329b770ddf9e1265ce"
+      },
+      "tests/test_admission_semantics.py": {
+        "bytes": 7070,
+        "sha256": "dadd70eb0aa39db5e8ab26f8ea94aca231fa10db2aaa5d1f4371942d38eda4f7"
+      },
+      "tests/test_corrections.py": {
+        "bytes": 28654,
+        "sha256": "9c0c123105965bbe78ab4835801d87225807ff9524655f250c27e1e4f0dc0cf4"
+      },
+      "tests/test_lab.py": {
+        "bytes": 17997,
+        "sha256": "c604e4d2c734ac9d678c635255a6b681d19282c17d7cb8484e8f560b8c300538"
+      },
+      "tests/test_lab_contract_validation.py": {
+        "bytes": 13038,
+        "sha256": "6fae4f3eed3bd16356bf71c15630b155daf8d6b6747c62509e0be6e0e92ecd17"
+      },
+      "tests/test_lab_contracts.py": {
+        "bytes": 9298,
+        "sha256": "d6d27a58ec69b318844148ce6076f97ec20b2f5894ac8592d0dbd4421a7508bb"
+      },
+      "tests/test_profiling.py": {
+        "bytes": 11752,
+        "sha256": "41b5ddfa583596bc0a0157e841ca35ae7e511ce5044c18562aae9db585a79790"
+      },
+      "tests/test_receipt_index.py": {
+        "bytes": 18918,
+        "sha256": "0f2f036a91a6a2c88ef4d6f797ff1cd6181098ccff2a4b69917c0c07d3aab0d3"
+      },
+      "tests/test_reconciliation.py": {
+        "bytes": 25125,
+        "sha256": "ad78e0717ae992a0387697d2ad1d1ba180be7855c385cbef78d55673a77518d0"
+      },
+      "tests/test_release_financial_inventory.py": {
+        "bytes": 4963,
+        "sha256": "0f3f7cbc09e728f58a3ca31d6a51cb11a30828117fb038d442764b8970e10f2a"
+      },
+      "tests/test_release_financial_scope.py": {
+        "bytes": 10290,
+        "sha256": "b3580f0c0b6c015fb725c544a09197757b84af7c7545038b24789aed6fb52613"
+      },
+      "tests/test_release_packaging.py": {
+        "bytes": 4516,
+        "sha256": "493150e78012433ed285485ead86581d056edc985e8355a47b49749522324324"
+      },
+      "tests/test_release_test_scope.py": {
+        "bytes": 7983,
+        "sha256": "d0843e930098b2c0a40612e7479cd2a71be2514bb370676201a66fe9270dc10b"
+      },
+      "tests/test_release_verification.py": {
+        "bytes": 5593,
+        "sha256": "834873f5a2c7c0593cedc6c669acebcd7c146ab166dde479c0fa57ce96415aef"
+      },
+      "tests/test_reproduce_review.py": {
+        "bytes": 5954,
+        "sha256": "465b04605ff6e72d22b29c12c1d518f7c1da4efbef042dcbb69fc89f82ee9eab"
+      },
+      "tests/test_review_adapter.py": {
+        "bytes": 21325,
+        "sha256": "d10f6eb7a63c1be583ec171ddc2f53835fd00acb11f08b8dde66e53fc602ca05"
+      },
+      "tests/test_review_assets.py": {
+        "bytes": 2919,
+        "sha256": "89d8e1cf6d50f86492f0d309b44884fde711a1d0d342464672cafb498ac0030c"
+      },
+      "tests/test_review_export.py": {
+        "bytes": 8377,
+        "sha256": "25fee6cbcfd12e8f861ab72a5be651d38aea44c1298e4d78756cddfb1461bf69"
+      },
+      "tests/test_review_output_paths.py": {
+        "bytes": 17373,
+        "sha256": "061d5414ecf01f7db895cbdc9baf7d29f23ac171c99ec27cb1059a5a9ccd299b"
+      },
+      "tests/test_scope_regressions.py": {
+        "bytes": 17524,
+        "sha256": "c60256f44629964ac3a14b261265e3551d4f9550dbf31442dfa800238bd587c2"
+      },
+      "tests/test_source_auth_cli.py": {
+        "bytes": 3558,
+        "sha256": "7e5645714e5aabba76993a6b312c0e66b9b9b1ee39d95e5cbfa2e8991801072a"
+      },
+      "tests/test_source_auth_crypto.py": {
+        "bytes": 5851,
+        "sha256": "dabdd2bacb9b94d6b94a974d67e52e569af0ddfdd903473c2fac71c646a7dace"
+      },
+      "tests/test_source_auth_experiment.py": {
+        "bytes": 11146,
+        "sha256": "1267b6fcf5ff7ea3cac8b681a1bb50c803513f095178cf4c0d7d0ffc9c3f21f5"
+      },
+      "tests/test_source_auth_migrations.py": {
+        "bytes": 6808,
+        "sha256": "760dce83418595a3e09fe3ab75184447d543f1854c84ed322b281775cb6482e5"
+      },
+      "tests/test_source_auth_release.py": {
+        "bytes": 6238,
+        "sha256": "ad19b5d877e9749a08fde94745db0621242160a05364729e1112470e306802ba"
+      },
+      "tests/test_source_auth_runtime.py": {
+        "bytes": 15868,
+        "sha256": "248a89103d7e569c9c060477a7c100dec2d07e953321fb6c946b66a78e1b7839"
+      },
+      "tests/test_stage3_3_execution.py": {
+        "bytes": 5507,
+        "sha256": "96560c6e934feeab8a4691eab950f53acd6a7c6fa36b6197955cf5d982657429"
+      },
+      "tests/test_trace_contract.py": {
+        "bytes": 8840,
+        "sha256": "94e7ae1114c48d55b3987a26bb44864287a86a4dfde6e1f30f5482c570b1e957"
+      },
+      "tests/test_triage_decimal_context.py": {
+        "bytes": 8883,
+        "sha256": "c9869a2f68ce1b555aec86fab0ed93a70a3d0b4aa3a475d938e420562b0e53a4"
+      },
+      "tests/test_triage_features.py": {
+        "bytes": 13475,
+        "sha256": "2202c42ea3a793a198b647d8aba4d5b7814f5b0053a805a664f21a6cee2d1c8f"
+      },
+      "tests/test_triage_metrics.py": {
+        "bytes": 7038,
+        "sha256": "48d627ca0ea77f6c01d303a0c56df3a9181fae9118db813fc1c983472b3c19f2"
+      },
+      "tests/test_triage_model.py": {
+        "bytes": 10692,
+        "sha256": "63b112a4864b0a62e096ee52b747eed5ae551b364f07601641429ef825e37f13"
+      },
+      "tests/test_triage_provenance.py": {
+        "bytes": 10003,
+        "sha256": "2766737500c699b01934366318f85c00089a8e86132e88daf2e276432f1fb891"
+      },
+      "tests/test_triage_provenance_cross_refs.py": {
+        "bytes": 2257,
+        "sha256": "f2e7681eda3be833ca12ad463bebf6a0a48091bc4b2c216a2b885ecdf2776ed2"
+      },
+      "tests/test_triage_runner.py": {
+        "bytes": 5343,
+        "sha256": "c75afa9f58aaf4353eabf50dce883f859785f2197b73245f90c3e09efab41b34"
+      },
+      "tests/test_triage_scope.py": {
+        "bytes": 11015,
+        "sha256": "58938bbf439bbff210e1a799dab4baa92908deba62f4ad39c891dad5a231af77"
+      },
+      "tests/test_triage_scope_contract.py": {
+        "bytes": 6857,
+        "sha256": "0d3168b84db42eb94e930737408202cf664ed1618118f6e8dbe12f4b0d16648d"
+      },
+      "tests/test_triage_world.py": {
+        "bytes": 17990,
+        "sha256": "fe766ef2d47439dff1b23a72a8c98a888c71fdb9dc1a6443e4386b52c0659466"
+      },
+      "tests/triage_model_fixtures.py": {
+        "bytes": 4327,
+        "sha256": "1a79b7a541ddc2eccac46311c6ad6e356a4ed40e164f38a6b2d9b7a530a64915"
+      },
+      "tests/triage_scope_fixtures.py": {
+        "bytes": 4114,
+        "sha256": "943e2eb19a634ea55e7a91e66c62be3553f5b6ce22ec08a64f00e535e036b9fb"
+      }
+    },
+    "test_count": 540,
+    "test_ids": [
+      "test_ab_stage3_3.ABProtocolTests.test_balanced_order_single_deadline_and_diagnostics_after_all_normals",
+      "test_ab_stage3_3.ABProtocolTests.test_candidate_descending_index_is_rejected_before_comparison",
+      "test_ab_stage3_3.ABProtocolTests.test_changed_final_source_is_failed_and_stops_remaining_probe",
+      "test_ab_stage3_3.ABProtocolTests.test_combined_retention_tree_budget_blocks_copy_before_launch",
+      "test_ab_stage3_3.ABProtocolTests.test_existing_bytecode_prefix_is_rejected_before_workers",
+      "test_ab_stage3_3.ABProtocolTests.test_failed_final_probe_survives_retention_exception",
+      "test_ab_stage3_3.ABProtocolTests.test_failed_gate_survives_retention_exception",
+      "test_ab_stage3_3.ABProtocolTests.test_gate_failure_stops_before_generation",
+      "test_ab_stage3_3.ABProtocolTests.test_known_failure_survives_budget_and_stops_all_later_work",
+      "test_ab_stage3_3.ABProtocolTests.test_pair_arithmetic_and_three_observation_statistics_exclude_diagnostics",
+      "test_ab_stage3_3.ABProtocolTests.test_parity_failure_stops_remaining_workers_and_retains_counterexample",
+      "test_ab_stage3_3.ABProtocolTests.test_provenance_rejects_wrong_build_root_or_distribution",
+      "test_ab_stage3_3.ABProtocolTests.test_retention_budget_keeps_known_failure_and_owned_runtime",
+      "test_ab_stage3_3.ABProtocolTests.test_streamed_hash_matches_literal_reference",
+      "test_ab_stage3_3.ABProtocolTests.test_unknown_budget_stops_related_work_without_claiming_wrong_finance",
+      "test_admission.AdmissionTests.test_bad_json_and_duplicate_keys_have_inspectable_terminal_dispositions",
+      "test_admission.AdmissionTests.test_busy_is_retriable_without_ack_or_fabricated_attempt",
+      "test_admission.AdmissionTests.test_changed_committed_prefix_cannot_replace_first_plan",
+      "test_admission.AdmissionTests.test_cli_admission_and_status_are_separate_from_reconciliation",
+      "test_admission.AdmissionTests.test_cli_open_busy_is_explicit_retriable_without_ack",
+      "test_admission.AdmissionTests.test_economic_conflict_is_terminal_core_result_not_transport_block",
+      "test_admission.AdmissionTests.test_exact_bytes_distinguish_spacing_and_permanently_block",
+      "test_admission.AdmissionTests.test_exact_replay_reuses_physical_receipt_and_original_result",
+      "test_admission.AdmissionTests.test_exclusive_lock_keeps_feed_busy_response_explicit",
+      "test_admission.AdmissionTests.test_feed_status_is_read_only_and_observation_is_not_financial_time",
+      "test_admission.AdmissionTests.test_fifo_is_rejected_without_waiting_for_a_writer",
+      "test_admission.AdmissionTests.test_full_file_replay_preserves_financial_run_and_does_not_evaluate_implicitly",
+      "test_admission.AdmissionTests.test_gap_attempt_does_not_bind_plan_or_advance_and_is_retryable",
+      "test_admission.AdmissionTests.test_invalid_financial_record_is_quarantined_and_acked_atomically",
+      "test_admission.AdmissionTests.test_invalid_protocol_fields_do_not_create_delivery_history",
+      "test_admission.AdmissionTests.test_legacy_direct_ingest_still_appends_each_physical_receipt",
+      "test_admission.AdmissionTests.test_new_transport_sequence_uses_core_duplicate_semantics",
+      "test_admission.AdmissionTests.test_numeric_amount_is_core_invalid_not_silently_converted_to_text",
+      "test_admission.AdmissionTests.test_out_of_range_has_no_core_effect",
+      "test_admission.AdmissionTests.test_postcommit_response_loss_is_resolved_by_replay",
+      "test_admission.AdmissionTests.test_shortened_file_with_identical_prefix_is_not_successful_eof",
+      "test_admission.AdmissionTests.test_snapshot_framing_refusals_write_nothing",
+      "test_admission.AdmissionTests.test_snapshot_rejects_symlink",
+      "test_admission.AdmissionTests.test_three_precommit_exception_barriers_roll_back_all_layers",
+      "test_admission_busy_evidence.AdmissionBusyEvidenceTests.test_legitimate_unknown_busy_observation_is_accepted_after_complete_readback",
+      "test_admission_busy_evidence.AdmissionBusyEvidenceTests.test_unknown_busy_evidence_rejects_partial_or_success_claims",
+      "test_admission_diagnostics.AdmissionDiagnosticTests.test_lone_surrogate_api_rejection_is_durable_and_exact_replay_reuses_it",
+      "test_admission_diagnostics.AdmissionDiagnosticTests.test_real_cli_surrogate_rejection_completes_and_replays_with_controlled_exit",
+      "test_admission_diagnostics.AdmissionDiagnosticTests.test_unicode_and_control_duplicate_key_rejections_remain_terminal",
+      "test_admission_maintenance_release.AdmissionMaintenanceReleaseTests.test_named_fixture_permission_cannot_hide_a_changed_old_assertion",
+      "test_admission_maintenance_release.AdmissionMaintenanceReleaseTests.test_named_fixture_permission_rejects_other_targets_and_extra_code",
+      "test_admission_maintenance_release.AdmissionMaintenanceReleaseTests.test_other_metadata_permissions_still_reject_multiline_replacements",
+      "test_admission_maintenance_release.AdmissionMaintenanceReleaseTests.test_wheel_allows_only_the_named_recovery_scope_json_asset",
+      "test_admission_migrations.AdmissionMigrationTests.test_attempt_guards_preserve_replay_identity_and_allow_unbound_gap_audit",
+      "test_admission_migrations.AdmissionMigrationTests.test_corrupt_admission_guard_is_rejected_without_implicit_repair",
+      "test_admission_migrations.AdmissionMigrationTests.test_delivery_tables_are_append_only_and_receipt_links_are_exact",
+      "test_admission_migrations.AdmissionMigrationTests.test_each_schema4_boundary_failure_rolls_back_all_ddl_metadata_and_rows",
+      "test_admission_migrations.AdmissionMigrationTests.test_effect_guards_reject_gaps_blocked_streams_and_plan_overrun",
+      "test_admission_migrations.AdmissionMigrationTests.test_explicit_schema3_backup_rehearsal_restore_and_retry_preserve_history",
+      "test_admission_migrations.AdmissionMigrationTests.test_frame_rejection_is_only_disposition_without_core_receipt",
+      "test_admission_migrations.AdmissionMigrationTests.test_schema3_migration_preserves_every_original_row_object_and_history",
+      "test_admission_migrations.AdmissionMigrationTests.test_schema3_open_reads_history_without_migration_or_byte_changes",
+      "test_admission_migrations.AdmissionMigrationTests.test_schema4_saved_historical_run_exports_without_recompute_or_source_writes",
+      "test_admission_provenance.AdmissionWriterProvenanceTests.test_actual_feed_writer_observation_cannot_be_omitted_or_renamed",
+      "test_admission_provenance.AdmissionWriterProvenanceTests.test_parent_writer_cannot_be_claimed_as_child_process",
+      "test_admission_provenance.AdmissionWriterProvenanceTests.test_parent_writer_connections_share_the_observed_process",
+      "test_admission_recovery.RecoveryTests.test_blocked_and_changed_snapshots_never_create_financial_run",
+      "test_admission_recovery.RecoveryTests.test_complete_predeclared_scenario_inventory",
+      "test_admission_recovery.RecoveryTests.test_core_conflict_invalid_and_frame_rejection_stay_visible",
+      "test_admission_recovery.RecoveryTests.test_existing_output_is_not_overwritten",
+      "test_admission_recovery.RecoveryTests.test_lost_ack_retries_original_receipt_and_result",
+      "test_admission_recovery.RecoveryTests.test_oracle_rejects_wrong_first_bytes_and_broken_ack_models",
+      "test_admission_recovery.RecoveryTests.test_save_run_real_crash_preserves_old_history_and_retries_whole_run",
+      "test_admission_recovery.RecoveryTests.test_three_precommit_real_kills_leave_no_half_effect",
+      "test_admission_recovery.RecoveryTests.test_transport_replay_and_new_economic_receipt_are_distinct",
+      "test_admission_recovery.RecoveryTests.test_two_real_writers_and_busy_attempt_do_not_disappear",
+      "test_admission_release.AdmissionReleaseTests.test_broken_models_must_actually_fail_the_negative_control",
+      "test_admission_release.AdmissionReleaseTests.test_candidate_cannot_replace_fixed_required_scope_with_partial_plan",
+      "test_admission_release.AdmissionReleaseTests.test_claimed_pass_without_observed_sigkill_or_barrier_is_rejected",
+      "test_admission_release.AdmissionReleaseTests.test_complete_declared_verifier_input_is_accepted",
+      "test_admission_release.AdmissionReleaseTests.test_empty_partial_duplicate_or_substituted_scenario_ids_are_rejected",
+      "test_admission_release.AdmissionReleaseTests.test_failed_or_missing_readback_checks_and_changed_schedule_are_rejected",
+      "test_admission_release.AdmissionReleaseTests.test_writer_claim_requires_two_distinct_joined_successful_processes",
+      "test_admission_semantics.AdmissionSemanticTests.test_21_names_with_one_generic_check_cannot_replace_evidence",
+      "test_admission_semantics.AdmissionSemanticTests.test_actual_complete_run_passes_semantic_gate",
+      "test_admission_semantics.AdmissionSemanticTests.test_negative_models_need_actual_rejected_invariants",
+      "test_admission_semantics.AdmissionSemanticTests.test_process_proof_requires_pid_join_and_matching_observed_barrier",
+      "test_admission_semantics.AdmissionSemanticTests.test_real_clean_case_cannot_skip_financial_work_by_plan",
+      "test_admission_semantics.AdmissionSemanticTests.test_required_and_forbidden_financial_work_is_independent_of_flags",
+      "test_admission_semantics.AdmissionSemanticTests.test_required_control_missing_duplicate_or_substituted_is_rejected",
+      "test_admission_semantics.AdmissionSemanticTests.test_required_observation_and_response_subfields_cannot_disappear",
+      "test_admission_semantics.AdmissionSemanticTests.test_stale_passed_flag_cannot_hide_lost_ack_committed_result",
+      "test_corrections.CorrectionTests.test_arrival_order_independent_for_valid_group",
+      "test_corrections.CorrectionTests.test_atomic_net_avoids_half_group_negative",
+      "test_corrections.CorrectionTests.test_cancelled_event_and_derived_effects_are_not_source_counts",
+      "test_corrections.CorrectionTests.test_cli_correction_demo",
+      "test_corrections.CorrectionTests.test_conflicting_target_is_not_corrected",
+      "test_corrections.CorrectionTests.test_cycle_is_rejected_without_recursion",
+      "test_corrections.CorrectionTests.test_deposit_replacement_reports_are_independent",
+      "test_corrections.CorrectionTests.test_deposit_void_and_old_reports",
+      "test_corrections.CorrectionTests.test_derived_and_saved_groups_fail_atomically_but_audit_survives",
+      "test_corrections.CorrectionTests.test_duplicate_does_not_cover_correction_count_shortfall",
+      "test_corrections.CorrectionTests.test_five_demos_have_literal_oracles_and_are_repeatable",
+      "test_corrections.CorrectionTests.test_fractional_correction_and_zero_tolerance",
+      "test_corrections.CorrectionTests.test_group_evidence_survives_restart_and_is_immutable",
+      "test_corrections.CorrectionTests.test_incomplete_original_delivery_prevents_correction_application",
+      "test_corrections.CorrectionTests.test_ingestion_failure_does_not_leave_record_without_receipt",
+      "test_corrections.CorrectionTests.test_invalid_replacement_never_removes_original",
+      "test_corrections.CorrectionTests.test_invalid_target_is_not_reported_as_missing",
+      "test_corrections.CorrectionTests.test_manifest_conflict_coverage_and_revision_rejection",
+      "test_corrections.CorrectionTests.test_manifest_only_announces_missing_correction",
+      "test_corrections.CorrectionTests.test_missing_manifest_does_not_apply_group",
+      "test_corrections.CorrectionTests.test_missing_target_is_pending_then_resolves",
+      "test_corrections.CorrectionTests.test_negative_corrected_ledger_is_invalid_in_economic_order",
+      "test_corrections.CorrectionTests.test_no_effect_before_target_economic_time",
+      "test_corrections.CorrectionTests.test_opening_horizon_is_explicitly_unsupported",
+      "test_corrections.CorrectionTests.test_platform_asset_and_time_mismatches",
+      "test_corrections.CorrectionTests.test_retry_receipts_first_known_time_and_rerun",
+      "test_corrections.CorrectionTests.test_same_id_changed_content_conflicts_without_winner",
+      "test_corrections.CorrectionTests.test_transfer_amount_replacement",
+      "test_corrections.CorrectionTests.test_transfer_void_preserves_liability_but_catches_distribution",
+      "test_corrections.CorrectionTests.test_two_corrections_same_target_conflict_in_every_arrival_order",
+      "test_corrections.CorrectionTests.test_unannounced_legacy_data_has_no_missing_channel",
+      "test_corrections.CorrectionTests.test_unsupported_forms_have_reason_codes",
+      "test_corrections.CorrectionTests.test_withdrawal_replace_signs",
+      "test_corrections.CorrectionTests.test_withdrawal_void_signs",
+      "test_corrections.MigrationTests.test_backup_restore_to_new_destination",
+      "test_corrections.MigrationTests.test_cli_migration",
+      "test_corrections.MigrationTests.test_controlled_migration_failures_rollback_schema_and_data",
+      "test_corrections.MigrationTests.test_failure_on_real_phase_keeps_verified_backup_and_original",
+      "test_corrections.MigrationTests.test_migration_preserves_all_columns_ids_and_old_runs",
+      "test_corrections.MigrationTests.test_old_history_read_without_silent_migration",
+      "test_lab.LabTests.test_all_small_scenarios_exact_oracle",
+      "test_lab.LabTests.test_assets_do_not_net_opposite_custody_errors",
+      "test_lab.LabTests.test_bundle_bytes_repeat_and_refuse_overwrite",
+      "test_lab.LabTests.test_bundle_tampering_is_rejected",
+      "test_lab.LabTests.test_correctness_gate_rejects_incomplete_matrix",
+      "test_lab.LabTests.test_engine_error_keeps_reproducible_counterexample",
+      "test_lab.LabTests.test_fault_target_precondition_failure_is_not_pass",
+      "test_lab.LabTests.test_generator_original_event_definition_and_funded_world",
+      "test_lab.LabTests.test_hash_seed_order_does_not_change_generation",
+      "test_lab.LabTests.test_input_contract_has_no_answer_tags",
+      "test_lab.LabTests.test_labels_do_not_influence_engine",
+      "test_lab.LabTests.test_later_knowledge_and_saved_history",
+      "test_lab.LabTests.test_new_retry_preserves_quantities_not_receipt_count",
+      "test_lab.LabTests.test_physical_order_same_finance_and_evidence",
+      "test_lab.LabTests.test_scorer_detects_changed_amount_state_and_missing_evidence",
+      "test_lab.LabTests.test_scorer_distinguishes_null_from_zero_and_missing_reason",
+      "test_lab.LabTests.test_three_fresh_benchmark_workers_on_small_fixture",
+      "test_lab.OracleTests.test_independence_from_production_domain_functions",
+      "test_lab.OracleTests.test_invalid_decimal_types_and_null_are_not_zero",
+      "test_lab.OracleTests.test_manual_clean_balances",
+      "test_lab.OracleTests.test_manual_correction_sign_table",
+      "test_lab.OracleTests.test_oracle_refuses_invalid_world_instead_of_clipping",
+      "test_lab.OracleTests.test_partial_observation_is_not_full_truth",
+      "test_lab.OracleTests.test_smallest_units_and_scale_18",
+      "test_lab.OracleTests.test_transfer_preserves_total_liability_and_custody",
+      "test_lab.WatchdogTests.test_aggregate_temporary_budget_is_separate",
+      "test_lab.WatchdogTests.test_budget_validation",
+      "test_lab.WatchdogTests.test_correctness_failure_is_not_application_success",
+      "test_lab.WatchdogTests.test_disk_resource_target",
+      "test_lab.WatchdogTests.test_exhausted_budget_does_not_launch",
+      "test_lab.WatchdogTests.test_phase_timeout_really_terminates_worker",
+      "test_lab.WatchdogTests.test_rss_target_is_sampled_not_peak_only",
+      "test_lab.WatchdogTests.test_total_timeout",
+      "test_lab.WatchdogTests.test_truncated_result_does_not_hide_watchdog_timeout",
+      "test_lab.WatchdogTests.test_worker_error_exit_is_not_completed",
+      "test_lab_contract_validation.BundleValidationTests.test_config_plan_seed_and_inventory_are_not_advisory",
+      "test_lab_contract_validation.BundleValidationTests.test_invalid_experiment_cli_retains_located_diagnostic",
+      "test_lab_contract_validation.BundleValidationTests.test_single_scenario_valid_and_old_bundle_not_relabelled",
+      "test_lab_contract_validation.GateValidationTests.test_partial_case_succeeds_but_never_opens_full_gate",
+      "test_lab_contract_validation.GateValidationTests.test_real_full_gate_and_counter_scope_integrity",
+      "test_lab_contract_validation.PayloadLinkTests.test_derived_effect_rehash_does_not_make_wrong_content_valid",
+      "test_lab_contract_validation.PayloadLinkTests.test_link_mutations_cover_receipts_manifests_groups_and_trace",
+      "test_lab_contract_validation.PayloadLinkTests.test_quarantine_receipt_content_and_type_are_checked",
+      "test_lab_contract_validation.PayloadLinkTests.test_unselected_old_and_future_receipts_are_not_minimum",
+      "test_lab_contract_validation.ProtocolValidationTests.test_generation_is_not_an_oracle_trial_and_unverified_statistics_fail",
+      "test_lab_contract_validation.ProtocolValidationTests.test_pure_timeout_and_resource_without_oracle_are_unknown",
+      "test_lab_contract_validation.ProtocolValidationTests.test_seen_failure_survives_later_truncated_result",
+      "test_lab_contracts.EvidenceRegressions.test_bad_payload_content_and_shape_are_controlled_failures",
+      "test_lab_contracts.EvidenceRegressions.test_empty_payloads_with_preserved_keys_are_not_evidence",
+      "test_lab_contracts.EvidenceRegressions.test_independent_minimum_survives_coordinated_reference_deletion",
+      "test_lab_contracts.EvidenceRegressions.test_ledger_and_trace_links_cannot_dangle",
+      "test_lab_contracts.OutcomeRegressions.test_failure_halts_all_later_profiles_including_smaller",
+      "test_lab_contracts.OutcomeRegressions.test_known_oracle_failure_survives_post_run_resource_and_time",
+      "test_lab_contracts.OutcomeRegressions.test_parent_termination_keeps_readable_failure_and_actual_reason",
+      "test_lab_contracts.OutcomeRegressions.test_readback_failure_is_correctness_failure_even_with_completed_label",
+      "test_lab_contracts.ScopeRegressions.test_empty_full_matrix_cannot_open_benchmark_gate",
+      "test_lab_contracts.ScopeRegressions.test_phase_and_finding_identity_not_just_count",
+      "test_profiling.ProfilingTests.test_correctness_only_abort_does_not_invent_a_budget_failure",
+      "test_profiling.ProfilingTests.test_false_readback_survives_later_snapshot_failure",
+      "test_profiling.ProfilingTests.test_financial_parity_or_build_change_halts_all_modes",
+      "test_profiling.ProfilingTests.test_invalid_gate_never_starts_generation",
+      "test_profiling.ProfilingTests.test_known_failure_in_any_mode_halts_every_later_worker",
+      "test_profiling.ProfilingTests.test_profiler_budget_blocks_related_workloads_but_not_smaller",
+      "test_profiling.ProfilingTests.test_readback_failure_cannot_be_masked_by_timeout",
+      "test_profiling.ProfilingTests.test_real_small_workers_are_isolated_and_have_equal_financial_evidence",
+      "test_profiling.ProfilingTests.test_statistics_exclude_profiler_and_unverified_trials",
+      "test_receipt_index.ReceiptIndexTests.test_actual_unforced_query_plans_use_hash_search_after_migration",
+      "test_receipt_index.ReceiptIndexTests.test_corrupt_current_or_future_schema_is_rejected_without_implicit_repair",
+      "test_receipt_index.ReceiptIndexTests.test_duplicate_raw_variant_conflict_and_invalid_lookup_evidence",
+      "test_receipt_index.ReceiptIndexTests.test_empty_versioned_database_is_rejected_before_any_ddl",
+      "test_receipt_index.ReceiptIndexTests.test_existing_backup_with_wrong_starting_version_is_never_overwritten",
+      "test_receipt_index.ReceiptIndexTests.test_existing_valid_index_is_accepted_and_metadata_is_added",
+      "test_receipt_index.ReceiptIndexTests.test_existing_view_only_database_is_not_treated_as_empty",
+      "test_receipt_index.ReceiptIndexTests.test_explicit_backup_restore_and_full_database_verification",
+      "test_receipt_index.ReceiptIndexTests.test_failed_fresh_open_without_config_keeps_creation_recoverable",
+      "test_receipt_index.ReceiptIndexTests.test_fresh_index_is_exactly_one_nonunique_binary_ascending_column",
+      "test_receipt_index.ReceiptIndexTests.test_incomplete_existing_database_is_not_initialized",
+      "test_receipt_index.ReceiptIndexTests.test_migration_rejects_nested_transaction",
+      "test_receipt_index.ReceiptIndexTests.test_schema0_transition_keeps_literal_old_metadata_and_rolls_back_atomically",
+      "test_receipt_index.ReceiptIndexTests.test_schema2_all_tables_objects_and_correction_rows_are_preserved",
+      "test_receipt_index.ReceiptIndexTests.test_schema2_duplicate_receipts_and_limit_one_raw_are_unchanged",
+      "test_receipt_index.ReceiptIndexTests.test_schema2_failures_before_and_after_index_restore_everything",
+      "test_receipt_index.ReceiptIndexTests.test_schema2_open_and_read_are_ddl_free_and_save_requires_migration",
+      "test_receipt_index.ReceiptIndexTests.test_wrong_same_name_definitions_are_rejected_without_dropping",
+      "test_reconciliation.CliTests.test_demo_cli_and_generic_exit_codes",
+      "test_reconciliation.CliTests.test_local_ingestion_keeps_malformed_lines",
+      "test_reconciliation.ReconciliationTests.test_all_four_demos_and_repeated_run",
+      "test_reconciliation.ReconciliationTests.test_assets_never_offset",
+      "test_reconciliation.ReconciliationTests.test_clean_independent_literals",
+      "test_reconciliation.ReconciliationTests.test_configuration_cannot_change_on_restart",
+      "test_reconciliation.ReconciliationTests.test_custody_difference_does_not_change_investor_check",
+      "test_reconciliation.ReconciliationTests.test_decimal_context_traps_precision_loss",
+      "test_reconciliation.ReconciliationTests.test_duplicate_same_receipt_and_rerun_are_idempotent",
+      "test_reconciliation.ReconciliationTests.test_duplicates_do_not_fill_missing_delivery",
+      "test_reconciliation.ReconciliationTests.test_event_conflict_is_visible_and_temporal",
+      "test_reconciliation.ReconciliationTests.test_evidence_is_complete_and_persistent",
+      "test_reconciliation.ReconciliationTests.test_future_economic_event_is_excluded",
+      "test_reconciliation.ReconciliationTests.test_incomplete_negative_is_provisional_not_permanent_rejection",
+      "test_reconciliation.ReconciliationTests.test_internal_transfer_preserves_totals_and_custody",
+      "test_reconciliation.ReconciliationTests.test_invalid_amounts_are_retained_and_do_not_fill_manifest",
+      "test_reconciliation.ReconciliationTests.test_invalid_configuration_types_fail_explicitly",
+      "test_reconciliation.ReconciliationTests.test_invalid_later_report_does_not_silently_pass_using_old",
+      "test_reconciliation.ReconciliationTests.test_late_event_manifest_and_immutable_history",
+      "test_reconciliation.ReconciliationTests.test_manifest_conflict_is_visible",
+      "test_reconciliation.ReconciliationTests.test_manifest_excess_unique_events_is_conflict",
+      "test_reconciliation.ReconciliationTests.test_manifest_must_cover_exact_economic_interval",
+      "test_reconciliation.ReconciliationTests.test_missing_amount_is_not_zero",
+      "test_reconciliation.ReconciliationTests.test_missing_custody_is_not_deficit",
+      "test_reconciliation.ReconciliationTests.test_negative_balances_only_rejected_on_complete_economic_ledger",
+      "test_reconciliation.ReconciliationTests.test_newer_version_supersedes_conflicted_old_version",
+      "test_reconciliation.ReconciliationTests.test_no_manifest_means_unknown_not_asserted_missing_event",
+      "test_reconciliation.ReconciliationTests.test_order_independence_same_knowledge_cut",
+      "test_reconciliation.ReconciliationTests.test_platform_customer_wallet_movements_are_explicit",
+      "test_reconciliation.ReconciliationTests.test_quantities_stored_as_canonical_json_strings",
+      "test_reconciliation.ReconciliationTests.test_received_time_and_decimal_spelling_do_not_change_event_identity",
+      "test_reconciliation.ReconciliationTests.test_reference_tiebreak_is_economic_not_receipt_order",
+      "test_reconciliation.ReconciliationTests.test_report_revision_preserves_old_version_and_knowledge",
+      "test_reconciliation.ReconciliationTests.test_same_report_version_conflict_does_not_overwrite",
+      "test_reconciliation.ReconciliationTests.test_same_time_sequence_and_reference_tiebreak",
+      "test_reconciliation.ReconciliationTests.test_scenario_tags_are_not_accepted_by_engine",
+      "test_reconciliation.ReconciliationTests.test_sqlite_restart_and_immutability",
+      "test_reconciliation.ReconciliationTests.test_stale_custody_is_not_same_time_comparison",
+      "test_reconciliation.ReconciliationTests.test_timezone_and_strict_timestamps",
+      "test_reconciliation.ReconciliationTests.test_two_investor_errors_same_total_are_detected",
+      "test_reconciliation.ReconciliationTests.test_unknown_asset_invalid_record_blocks_completeness",
+      "test_reconciliation.ReconciliationTests.test_unsupported_correction_and_reversal_retained",
+      "test_reconciliation.ReconciliationTests.test_version_order_not_retransmission_order",
+      "test_release_financial_inventory.FinancialInventoryTests.test_complete_real_demo_reports_bind_all_twelve_frozen_files",
+      "test_release_financial_inventory.FinancialInventoryTests.test_in_memory_reference_cannot_shrink_or_substitute_after_preflight",
+      "test_release_financial_inventory.FinancialInventoryTests.test_matrix_requires_exact_names_integer_zeros_and_integer_evaluation_count",
+      "test_release_financial_inventory.FinancialInventoryTests.test_missing_renamed_extra_and_one_byte_changed_outputs_fail",
+      "test_release_financial_scope.ReleaseFinancialScopeTests.test_all_empty_maps_with_unchanged_declared_total_reject",
+      "test_release_financial_scope.ReleaseFinancialScopeTests.test_bad_hash_size_and_same_count_group_exchange_reject",
+      "test_release_financial_scope.ReleaseFinancialScopeTests.test_general_empty_comparison_rejects_even_missing_directory",
+      "test_release_financial_scope.ReleaseFinancialScopeTests.test_one_required_file_missing_rejects",
+      "test_release_financial_scope.ReleaseFinancialScopeTests.test_partial_group_rejects_before_full_profile_install",
+      "test_release_financial_scope.ReleaseFinancialScopeTests.test_real_core_and_full_cli_reject_empty_reference_before_environment",
+      "test_release_financial_scope.ReleaseFinancialScopeTests.test_real_json_types_and_exact_matrix_settings_are_mandatory",
+      "test_release_financial_scope.ReleaseFinancialScopeTests.test_real_no_source_cli_rejects_bad_reference_before_build",
+      "test_release_financial_scope.ReleaseFinancialScopeTests.test_reference_raw_identity_is_fixed_outside_its_document",
+      "test_release_financial_scope.ReleaseFinancialScopeTests.test_same_count_wrong_name_rejects",
+      "test_release_financial_scope.ReleaseFinancialScopeTests.test_unsafe_names_reject_without_accessing_output_files",
+      "test_release_financial_scope.ReleaseFinancialScopeTests.test_valid_fixed_reference_reaches_environment_boundary",
+      "test_release_packaging.ReleasePackagingTests.test_canonical_output_does_not_create_lexical_parents_in_protected_tree",
+      "test_release_packaging.ReleasePackagingTests.test_existing_output_is_preserved_before_any_build_or_source_read",
+      "test_release_packaging.ReleasePackagingTests.test_failed_build_command_records_actual_exit_and_never_becomes_success",
+      "test_release_packaging.ReleasePackagingTests.test_sdist_cannot_silently_omit_a_required_test_fixture",
+      "test_release_packaging.ReleasePackagingTests.test_traversal_and_symlink_sdist_members_fail_before_extraction",
+      "test_release_test_scope.ReleaseTestScopeTests.test_actual_runner_rejects_all_three_omitted_stage6_modules",
+      "test_release_test_scope.ReleaseTestScopeTests.test_complete_declared_unique_identity_evidence_is_accepted",
+      "test_release_test_scope.ReleaseTestScopeTests.test_counts_without_actual_identity_evidence_are_not_a_full_suite",
+      "test_release_test_scope.ReleaseTestScopeTests.test_discovered_and_actually_executed_identities_must_agree",
+      "test_release_test_scope.ReleaseTestScopeTests.test_import_error_holder_cannot_be_an_expected_test_identity",
+      "test_release_test_scope.ReleaseTestScopeTests.test_missing_one_old_identity_is_rejected_even_above_old_threshold",
+      "test_release_test_scope.ReleaseTestScopeTests.test_official_full_supplied_source_stops_before_environment_creation",
+      "test_release_test_scope.ReleaseTestScopeTests.test_same_count_duplicate_identity_is_rejected",
+      "test_release_test_scope.ReleaseTestScopeTests.test_same_count_substituted_identity_is_rejected",
+      "test_release_verification.ReleaseVerificationTests.test_core_financial_request_fails_before_output",
+      "test_release_verification.ReleaseVerificationTests.test_empty_or_truncated_discovery_cannot_pass",
+      "test_release_verification.ReleaseVerificationTests.test_existing_output_is_preserved",
+      "test_release_verification.ReleaseVerificationTests.test_failed_command_is_recorded_and_stops_gate",
+      "test_release_verification.ReleaseVerificationTests.test_financial_byte_changes_are_not_ignored",
+      "test_release_verification.ReleaseVerificationTests.test_no_ai_requires_absence_not_just_no_import",
+      "test_release_verification.ReleaseVerificationTests.test_partial_source_wheel_arguments_fail_before_output",
+      "test_release_verification.ReleaseVerificationTests.test_skipped_or_failed_tests_cannot_pass",
+      "test_release_verification.ReleaseVerificationTests.test_unsafe_wheel_members_are_rejected_before_install",
+      "test_reproduce_review.ReproductionFailureTests.test_existing_output_and_source_paths_are_never_overwritten",
+      "test_reproduce_review.ReproductionFailureTests.test_installed_origin_rejects_checkout_and_accepts_local_venv_site_packages",
+      "test_reproduce_review.ReproductionFailureTests.test_missing_or_duplicate_demo_coverage_never_counts_as_success",
+      "test_reproduce_review.ReproductionFailureTests.test_negative_exit_cannot_hide_a_published_queue",
+      "test_reproduce_review.ReproductionFailureTests.test_nonzero_child_exit_is_recorded_and_propagated",
+      "test_reproduce_review.ReproductionFailureTests.test_zero_exit_without_required_child_audit_is_failure",
+      "test_review_adapter.ReviewAdapterTests.test_active_wal_is_rejected_without_checkpoint_or_sidecar_change",
+      "test_review_adapter.ReviewAdapterTests.test_amount_null_zero_negative_long_string_not_coerced",
+      "test_review_adapter.ReviewAdapterTests.test_boolean_number_mirror_equivalence_is_not_accepted",
+      "test_review_adapter.ReviewAdapterTests.test_broken_or_live_sidecar_symlink_is_rejected_without_following_target",
+      "test_review_adapter.ReviewAdapterTests.test_copy_race_is_rejected_and_original_is_never_connected",
+      "test_review_adapter.ReviewAdapterTests.test_dangling_evidence_is_not_repaired_from_current_records",
+      "test_review_adapter.ReviewAdapterTests.test_identity_corruption_and_bad_json_do_not_leave_mutated_sources",
+      "test_review_adapter.ReviewAdapterTests.test_large_unselected_payload_is_streamed_not_decoded_or_selected",
+      "test_review_adapter.ReviewAdapterTests.test_missing_database_is_not_created",
+      "test_review_adapter.ReviewAdapterTests.test_missing_mirror_tables_use_original_evidence_value_slices",
+      "test_review_adapter.ReviewAdapterTests.test_oversized_persisted_mirror_is_rejected_before_materialization",
+      "test_review_adapter.ReviewAdapterTests.test_payload_download_text_is_exact_with_whitespace_unicode_and_microseconds",
+      "test_review_adapter.ReviewAdapterTests.test_persisted_findings_and_evidence_mirrors_cannot_silently_disagree",
+      "test_review_adapter.ReviewAdapterTests.test_raw_big_integer_script_text_and_bad_time_remain_lossless_inert_strings",
+      "test_review_adapter.ReviewAdapterTests.test_rejects_wal_header_even_when_no_sidecar_and_sidecar_even_if_empty",
+      "test_review_adapter.ReviewAdapterTests.test_same_id_under_two_aliases_keeps_two_source_identities",
+      "test_review_adapter.ReviewAdapterTests.test_schema_zero_two_three_legacy_rule_and_configuration_are_preserved",
+      "test_review_adapter.ReviewAdapterTests.test_selected_byte_limit_preflights_before_loading_or_validating_payload",
+      "test_review_adapter.ReviewAdapterTests.test_selection_growth_after_open_still_obeys_bounded_read",
+      "test_review_adapter.ReviewAdapterTests.test_selection_limit_duplicate_alias_and_bad_label_errors",
+      "test_review_adapter.ReviewAdapterTests.test_unknown_rule_and_duplicate_or_missing_finding_scope_are_rejected",
+      "test_review_adapter.ReviewAdapterTests.test_unknown_run_and_schema_errors_preserve_original",
+      "test_review_adapter.ReviewAdapterTests.test_unknown_states_stay_explicit_and_stage2_v1_is_not_relabelled",
+      "test_review_adapter.ReviewAdapterTests.test_uses_readonly_escaped_uri_only_on_verified_owned_copy",
+      "test_review_adapter.ReviewAdapterTests.test_wrong_record_reference_kind_and_invented_legacy_fields_fail_integrity",
+      "test_review_assets.ReviewAssetTests.test_css_uses_local_system_fonts_and_no_external_loads",
+      "test_review_assets.ReviewAssetTests.test_financial_text_is_not_coerced_or_rounded_in_browser",
+      "test_review_assets.ReviewAssetTests.test_packaged_template_has_exact_embedding_slots_and_no_remote_resources",
+      "test_review_assets.ReviewAssetTests.test_script_has_no_executable_data_or_network_api",
+      "test_review_export.ReviewExportTests.test_asset_failure_leaves_no_completed_output",
+      "test_review_export.ReviewExportTests.test_broken_symlink_target_is_not_replaced",
+      "test_review_export.ReviewExportTests.test_complete_manifest_hashes_and_no_self_reference",
+      "test_review_export.ReviewExportTests.test_csp_hashes_match_actual_inline_assets",
+      "test_review_export.ReviewExportTests.test_exact_reproducibility_excludes_output_and_host_paths",
+      "test_review_export.ReviewExportTests.test_existing_directory_and_file_are_never_overwritten",
+      "test_review_export.ReviewExportTests.test_export_and_adapter_have_no_financial_entrypoint_calls",
+      "test_review_export.ReviewExportTests.test_html_size_failure_removes_only_owned_staging",
+      "test_review_export.ReviewExportTests.test_raced_empty_target_is_not_replaced",
+      "test_review_export.ReviewExportTests.test_script_boundary_and_raw_large_integer_are_lossless",
+      "test_review_export.ReviewExportTests.test_selected_invalid_run_leaves_no_html_or_completed_output",
+      "test_review_export.ReviewExportTests.test_stored_payload_text_not_wrapper_is_embedded",
+      "test_review_export.ReviewExportTests.test_view_never_calls_financial_execution",
+      "test_review_output_paths.ReviewOutputPathTests.test_dotdot_normal_target_does_not_materialize_sidecar_component",
+      "test_review_output_paths.ReviewOutputPathTests.test_existing_file_directory_and_dangling_symlink_stay_untouched",
+      "test_review_output_paths.ReviewOutputPathTests.test_existing_symlink_parent_resolves_before_writing",
+      "test_review_output_paths.ReviewOutputPathTests.test_main_database_itself_and_descendant_are_protected",
+      "test_review_output_paths.ReviewOutputPathTests.test_normal_export_manifest_and_source_reread",
+      "test_review_output_paths.ReviewOutputPathTests.test_real_cli_rejects_sidecars_and_nested_targets_without_complete",
+      "test_review_output_paths.ReviewOutputPathTests.test_relative_selection_and_output_resolve_same_physical_source",
+      "test_review_output_paths.ReviewOutputPathTests.test_second_selected_source_is_protected",
+      "test_review_output_paths.ReviewOutputPathTests.test_selection_is_parsed_once_and_same_object_reaches_reader",
+      "test_review_output_paths.ReviewOutputPathTests.test_sidecar_direct_and_descendant_rejected_before_first_write",
+      "test_review_output_paths.ReviewOutputPathTests.test_text_prefix_siblings_remain_valid",
+      "test_scope_regressions.ScopeRegressionTests.test_actual_external_report_preserves_investor_comparison",
+      "test_scope_regressions.ScopeRegressionTests.test_event_outside_cut_ignores_extra_fields",
+      "test_scope_regressions.ScopeRegressionTests.test_existing_correction_and_manifest_invalid_asset_controls",
+      "test_scope_regressions.ScopeRegressionTests.test_existing_nan_event_control",
+      "test_scope_regressions.ScopeRegressionTests.test_f1_earlier_knowledge_and_saved_history_unchanged",
+      "test_scope_regressions.ScopeRegressionTests.test_f1_f2_physical_arrival_order_preserves_full_evidence",
+      "test_scope_regressions.ScopeRegressionTests.test_f1_future_schema_invalid_target_does_not_block_past",
+      "test_scope_regressions.ScopeRegressionTests.test_f1_future_target_and_batch_do_not_reach_past",
+      "test_scope_regressions.ScopeRegressionTests.test_f1_known_target_overrides_future_claim_and_batch_start",
+      "test_scope_regressions.ScopeRegressionTests.test_f1_schema_invalid_future_claim_still_blocks_known_target",
+      "test_scope_regressions.ScopeRegressionTests.test_f1_unknown_target_uses_claim_without_future_knowledge",
+      "test_scope_regressions.ScopeRegressionTests.test_f2_event_extra_balance_time_cannot_hide_quarantine",
+      "test_scope_regressions.ScopeRegressionTests.test_f2_event_extra_stream_cannot_route_quarantine",
+      "test_scope_regressions.ScopeRegressionTests.test_f3_asset_json_type_table",
+      "test_scope_regressions.ScopeRegressionTests.test_f3_correction_target_and_time_types",
+      "test_scope_regressions.ScopeRegressionTests.test_f3_dict_asset_does_not_crash",
+      "test_scope_regressions.ScopeRegressionTests.test_f3_kind_json_type_table",
+      "test_scope_regressions.ScopeRegressionTests.test_f3_list_asset_does_not_crash",
+      "test_scope_regressions.ScopeRegressionTests.test_f3_manifest_stream_and_time_json_types",
+      "test_scope_regressions.ScopeRegressionTests.test_f3_report_stream_scope_time_json_types",
+      "test_scope_regressions.ScopeRegressionTests.test_old_invalid_report_outside_cut_does_not_block",
+      "test_scope_regressions.ScopeRegressionTests.test_saved_conflict_and_incomplete_survive_restart",
+      "test_source_auth_cli.SourceAuthCliTests.test_operator_and_signed_cli_keep_financial_evaluation_explicit",
+      "test_source_auth_cli.SourceAuthCliTests.test_unsigned_ingest_and_feed_cli_refused_before_and_after_binding",
+      "test_source_auth_crypto.SourceAuthCryptoTests.test_literal_pae_counts_bytes_and_separates_type",
+      "test_source_auth_crypto.SourceAuthCryptoTests.test_profile_rejects_bad_base64_multiple_signature_and_payload_type",
+      "test_source_auth_crypto.SourceAuthCryptoTests.test_rfc8032_public_empty_message_vector",
+      "test_source_auth_crypto.SourceAuthCryptoTests.test_rfc8032_public_one_byte_vector_and_wrong_key",
+      "test_source_auth_crypto.SourceAuthCryptoTests.test_snapshot_limits_and_required_single_publisher",
+      "test_source_auth_crypto.SourceAuthCryptoTests.test_statement_rejects_bool_integer_unknown_fields_and_false_scope",
+      "test_source_auth_crypto.SourceAuthCryptoTests.test_strict_json_rejects_duplicates_surrogates_nonfinite_depth",
+      "test_source_auth_crypto.SourceAuthCryptoTests.test_verified_payload_keeps_exact_bytes_not_canonical_reconstruction",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_actual_complete_bundle",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_decision_stream_must_equal_signed_stream",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_denied_families_require_independent_invalid_input_or_policy_denial",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_denied_pass_flag_cannot_hide_committed_actual",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_extra_information_is_accepted",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_false_financial_payload_not_equal_saved_run",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_fixed_literal_financial_outputs_and_paired_core_rows",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_historical_replay_requires_revoked_key_and_original_approval",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_initial_policy_hash_is_bound_to_first_epoch",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_kill_requires_real_pid_barrier_join_unknown",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_manifest_rehash_does_not_replace_operator_anchor",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_missing_attempt_authorization_rejected",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_missing_financial_report_file_rejected",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_mutation_campaign_all_six_rejections_and_extra_information",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_policy_cannot_change_grants_in_report",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_policy_race_requires_actual_result_and_no_new_receipt",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_precommit_half_authorization_rejected",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_removed_decision_and_its_references_rejected",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_removed_required_family_rejected_after_rehash",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_same_count_scope_with_valid_signature_rejected",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_signed_mismatch_cannot_be_relabelled_matched",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_snapshot_receipt_membership_exact_bytes",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_wrong_key_binding_rejected",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_wrong_receipt_binding_rejected",
+      "test_source_auth_experiment.SourceAuthExperimentTests.test_wrong_source_binding_rejected",
+      "test_source_auth_migrations.SourceAuthMigrationTests.test_every_schema5_fault_rolls_back_entire_upgrade",
+      "test_source_auth_migrations.SourceAuthMigrationTests.test_guard_requires_write_transaction_and_marker_cannot_be_removed",
+      "test_source_auth_migrations.SourceAuthMigrationTests.test_missing_schema5_guard_is_rejected_without_repair",
+      "test_source_auth_migrations.SourceAuthMigrationTests.test_module_and_store_delivery_paths_cannot_bypass_guard",
+      "test_source_auth_migrations.SourceAuthMigrationTests.test_new_database_chain_and_no_implicit_protection",
+      "test_source_auth_migrations.SourceAuthMigrationTests.test_populated_schema4_explicit_backup_restore_and_preservation",
+      "test_source_auth_migrations.SourceAuthMigrationTests.test_schema4_open_read_is_byte_and_logically_unchanged",
+      "test_source_auth_migrations.SourceAuthMigrationTests.test_store_unsigned_guard_is_before_first_financial_receipt",
+      "test_source_auth_release.SourceAuthReleaseTests.test_auth_contract_and_pins_are_required_source_inputs",
+      "test_source_auth_release.SourceAuthReleaseTests.test_auth_only_requires_pinned_transitives_without_ai",
+      "test_source_auth_release.SourceAuthReleaseTests.test_auth_resource_is_allowlisted_but_arbitrary_json_is_not",
+      "test_source_auth_release.SourceAuthReleaseTests.test_core_auth_absence_requires_availability_and_distribution_absence",
+      "test_source_auth_release.SourceAuthReleaseTests.test_core_missing_auth_cannot_claim_success_after_creating_output",
+      "test_source_auth_release.SourceAuthReleaseTests.test_current_scope_retains_all_472_prior_identities",
+      "test_source_auth_release.SourceAuthReleaseTests.test_historical_recovery_bytes_and_release_remain_pinned",
+      "test_source_auth_release.SourceAuthReleaseTests.test_historical_schema4_exception_cannot_change_assertions",
+      "test_source_auth_runtime.SourceAuthRuntimeTests.test_accept_replay_and_restart_preserve_receipt_and_original_links",
+      "test_source_auth_runtime.SourceAuthRuntimeTests.test_all_six_kind_scopes_and_correction_target_binding",
+      "test_source_auth_runtime.SourceAuthRuntimeTests.test_authorized_plan_conflict_stays_blocked_even_for_revoked_exact_replay",
+      "test_source_auth_runtime.SourceAuthRuntimeTests.test_busy_reports_retryable_without_false_durable_rejection",
+      "test_source_auth_runtime.SourceAuthRuntimeTests.test_clear_scope_invalid_amount_uses_core_quarantine",
+      "test_source_auth_runtime.SourceAuthRuntimeTests.test_every_transaction_rechecks_epoch_after_preflight_and_between_lines",
+      "test_source_auth_runtime.SourceAuthRuntimeTests.test_exception_before_commit_rolls_back_auth_receipt_stream_and_links",
+      "test_source_auth_runtime.SourceAuthRuntimeTests.test_invalid_last_line_authority_rejects_before_first_core_write",
+      "test_source_auth_runtime.SourceAuthRuntimeTests.test_namespace_receiver_and_configuration_rejection_do_not_poison_live_stream",
+      "test_source_auth_runtime.SourceAuthRuntimeTests.test_new_same_source_key_resumes_suffix_preserving_old_epoch",
+      "test_source_auth_runtime.SourceAuthRuntimeTests.test_policy_stale_update_alias_reactivation_and_namespace_changes_rejected",
+      "test_source_auth_runtime.SourceAuthRuntimeTests.test_revoked_different_statement_cannot_borrow_existing_sequence",
+      "test_source_auth_runtime.SourceAuthRuntimeTests.test_revoked_exact_prefix_replays_but_unseen_suffix_is_denied",
+      "test_source_auth_runtime.SourceAuthRuntimeTests.test_same_count_scope_substitution_and_cartesian_grant_are_denied",
+      "test_source_auth_runtime.SourceAuthRuntimeTests.test_unknown_embedded_wrong_and_corrupt_keys_do_not_reserve_stream",
+      "test_source_auth_runtime.SourceAuthRuntimeTests.test_unsigned_public_paths_fail_before_first_stream_and_legacy_survives",
+      "test_source_auth_runtime.SourceAuthRuntimeTests.test_whole_scope_is_reauthorized_for_every_new_effect",
+      "test_stage3_3_execution.ExecutionProofTests.test_completion_requires_actual_exit_deadline_and_bound_artifacts",
+      "test_stage3_3_execution.ExecutionProofTests.test_detected_origin_drift_survives_a_report_write_error",
+      "test_stage3_3_execution.ExecutionProofTests.test_known_failed_controller_survives_later_origin_audit_error",
+      "test_stage3_3_execution.ExecutionProofTests.test_missing_or_malformed_hashes_cannot_bind_a_receipt",
+      "test_trace_contract.TraceContractTests.test_group_cannot_attach_to_wrong_target_or_unamended_event",
+      "test_trace_contract.TraceContractTests.test_intermediate_error_cannot_be_cancelled_later_or_change_idle_investor",
+      "test_trace_contract.TraceContractTests.test_malformed_trace_values_fail_with_location",
+      "test_trace_contract.TraceContractTests.test_missing_opening_stays_unknown_in_provisional_trace",
+      "test_trace_contract.TraceContractTests.test_normal_directions_locations_and_decimal_precision",
+      "test_trace_contract.TraceContractTests.test_rehashed_applied_group_null_reproduction",
+      "test_trace_contract.TraceContractTests.test_rehashed_intermediate_balance_reproduction",
+      "test_trace_contract.TraceContractTests.test_rehashed_normal_custody_delta_reproduction",
+      "test_trace_contract.TraceContractTests.test_rehashed_normal_investor_delta_reproduction",
+      "test_trace_contract.TraceContractTests.test_void_and_replace_net_effect_at_original_position",
+      "test_triage_decimal_context.DecimalContextRegressionTests.test_18_place_half_even_and_actual_null_denominators_are_preserved",
+      "test_triage_decimal_context.DecimalContextRegressionTests.test_large_saved_amount_ratio_is_exact_at_precision_28_and_64",
+      "test_triage_decimal_context.DecimalContextRegressionTests.test_model_rounded_score_order_and_neutral_tie_survive_low_precision",
+      "test_triage_decimal_context.DecimalContextRegressionTests.test_rules_order_age_without_low_precision_rounding",
+      "test_triage_decimal_context.DecimalContextRegressionTests.test_rules_order_long_ratios_without_ambient_rounding",
+      "test_triage_features.FeatureBoundaryTests.test_actual_future_receipts_reports_and_private_labels_do_not_change_t_features_or_scores",
+      "test_triage_features.FeatureBoundaryTests.test_actual_provenance_points_to_all_contributing_findings_and_saved_evidence",
+      "test_triage_features.FeatureBoundaryTests.test_derived_ratio_rounding_is_explicit_and_independent_of_financial_traps",
+      "test_triage_features.FeatureBoundaryTests.test_future_incompatible_and_different_episode_history_are_rejected",
+      "test_triage_features.FeatureBoundaryTests.test_identity_alias_and_scenario_filename_changes_only_provenance_and_ties",
+      "test_triage_features.FeatureBoundaryTests.test_literal_values_keep_null_amounts_and_independent_a_b_asset_states",
+      "test_triage_features.FeatureBoundaryTests.test_rank_source_sidecars_existing_targets_and_input_files_are_protected",
+      "test_triage_features.FeatureBoundaryTests.test_rank_uses_no_financial_entrypoints_and_same_inputs_are_byte_deterministic",
+      "test_triage_metrics.TriageMetricTests.test_censored_counts_for_ceil_budget_and_can_consume_all_selected_capacity",
+      "test_triage_metrics.TriageMetricTests.test_empty_no_positive_and_closed_inventory_are_not_fabricated_successes",
+      "test_triage_metrics.TriageMetricTests.test_groups_attribute_same_global_selection_without_local_reranking",
+      "test_triage_metrics.TriageMetricTests.test_label_time_scope_is_required_and_horizon_is_really_24_hours",
+      "test_triage_metrics.TriageMetricTests.test_policy_difference_and_evidence_examples_keep_negative_result",
+      "test_triage_metrics.TriageMetricTests.test_rankings_are_complete_and_label_scope_exact",
+      "test_triage_metrics.TriageMetricTests.test_unknown_top_k_is_not_negative_refilled_or_removed_from_capacity",
+      "test_triage_model.JSONModelTests.test_feature_time_and_provenance_future_are_rejected",
+      "test_triage_model.JSONModelTests.test_half_even_common_score_precision",
+      "test_triage_model.JSONModelTests.test_json_roundtrip_deterministic_and_metadata_mismatch_is_not_fallback",
+      "test_triage_model.JSONModelTests.test_literal_linear_score_and_missing_contribution_are_exactly_explained",
+      "test_triage_model.JSONModelTests.test_metadata_version_order_horizon_and_content_tampering_reject",
+      "test_triage_model.JSONModelTests.test_same_observation_renamed_ids_aliases_and_paths_keep_score",
+      "test_triage_model.JSONModelTests.test_scoring_does_not_import_optional_libraries",
+      "test_triage_model.JSONModelTests.test_unknown_wrong_type_missing_and_nonfinite_features_reject",
+      "test_triage_model.JSONModelTests.test_unscorable_unit_is_explicit_and_never_a_successful_fallback",
+      "test_triage_model.TrainingBoundaryTests.test_cross_split_and_incomplete_label_coverage_halt_training",
+      "test_triage_model.TrainingBoundaryTests.test_preprocessing_train_known_open_only_and_actual_library_parity",
+      "test_triage_model.TrainingBoundaryTests.test_validation_changes_never_fit_and_same_t_twins_score_equally",
+      "test_triage_provenance.ProvenanceConsistencyTests.test_current_refs_must_agree_with_known_sources_scope_and_snapshot_metadata",
+      "test_triage_provenance.ProvenanceConsistencyTests.test_every_source_is_typed_and_has_required_time_identity_and_pointers",
+      "test_triage_provenance.ProvenanceConsistencyTests.test_finding_and_evidence_pointers_must_name_the_same_finding",
+      "test_triage_provenance.ProvenanceConsistencyTests.test_inner_future_source_with_unchanged_t_summary_is_rejected",
+      "test_triage_provenance.ProvenanceConsistencyTests.test_invalid_rank_has_no_published_output_and_valid_rank_still_succeeds",
+      "test_triage_provenance.ProvenanceConsistencyTests.test_optional_snapshot_metadata_is_checked_when_present",
+      "test_triage_provenance.ProvenanceConsistencyTests.test_real_cli_accepts_valid_history_and_t_with_exact_financial_refs",
+      "test_triage_provenance.ProvenanceConsistencyTests.test_real_cli_rejects_future_source_without_complete_or_scored_publication",
+      "test_triage_provenance.ProvenanceConsistencyTests.test_real_history_and_equivalent_timezone_text_are_valid",
+      "test_triage_provenance.ProvenanceConsistencyTests.test_same_run_hash_is_legal_in_two_different_episode_scopes",
+      "test_triage_provenance.ProvenanceConsistencyTests.test_summary_must_equal_actual_source_maximum_even_when_both_are_before_t",
+      "test_triage_provenance_cross_refs.CrossReferenceConsistencyTests.test_current_pointer_cannot_name_different_asset_findings_in_one_run",
+      "test_triage_runner.RunnerBoundaryTests.test_changed_catalog_or_model_aborts_before_any_holdout_truth",
+      "test_triage_runner.RunnerBoundaryTests.test_deadline_includes_accounting_scan_itself",
+      "test_triage_runner.RunnerBoundaryTests.test_nested_roots_do_not_double_count_but_publication_destination_does",
+      "test_triage_runner.RunnerBoundaryTests.test_retention_hashes_owned_bytes_and_omissions_have_exact_producer",
+      "test_triage_runner.RunnerBoundaryTests.test_transient_adapter_copy_reservation_enforces_combined_limit_and_releases",
+      "test_triage_runner.RunnerBoundaryTests.test_twin_audit_uses_real_frozen_scores_and_detects_changed_observation",
+      "test_triage_scope.PublicScopeTests.test_complete_small_public_scope_reaches_only_the_truth_sentinel",
+      "test_triage_scope.PublicScopeTests.test_dropped_closed_unit_is_not_hidden_by_correct_open_rankings",
+      "test_triage_scope.PublicScopeTests.test_empty_final_queue_rejected_before_truth_even_with_updated_prediction_hash",
+      "test_triage_scope.PublicScopeTests.test_extra_final_label_is_not_silently_filtered_before_metrics",
+      "test_triage_scope.PublicScopeTests.test_full_final_labels_keep_closed_and_unknown_units",
+      "test_triage_scope.PublicScopeTests.test_general_explicit_subset_ranking_remains_supported",
+      "test_triage_scope.PublicScopeTests.test_missing_closed_final_label_is_rejected_before_split_filtering",
+      "test_triage_scope.PublicScopeTests.test_public_hash_and_mode_links_are_checked_before_freeze",
+      "test_triage_scope.PublicScopeTests.test_reduced_features_cannot_be_frozen_against_unchanged_public_roster",
+      "test_triage_scope.PublicScopeTests.test_same_count_wrong_asset_is_rejected_from_independent_public_assets",
+      "test_triage_scope.PublicScopeTests.test_self_consistent_reduced_features_queues_and_hashes_stop_before_truth",
+      "test_triage_scope.PublicScopeTests.test_small_roster_cannot_claim_main_mode_with_consistent_public_hashes",
+      "test_triage_scope_contract.PublicScopeContractTests.test_duplicate_final_label_rejected_before_metric_join",
+      "test_triage_scope_contract.PublicScopeContractTests.test_feature_wrong_world_wrong_time_and_duplicate_are_rejected",
+      "test_triage_scope_contract.PublicScopeContractTests.test_final_label_wrong_world_split_time_and_horizon_are_rejected",
+      "test_triage_scope_contract.PublicScopeContractTests.test_nonobject_feature_document_is_controlled_at_freeze_and_final",
+      "test_triage_scope_contract.PublicScopeContractTests.test_nonobject_public_documents_fail_controlled_validation",
+      "test_triage_scope_contract.PublicScopeContractTests.test_public_equivalent_offsets_preserve_common_scope",
+      "test_triage_scope_contract.PublicScopeContractTests.test_public_wrong_world_duplicate_episode_and_wrong_cut_are_rejected",
+      "test_triage_world.TriageWorldTests.test_censored_evaluation_keeps_source_bytes_run_ids_and_null_inventory",
+      "test_triage_world.TriageWorldTests.test_challenge_future_revisions_do_not_change_complete_twin_payloads_at_t",
+      "test_triage_world.TriageWorldTests.test_every_rotating_family_has_resolved_and_unresolved_training_examples",
+      "test_triage_world.TriageWorldTests.test_final_freeze_binds_bundle_and_catalog_before_horizon_truth_access",
+      "test_triage_world.TriageWorldTests.test_finite_truth_is_checked_against_real_engine_without_deriving_labels",
+      "test_triage_world.TriageWorldTests.test_future_deliveries_do_not_change_complete_saved_twin_payloads",
+      "test_triage_world.TriageWorldTests.test_holdout_truth_requires_freeze_and_is_single_use",
+      "test_triage_world.TriageWorldTests.test_label_output_rejects_source_sidecar_before_any_mutation",
+      "test_triage_world.TriageWorldTests.test_literal_integer_balances_and_custody_are_independent",
+      "test_triage_world.TriageWorldTests.test_main_roster_has_fixed_groups_sizes_seeds_and_disjoint_worlds",
+      "test_triage_world.TriageWorldTests.test_null_and_out_of_scope_are_never_negative_labels",
+      "test_triage_world.TriageWorldTests.test_resolved_initial_problem_then_new_scope_problem_is_positive",
+      "test_triage_world.TriageWorldTests.test_train_evaluator_does_not_open_private_holdout_files",
+      "test_triage_world.TriageWorldTests.test_truth_catalog_cannot_be_rewritten_outside_original_bundle",
+      "test_triage_world.TriageWorldTests.test_twins_have_identical_visible_prefix_and_distinct_literal_horizon_labels"
+    ]
+  },
+  "fixture_exceptions": [
+    {
+      "changes": [
+        {
+          "count": 1,
+          "new_text": "self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0], 5)",
+          "old_text": "self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0], 4)"
+        }
+      ],
+      "current": {
+        "bytes": 28654,
+        "sha256": "9c0c123105965bbe78ab4835801d87225807ff9524655f250c27e1e4f0dc0cf4"
+      },
+      "kind": "metadata-lines-v1",
+      "original": {
+        "bytes": 28654,
+        "sha256": "d233406aaebe9aa699de29c3ac86149d3c1967570eb3a39790296a127f70cd40"
+      },
+      "path": "tests/test_corrections.py",
+      "reason": "The migration postcondition names the current schema target 5; all old columns, IDs, saved payload and restore assertions are retained."
+    },
+    {
+      "changes": [
+        {
+          "count": 1,
+          "new_text": "[(2,), (3,), (4,), (5,)]",
+          "old_text": "[(2,), (3,), (4,)]"
+        },
+        {
+          "count": 1,
+          "new_text": "self.assertEqual(store.db.execute('PRAGMA user_version').fetchone()[0], 5)",
+          "old_text": "self.assertEqual(store.db.execute('PRAGMA user_version').fetchone()[0], 4)"
+        },
+        {
+          "count": 1,
+          "new_text": "store.db.execute('PRAGMA user_version=6')",
+          "old_text": "store.db.execute('PRAGMA user_version=5')"
+        }
+      ],
+      "current": {
+        "bytes": 18918,
+        "sha256": "0f2f036a91a6a2c88ef4d6f797ff1cd6181098ccff2a4b69917c0c07d3aab0d3"
+      },
+      "kind": "metadata-lines-v1",
+      "original": {
+        "bytes": 18912,
+        "sha256": "9a3be65e59e5c53f9799de137cf5d07bfe7478d52776fba6420ab56eebc0e585"
+      },
+      "path": "tests/test_receipt_index.py",
+      "reason": "Fresh and migrated current-target metadata now names additive schema 5; the deliberately unsupported future-version fixture becomes 6. All corruption rejection and preserved-row assertions stay intact."
+    },
+    {
+      "changes": [
+        {
+          "count": 1,
+          "new_text": "self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0], 5)",
+          "old_text": "self.assertEqual(db.execute('PRAGMA user_version').fetchone()[0], 4)"
+        },
+        {
+          "count": 1,
+          "new_text": "[(2,), (3,), (4,), (5,)]",
+          "old_text": "[(2,), (3,), (4,)]"
+        },
+        {
+          "count": 1,
+          "new_text": "self.assertEqual(report['schema_version'], 5)",
+          "old_text": "self.assertEqual(report['schema_version'], 4)"
+        },
+        {
+          "count": 1,
+          "new_text": "        expected = dict(db.execute('SELECT id,payload FROM runs'))\n        from source_auth_legacy_fixtures import install_historical_schema4\n        install_historical_schema4(db)\n        db.close()",
+          "old_text": "        expected = dict(db.execute('SELECT id,payload FROM runs'))\n        migrate_connection(db)\n        db.close()"
+        }
+      ],
+      "current": {
+        "bytes": 14669,
+        "sha256": "b2056652dffbf442b813ee0a3c1a4fd792d0c97968ddc1f3cd643bef6d404561"
+      },
+      "kind": "schema4-history-setup-v1",
+      "original": {
+        "bytes": 14580,
+        "sha256": "203bba92c1a5d4f923738989ee0326712b2c1b70b98002337a2268f803637bb2"
+      },
+      "path": "tests/test_admission_migrations.py",
+      "reason": "Current migration-target metadata becomes 5; only the named historical schema-4 fixture setup uses independently frozen schema-4 DDL, preserving all historical assertions."
+    },
+    {
+      "changes": [
+        {
+          "count": 1,
+          "new_text": "contracts/release-test-scope-0.8.0.json",
+          "old_text": "contracts/release-test-scope-0.7.1.json"
+        },
+        {
+          "count": 1,
+          "new_text": "'release':'0.8.0'",
+          "old_text": "'release':'0.7.1'"
+        }
+      ],
+      "current": {
+        "bytes": 7983,
+        "sha256": "d0843e930098b2c0a40612e7479cd2a71be2514bb370676201a66fe9270dc10b"
+      },
+      "kind": "metadata-lines-v1",
+      "original": {
+        "bytes": 7983,
+        "sha256": "555a058ff68c9a80922230c566a27b8f8eba2b6d6a27bc43a2d51780dcc7d37e"
+      },
+      "path": "tests/test_release_test_scope.py",
+      "reason": "The current fixed-roster fixture points to 0.8.0; historical independent baseline and all acceptance/rejection assertions remain unchanged."
+    },
+    {
+      "changes": [
+        {
+          "count": 1,
+          "new_text": "        scope = scope_gate.checked_document(ROOT, scope_gate.BASELINE_PATH, scope_gate.BASELINE_BYTES, scope_gate.BASELINE_SHA256)",
+          "old_text": "        scope = scope_gate.load_test_scope(ROOT)"
+        }
+      ],
+      "current": {
+        "bytes": 4013,
+        "sha256": "1880fddbdbc45f2176c9eecb033152d4ba2cb1283a63839fe348bd76f4615a7c"
+      },
+      "kind": "metadata-lines-v1",
+      "original": {
+        "bytes": 3931,
+        "sha256": "948bf180b8cca24c06292a0bfd835f61214763c936fea293b6635a87c37c6cee"
+      },
+      "path": "tests/test_admission_maintenance_release.py",
+      "reason": "The old report_fixture exception fixture is loaded from its pinned historical 0.7.1 contract, so its original rejection tests retain their exact meaning after the new ancestry step."
+    }
+  ],
+  "format": "release-test-scope-v1",
+  "independent_anchor": {
+    "bytes": 42896,
+    "path": "contracts/release-tests-baseline-0.6.0.json",
+    "sha256": "d69bb489b06f94643ef9b6def46e0723d0533c08a263c4d0c81ca6ee8bc919e1"
+  },
+  "release": "0.8.0"
+}

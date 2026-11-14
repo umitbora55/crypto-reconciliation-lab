@@ -75,6 +75,8 @@ print(json.dumps(dict(python=sys.version, executable=sys.executable, isolated=bo
     origin=package.__file__, package_version=package.__version__, distribution_version=metadata.version('crypto-reconciliation-lab'),
     rule=RULE_VERSION, schema=SCHEMA_VERSION, review_format=BUNDLE_FORMAT, experiment_format=EXPERIMENT_FORMAT,
     feature_format=FEATURE_FORMAT, contract_sha256=CONTRACT_SHA256, package_files=files,
+    auth_imported=[name for name in ('cryptography','cffi','_cffi_backend') if name in sys.modules],
+    auth_available={name:importlib.util.find_spec(name) is not None for name in ('cryptography','cffi','pycparser')},
     optional_imported=[name for name in ('sklearn','numpy','scipy') if name in sys.modules],
     optional_available={name:importlib.util.find_spec(name) is not None for name in ('sklearn','numpy','scipy')},
     dependencies={d.metadata['Name']: {'version':d.version,'requires_python':d.metadata.get('Requires-Python')}
@@ -176,12 +178,13 @@ class Verification:
                     for p in (source / 'crypto_reconciliation_lab').rglob('*')
                     if p.is_file() and '__pycache__' not in p.parts and p.suffix != '.pyc'}
         require(result['package_files'] == expected, 'installed/source package module or asset bytes differ')
-        require(result['rule'] == 'stage2-v2' and result['schema'] == 4, 'financial rule/schema changed')
+        require(result['rule'] == 'stage2-v2' and result['schema'] == 5, 'financial rule/schema changed')
         require(result['review_format'] == 'review-bundle-v1' and result['experiment_format'] == 'triage-experiment-v1'
                 and result['feature_format'] == 'triage-features-v1', 'saved review/triage v1 format changed')
         require(result['contract_sha256'] == 'd532627546c49a582397fcb700ad723269fafe45ac25af7f162eded5f85d7428',
                 'frozen Stage 5 experiment contract changed')
         require(not result['optional_imported'], 'package import eagerly loaded optional AI dependencies')
+        require(not result['auth_imported'], 'package import eagerly loaded optional auth dependencies')
         self.record[name] = result
         self.persist()
         return result
@@ -236,7 +239,61 @@ def validate_core_probe(probe):
     require(not installed.intersection({'scikit-learn', 'numpy', 'scipy'}), 'core installation contains an optional dependency distribution')
 
 
-def wheel_manifest(wheel, version='0.7.1'):
+def validate_auth_absent(probe):
+    require(not probe.get('auth_imported') and probe.get('auth_available') ==
+            {'cryptography': False, 'cffi': False, 'pycparser': False},
+            'core environment contains or imported optional auth dependency')
+    installed = {name.lower().replace('_', '-') for name in probe['dependencies']}
+    require(not installed.intersection({'cryptography', 'cffi', 'pycparser'}),
+            'core installation contains an auth dependency distribution')
+
+
+def validate_auth_pins(probe, source):
+    require(probe.get('auth_available') == {'cryptography': True, 'cffi': True, 'pycparser': True},
+            'auth installation missing its optional dependencies')
+    for line in (Path(source) / 'requirements-auth.txt').read_text(encoding='utf-8').splitlines():
+        line = line.strip()
+        if line and not line.startswith('#'):
+            name, expected = line.split('==', 1)
+            require(probe['dependencies'].get(name, {}).get('version') == expected,
+                    'auth pin mismatch: ' + name)
+
+
+def core_auth_denied(gate, python):
+    """The actual isolated command must fail before creating any demo effects."""
+    target = gate.output / 'core-auth-must-not-exist'
+    gate.run('core-auth-unavailable', [python, '-B', '-I', '-m', 'crypto_reconciliation_lab',
+             'demo-source-auth', '--output', target, '--seed', '19'], expected=2)
+    error = (gate.output / 'logs/core-auth-unavailable.stderr.txt').read_text(encoding='utf-8')
+    require('AUTH_DEPENDENCY' in error and not target.exists(),
+            'core auth command did not fail explicitly before creating output')
+    gate.record['core_auth_refusal'] = {'status': 'PASS', 'exit_code': 2,
+                                      'output_absent': True, 'reason': 'AUTH_DEPENDENCY'}
+    gate.persist()
+
+
+def source_auth(gate, python, source, mode):
+    """Run the new independent auth gate, keeping historical recovery v2 intact."""
+    target = gate.output / (mode + '-source-auth')
+    flags = ['-I'] if mode == 'installed' else []
+    cwd = None if mode == 'installed' else source
+    gate.run(mode + '-source-auth', [python, '-B', *flags, '-m', 'crypto_reconciliation_lab',
+             'demo-source-auth', '--output', target, '--seed', '19'], cwd)
+    report = json.loads((target / 'report.json').read_text(encoding='utf-8'))
+    verified = json.loads(gate.run(mode + '-verify-source-auth',
+                         [python, '-B', *flags, '-m', 'crypto_reconciliation_lab',
+                          'verify-source-auth', '--bundle', target, '--anchor', 'demo-test-only'], cwd))
+    require(verified['status'] == 'PASSED', 'independent source-auth verification failed')
+    origin = Path(report['environment']['import_origin']).resolve()
+    expected_origin = Path(gate.record[mode + '_import']['origin']).resolve()
+    require(origin == expected_origin, 'source-auth imported a different source/package')
+    gate.record[mode + '_source_auth'] = {'status': 'PASS', 'path': str(target),
+        'report_identity': digest(target / 'report.json'), 'report': report,
+        'verification': verified, 'operator_anchor': 'demo-test-only; independently pinned public fixture'}
+    gate.persist()
+
+
+def wheel_manifest(wheel, version='0.8.0'):
     with zipfile.ZipFile(wheel) as archive:
         members = archive.infolist()
         require(len(members) <= 1000 and sum(item.file_size for item in members) <= 32 * 1024**2, 'wheel member/size limit exceeded')
@@ -258,7 +315,8 @@ def wheel_manifest(wheel, version='0.7.1'):
                     'wheel contains excluded artifact')
             if name.startswith('crypto_reconciliation_lab/'):
                 require(PurePosixPath(name).suffix in ('.py', '.html', '.css', '.js')
-                        or name == 'crypto_reconciliation_lab/admission/recovery_scope_v2.json',
+                        or name in ('crypto_reconciliation_lab/admission/recovery_scope_v2.json',
+                                    'crypto_reconciliation_lab/source_auth/experiment_scope_v1.json'),
                         'wheel contains unexpected package data')
             data = archive.read(item)
             require(len(data) == item.file_size, 'wheel member size mismatch')
@@ -338,7 +396,7 @@ def recovery(gate, python, source, mode):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--profile', choices=('full', 'core'), required=True)
+    parser.add_argument('--profile', choices=('full', 'core', 'auth-only'), required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--source', type=Path)
     parser.add_argument('--wheel', type=Path)
@@ -405,13 +463,21 @@ def main(argv=None):
         install = [python, '-B', '-I', '-m', 'pip', 'install', '--disable-pip-version-check', '--no-cache-dir']
         if args.profile == 'full':
             constraints = source / 'docs/stage5/ai_constraints.txt'
-            gate.run('install-wheel-ai', [*install, '-c', constraints, str(wheel) + '[ai]'])
+            gate.run('install-wheel-ai-auth', [*install, '-c', constraints, '-c', source / 'requirements-auth.txt', str(wheel) + '[ai,auth]'])
+        elif args.profile == 'auth-only':
+            gate.run('install-wheel-auth', [*install, '-c', source / 'requirements-auth.txt', str(wheel) + '[auth]'])
         else:
             gate.run('install-wheel-core', [*install, '--no-deps', str(wheel)])
         installed = gate.probe('installed_import', python, source, True, version)
         if args.profile == 'core':
             validate_core_probe(installed)
+            validate_auth_absent(installed)
+            core_auth_denied(gate, python)
+        elif args.profile == 'auth-only':
+            validate_core_probe(installed)
+            validate_auth_pins(installed, source)
         else:
+            validate_auth_pins(installed, source)
             for line in constraints.read_text(encoding='utf-8').splitlines():
                 line = line.strip()
                 if not line or line.startswith('#'):
@@ -424,8 +490,15 @@ def main(argv=None):
             require(source_tests['executed'] == installed_tests['executed'], 'source and installed test count differ')
             reproduce(gate, python, source, 'source', reference, False)
             recovery(gate, python, source, 'source')
-        reproduce(gate, python, source, 'installed', reference, args.profile == 'core')
+            source_auth(gate, python, source, 'source')
+        reproduce(gate, python, source, 'installed', reference, args.profile != 'full')
         recovery(gate, python, source, 'installed')
+        if args.profile != 'core':
+            source_auth(gate, python, source, 'installed')
+        else:
+            gate.record['installed_source_auth'] = {'status': 'NOT_RUN', 'reason': 'core has no auth dependency; refusal checked separately'}
+        if args.profile != 'full':
+            gate.record['source_tests'] = gate.record['installed_tests'] = {'status': 'NOT_RUN', 'reason': 'full suite requires both optional extras'}
         if args.financial:
             inputs, outputs = gate.output / 'financial-input', gate.output / 'financial-matrix'
             generated = json.loads(gate.run('financial-generate', [python, '-B', '-I', '-m', 'crypto_reconciliation_lab', 'lab-generate', '--output', inputs,
@@ -445,9 +518,10 @@ def main(argv=None):
         (gate.output / 'verification.md').write_text(
             f"# Release verification\n\nStatus: PASS. Profile: {args.profile}. Version: {version}.\n\n"
             f"Installed origin: `{installed['origin']}`. Python: `{installed['python']}`.\n\n"
-            f"Full-suite tests: {tests.get('executed', 'NOT_RUN (core profile)')}; skips: {tests.get('skips', 'not applicable')}. "
+            f"Full-suite tests: {tests.get('executed', 'NOT_RUN (non-full profile)')}; skips: {tests.get('skips', 'not applicable')}. "
             f"Financial matrix: {gate.record['financial_matrix']['status']}.\n\n"
             f"Admission recovery: {gate.record['installed_recovery']['scope']['executed_count']} fixed scenarios, observed crash barriers and negative controls PASS.\n\n"
+            f"Source authentication: {gate.record['installed_source_auth']['status']}. Profile-specific dependency absence/pins are in the import probe.\n\n"
             "All commands, actual exits, import origins, dependency versions, byte proofs and logs are in verification.json. "
             "No main triage generation, training, or final holdout evaluation was invoked by this gate.\n", encoding='utf-8')
         print(json.dumps({'status': 'PASS', 'profile': args.profile, 'report': str(gate.output / 'verification.json')}))

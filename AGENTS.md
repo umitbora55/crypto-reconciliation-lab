@@ -1,5 +1,17 @@
 # Project working agreement
 
+## Current Stage 10 authorization
+
+The explicit Stage 10 task authorizes optional pinned Ed25519/DSSE source admission,
+additive schema 5, package 0.8.0, current release scopes and CI, and a new task branch
+with a draft PR. Preserve the financial core, stage2-v2, all v1 formats, the 472 old
+test identities/assertions, recovery v2 resource/reader bytes and 373-file reference.
+Only specified version/schema metadata and genuine historical-schema fixture setup
+may change in old tests; document exact diffs under docs/stage10. Do not run the
+frozen main experiment. No main merge, force push, tag/release or protection change.
+Store actual execution evidence outside Git in stage10-output; do not commit final
+CI/SHA evidence back into source. Earlier stage restrictions below are historical.
+
 ## Current Stage 9.1 maintenance authorization
 
 The explicit Stage 9.1 task authorizes only the S9-F1 malformed-frame diagnostic

@@ -15,7 +15,7 @@ SPEC.loader.exec_module(scope_gate)
 
 class AdmissionMaintenanceReleaseTests(unittest.TestCase):
     def fixture_exception(self):
-        scope = scope_gate.load_test_scope(ROOT)
+        scope = scope_gate.checked_document(ROOT, scope_gate.BASELINE_PATH, scope_gate.BASELINE_BYTES, scope_gate.BASELINE_SHA256)
         return deepcopy(next(row for row in scope['fixture_exceptions']
                              if row.get('kind') == 'report-fixture-function-v1'))
 

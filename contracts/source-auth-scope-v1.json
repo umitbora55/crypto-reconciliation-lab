@@ -1,0 +1,541 @@
+{
+  "families": [
+    "valid_publishers",
+    "signed_wrong_custody",
+    "financial_invalid",
+    "snapshot_integrity",
+    "signature_identity",
+    "receiver_binding",
+    "capability_authority",
+    "exact_scope",
+    "strict_parsing",
+    "public_boundary",
+    "stream_ownership",
+    "replay_ack",
+    "revocation",
+    "rotation_resume",
+    "policy_order",
+    "transport_conflict",
+    "atomic_kill",
+    "semantic_verifier"
+  ],
+  "financial_reference": {
+    "ASSET_A": {
+      "I1": "7",
+      "I2": "4",
+      "external": "9",
+      "liability": "11",
+      "platform": "2"
+    },
+    "ASSET_B": {
+      "I1": "0.3",
+      "I2": "0.2",
+      "external": "0.45",
+      "liability": "0.5",
+      "platform": "0.05"
+    }
+  },
+  "format": "source-auth-scope-v1",
+  "release": "0.8.0",
+  "required_mutations": [
+    "missing_family",
+    "missing_decision_and_reference",
+    "same_count_scope",
+    "wrong_key_source_receipt",
+    "false_pass",
+    "false_financial_match",
+    "extra_information"
+  ],
+  "rule": "stage2-v2",
+  "scenarios": [
+    {
+      "family": "valid_publishers",
+      "id": "valid_publishers",
+      "required_controls": {
+        "financial": "MATCHED",
+        "paired_financial_identity": true,
+        "receipts": 30
+      },
+      "required_evidence": [
+        "operations",
+        "sql_final"
+      ]
+    },
+    {
+      "family": "signed_wrong_custody",
+      "id": "wrong_custody",
+      "required_controls": {
+        "custody_difference": "1",
+        "financial": "MISMATCH",
+        "investors": "MATCHED",
+        "receipts": 30
+      },
+      "required_evidence": [
+        "operations",
+        "sql_final"
+      ]
+    },
+    {
+      "family": "financial_invalid",
+      "id": "invalid_amount",
+      "required_controls": {
+        "core_status": "INVALID",
+        "receipts": 1,
+        "status": "COMPLETE"
+      },
+      "required_evidence": [
+        "operations",
+        "sql_final"
+      ]
+    },
+    {
+      "family": "snapshot_integrity",
+      "id": "tampered_bytes",
+      "required_controls": {
+        "new_blocking_attempts": 0,
+        "new_effects": 0,
+        "new_owners": 0,
+        "new_receipts": 0,
+        "status": "DENIED"
+      },
+      "required_evidence": [
+        "operations",
+        "sql_final"
+      ]
+    },
+    {
+      "family": "snapshot_integrity",
+      "id": "unsigned_hash",
+      "required_controls": {
+        "new_blocking_attempts": 0,
+        "new_effects": 0,
+        "new_owners": 0,
+        "new_receipts": 0,
+        "status": "DENIED"
+      },
+      "required_evidence": [
+        "operations",
+        "sql_final"
+      ]
+    },
+    {
+      "family": "signature_identity",
+      "id": "unknown_key",
+      "required_controls": {
+        "new_blocking_attempts": 0,
+        "new_effects": 0,
+        "new_owners": 0,
+        "new_receipts": 0,
+        "status": "DENIED"
+      },
+      "required_evidence": [
+        "operations",
+        "sql_final"
+      ]
+    },
+    {
+      "family": "signature_identity",
+      "id": "wrong_key",
+      "required_controls": {
+        "new_blocking_attempts": 0,
+        "new_effects": 0,
+        "new_owners": 0,
+        "new_receipts": 0,
+        "status": "DENIED"
+      },
+      "required_evidence": [
+        "operations",
+        "sql_final"
+      ]
+    },
+    {
+      "family": "signature_identity",
+      "id": "bad_signature",
+      "required_controls": {
+        "new_blocking_attempts": 0,
+        "new_effects": 0,
+        "new_owners": 0,
+        "new_receipts": 0,
+        "status": "DENIED"
+      },
+      "required_evidence": [
+        "operations",
+        "sql_final"
+      ]
+    },
+    {
+      "family": "receiver_binding",
+      "id": "wrong_receiver",
+      "required_controls": {
+        "new_blocking_attempts": 0,
+        "new_effects": 0,
+        "new_owners": 0,
+        "new_receipts": 0,
+        "status": "DENIED"
+      },
+      "required_evidence": [
+        "operations",
+        "sql_final"
+      ]
+    },
+    {
+      "family": "receiver_binding",
+      "id": "wrong_config",
+      "required_controls": {
+        "new_blocking_attempts": 0,
+        "new_effects": 0,
+        "new_owners": 0,
+        "new_receipts": 0,
+        "status": "DENIED"
+      },
+      "required_evidence": [
+        "operations",
+        "sql_final"
+      ]
+    },
+    {
+      "family": "receiver_binding",
+      "id": "wrong_namespace",
+      "required_controls": {
+        "new_blocking_attempts": 0,
+        "new_effects": 0,
+        "new_owners": 0,
+        "new_receipts": 0,
+        "status": "DENIED"
+      },
+      "required_evidence": [
+        "operations",
+        "sql_final"
+      ]
+    },
+    {
+      "family": "capability_authority",
+      "id": "unauthorized_asset",
+      "required_controls": {
+        "new_blocking_attempts": 0,
+        "new_effects": 0,
+        "new_owners": 0,
+        "new_receipts": 0,
+        "status": "DENIED"
+      },
+      "required_evidence": [
+        "operations",
+        "sql_final"
+      ]
+    },
+    {
+      "family": "capability_authority",
+      "id": "unauthorized_kind",
+      "required_controls": {
+        "new_blocking_attempts": 0,
+        "new_effects": 0,
+        "new_owners": 0,
+        "new_receipts": 0,
+        "status": "DENIED"
+      },
+      "required_evidence": [
+        "operations",
+        "sql_final"
+      ]
+    },
+    {
+      "family": "capability_authority",
+      "id": "unauthorized_channel",
+      "required_controls": {
+        "new_blocking_attempts": 0,
+        "new_effects": 0,
+        "new_owners": 0,
+        "new_receipts": 0,
+        "status": "DENIED"
+      },
+      "required_evidence": [
+        "operations",
+        "sql_final"
+      ]
+    },
+    {
+      "family": "exact_scope",
+      "id": "scope_missing",
+      "required_controls": {
+        "new_blocking_attempts": 0,
+        "new_effects": 0,
+        "new_owners": 0,
+        "new_receipts": 0,
+        "status": "DENIED"
+      },
+      "required_evidence": [
+        "operations",
+        "sql_final"
+      ]
+    },
+    {
+      "family": "exact_scope",
+      "id": "scope_substitution",
+      "required_controls": {
+        "new_blocking_attempts": 0,
+        "new_effects": 0,
+        "new_owners": 0,
+        "new_receipts": 0,
+        "status": "DENIED"
+      },
+      "required_evidence": [
+        "operations",
+        "sql_final"
+      ]
+    },
+    {
+      "family": "exact_scope",
+      "id": "cartesian_hole",
+      "required_controls": {
+        "new_blocking_attempts": 0,
+        "new_effects": 0,
+        "new_owners": 0,
+        "new_receipts": 0,
+        "status": "DENIED"
+      },
+      "required_evidence": [
+        "operations",
+        "sql_final"
+      ]
+    },
+    {
+      "family": "strict_parsing",
+      "id": "malformed_type",
+      "required_controls": {
+        "new_blocking_attempts": 0,
+        "new_effects": 0,
+        "new_owners": 0,
+        "new_receipts": 0,
+        "status": "DENIED"
+      },
+      "required_evidence": [
+        "operations",
+        "sql_final"
+      ]
+    },
+    {
+      "family": "strict_parsing",
+      "id": "duplicate_key",
+      "required_controls": {
+        "new_blocking_attempts": 0,
+        "new_effects": 0,
+        "new_owners": 0,
+        "new_receipts": 0,
+        "status": "DENIED"
+      },
+      "required_evidence": [
+        "operations",
+        "sql_final"
+      ]
+    },
+    {
+      "family": "strict_parsing",
+      "id": "unicode_surrogate",
+      "required_controls": {
+        "new_blocking_attempts": 0,
+        "new_effects": 0,
+        "new_owners": 0,
+        "new_receipts": 0,
+        "status": "DENIED"
+      },
+      "required_evidence": [
+        "operations",
+        "sql_final"
+      ]
+    },
+    {
+      "family": "strict_parsing",
+      "id": "authority_redirection",
+      "required_controls": {
+        "new_blocking_attempts": 0,
+        "new_effects": 0,
+        "new_owners": 0,
+        "new_receipts": 0,
+        "status": "DENIED"
+      },
+      "required_evidence": [
+        "operations",
+        "sql_final"
+      ]
+    },
+    {
+      "family": "public_boundary",
+      "id": "unsigned_paths",
+      "required_controls": {
+        "feed": "DENIED",
+        "legacy_receipts": 4,
+        "module_delivery": "DENIED",
+        "receipts": 0,
+        "store_delivery": "DENIED",
+        "store_ingest": "DENIED"
+      },
+      "required_evidence": [
+        "operations",
+        "sql_final"
+      ]
+    },
+    {
+      "family": "stream_ownership",
+      "id": "hijack_empty",
+      "required_controls": {
+        "new_blocking_attempts": 0,
+        "new_effects": 0,
+        "new_owners": 0,
+        "new_receipts": 0,
+        "status": "DENIED"
+      },
+      "required_evidence": [
+        "operations",
+        "sql_final"
+      ]
+    },
+    {
+      "family": "stream_ownership",
+      "id": "hijack_populated",
+      "required_controls": {
+        "new_blocking_attempts": 0,
+        "new_effects": 0,
+        "new_owners": 0,
+        "new_receipts": 0,
+        "status": "DENIED"
+      },
+      "required_evidence": [
+        "operations",
+        "sql_final"
+      ]
+    },
+    {
+      "family": "replay_ack",
+      "id": "normal_replay",
+      "required_controls": {
+        "outcome": "REPLAY",
+        "receipts": 2,
+        "same_receipts": true
+      },
+      "required_evidence": [
+        "operations",
+        "sql_final"
+      ]
+    },
+    {
+      "family": "replay_ack",
+      "id": "lost_ack",
+      "required_controls": {
+        "barrier": "auth_after_commit",
+        "before_retry_receipts": 1,
+        "exit": -9,
+        "receipts": 2,
+        "retry_outcome": "REPLAY"
+      },
+      "required_evidence": [
+        "operations",
+        "sql_final"
+      ]
+    },
+    {
+      "family": "revocation",
+      "id": "revoked_replay",
+      "required_controls": {
+        "currently_authorized": false,
+        "prefix_receipts": 1,
+        "receipts": 1,
+        "replayed": "HISTORICAL_REPLAY",
+        "suffix": "DENIED"
+      },
+      "required_evidence": [
+        "operations",
+        "sql_final"
+      ]
+    },
+    {
+      "family": "rotation_resume",
+      "id": "new_key_resume",
+      "required_controls": {
+        "new_epoch": 2,
+        "old_epoch": 1,
+        "old_evidence_preserved": true,
+        "receipts": 2
+      },
+      "required_evidence": [
+        "operations",
+        "sql_final"
+      ]
+    },
+    {
+      "family": "policy_order",
+      "id": "policy_race",
+      "required_controls": {
+        "active_epoch": 2,
+        "barrier": "auth_after_preflight",
+        "exit": 0,
+        "receipts": 0,
+        "status": "DENIED"
+      },
+      "required_evidence": [
+        "operations",
+        "sql_final"
+      ]
+    },
+    {
+      "family": "policy_order",
+      "id": "stale_policy",
+      "required_controls": {
+        "active_epoch": 2,
+        "receipts": 0,
+        "rejected": true
+      },
+      "required_evidence": [
+        "operations",
+        "sql_final"
+      ]
+    },
+    {
+      "family": "transport_conflict",
+      "id": "authorized_plan_conflict",
+      "required_controls": {
+        "original_readable": true,
+        "outcome": "PLAN_CONFLICT",
+        "receipts": 1,
+        "replay": "BLOCKED"
+      },
+      "required_evidence": [
+        "operations",
+        "sql_final"
+      ]
+    },
+    {
+      "family": "atomic_kill",
+      "id": "precommit_kill",
+      "required_controls": {
+        "barrier": "auth_before_commit",
+        "before_retry_decisions": 0,
+        "before_retry_receipts": 0,
+        "exit": -9,
+        "receipts": 2
+      },
+      "required_evidence": [
+        "operations",
+        "sql_final"
+      ]
+    },
+    {
+      "family": "semantic_verifier",
+      "id": "verifier_mutations",
+      "required_controls": {
+        "extra_information": "ACCEPTED",
+        "false_financial_match": "REJECTED",
+        "false_pass": "REJECTED",
+        "missing_decision_and_reference": "REJECTED",
+        "missing_family": "REJECTED",
+        "same_count_scope": "REJECTED",
+        "wrong_key_source_receipt": "REJECTED"
+      },
+      "required_evidence": [
+        "mutations"
+      ]
+    }
+  ],
+  "schema": 5,
+  "seed": 19,
+  "trust_boundary": "Explicit operator anchor, immutable fixed TEST-ONLY fixture; hashes prove byte integrity, not institutional source identity."
+}

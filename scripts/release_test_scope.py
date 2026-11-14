@@ -8,21 +8,24 @@ from pathlib import Path, PurePosixPath
 import re
 import stat
 
-RELEASE = '0.7.1'
+RELEASE = '0.8.0'
 ANCHOR_PATH = 'contracts/release-tests-baseline-0.6.0.json'
 ANCHOR_BYTES = 42896
 ANCHOR_SHA256 = 'd69bb489b06f94643ef9b6def46e0723d0533c08a263c4d0c81ca6ee8bc919e1'
 HISTORICAL_PATH = 'contracts/release-test-scope-0.6.1.json'
 HISTORICAL_BYTES = 51611
 HISTORICAL_SHA256 = 'c8d2e637950658ca71d5f2674d122fedc93c9888c4976af81a6607d5a5f3635f'
-BASELINE_PATH = 'contracts/release-test-scope-0.7.0.json'
-BASELINE_BYTES = 63100
-BASELINE_SHA256 = '0d163bd86cd3ecc8f57cf32c4619f245becd600ae01c8f1f7f752c04bf8dfb4d'
-CONTRACT_PATH = 'contracts/release-test-scope-0.7.1.json'
+STAGE9_PATH = 'contracts/release-test-scope-0.7.0.json'
+STAGE9_BYTES = 63100
+STAGE9_SHA256 = '0d163bd86cd3ecc8f57cf32c4619f245becd600ae01c8f1f7f752c04bf8dfb4d'
+BASELINE_PATH = 'contracts/release-test-scope-0.7.1.json'
+BASELINE_BYTES = 64724
+BASELINE_SHA256 = '2e21ae9f60ec7163af140d9f8e2eb91f33d3492e6b3edb1b3b4a86430a736a7e'
+CONTRACT_PATH = 'contracts/release-test-scope-0.8.0.json'
 SEMANTIC_FIXTURE_PATH = 'tests/fixtures/admission-semantic-report-v2.json'
 # Frozen only after reviewed additions and explicit metadata fixture exceptions.
-CONTRACT_BYTES = 64724
-CONTRACT_SHA256 = '2e21ae9f60ec7163af140d9f8e2eb91f33d3492e6b3edb1b3b4a86430a736a7e'
+CONTRACT_BYTES = 80521
+CONTRACT_SHA256 = '7dc06a3a89c2756f1574479cd288cec1bef65fe13925bfa5703a3be829311ec5'
 
 
 def require(condition, message):
@@ -124,6 +127,15 @@ def validate_fixture_exception(exception):
             require(exception.get(label) == byte_identity(text.encode('utf-8')),
                     'named fixture block identity differs')
         return
+    if kind == 'schema4-history-setup-v1':
+        require(exception['path'] == 'tests/test_admission_migrations.py',
+                'historical fixture exception has wrong file')
+        setup = {'old_text': "        expected = dict(db.execute('SELECT id,payload FROM runs'))\n        migrate_connection(db)\n        db.close()",
+                 'new_text': "        expected = dict(db.execute('SELECT id,payload FROM runs'))\n        from source_auth_legacy_fixtures import install_historical_schema4\n        install_historical_schema4(db)\n        db.close()", 'count': 1}
+        require(edits[-1] == setup, 'historical setup exceeds fixed authorization')
+        # Earlier changes are single-line current-version metadata only.
+        validate_fixture_exception({'changes': edits[:-1]})
+        return
     require(kind == 'metadata-lines-v1', 'unsupported fixture exception kind')
     for edit in edits:
         require(set(edit) == {'old_text', 'new_text', 'count'}
@@ -152,11 +164,12 @@ def restore_fixture_source(data, exception):
 
 
 def load_test_scope(root):
-    """Retain the independent anchor and all 451 prior release identities."""
+    """Retain the independent anchor and all 472 prior release identities."""
     root = Path(root).resolve()
     try:
         anchor = checked_document(root, ANCHOR_PATH, ANCHOR_BYTES, ANCHOR_SHA256)
         historical = checked_document(root, HISTORICAL_PATH, HISTORICAL_BYTES, HISTORICAL_SHA256)
+        stage9 = checked_document(root, STAGE9_PATH, STAGE9_BYTES, STAGE9_SHA256)
         prior = checked_document(root, BASELINE_PATH, BASELINE_BYTES, BASELINE_SHA256)
         scope = checked_document(root, CONTRACT_PATH, CONTRACT_BYTES, CONTRACT_SHA256)
         require(anchor['format'] == 'independent-stage6-baseline-test-inventory-v1'
@@ -165,16 +178,20 @@ def load_test_scope(root):
         require(historical['format'] == 'release-test-scope-v1' and historical['release'] == '0.6.1'
                 and historical['current']['test_count'] == 400 and historical['current']['file_count'] == 34,
                 'historical 0.6.1 contract metadata differs')
-        require(prior['format'] == 'release-test-scope-v1' and prior['release'] == '0.7.0'
-                and prior['current']['test_count'] == 451 and prior['current']['file_count'] == 38
-                and prior['baseline'] == {'path': HISTORICAL_PATH, 'bytes': HISTORICAL_BYTES,
+        require(stage9['format'] == 'release-test-scope-v1' and stage9['release'] == '0.7.0'
+                and stage9['current']['test_count'] == 451 and stage9['current']['file_count'] == 38
+                and stage9['baseline'] == {'path': HISTORICAL_PATH, 'bytes': HISTORICAL_BYTES,
                                           'sha256': HISTORICAL_SHA256},
                 'historical 0.7.0 contract metadata/binding differs')
+        require(prior['format'] == 'release-test-scope-v1' and prior['release'] == '0.7.1'
+                and prior['current']['test_count'] == 472 and prior['current']['file_count'] == 44
+                and prior['baseline'] == {'path': STAGE9_PATH, 'bytes': STAGE9_BYTES, 'sha256': STAGE9_SHA256},
+                'historical 0.7.1 contract metadata/binding differs')
         check_files(anchor['files']); check_ids(anchor['test_ids'], 'independent anchor')
         baseline = prior['current']
         check_files(baseline['files']); check_ids(baseline['test_ids'], 'baseline')
-        require(len(baseline['files']) == 38 and len(baseline['test_ids']) == 451
-                and set(anchor['test_ids']) <= set(historical['current']['test_ids']) <= set(baseline['test_ids']),
+        require(len(baseline['files']) == 44 and len(baseline['test_ids']) == 472
+                and set(anchor['test_ids']) <= set(historical['current']['test_ids']) <= set(stage9['current']['test_ids']) <= set(baseline['test_ids']),
                 'baseline roster differs')
         require(scope['format'] == 'release-test-scope-v1' and scope['release'] == RELEASE,
                 'current contract format/release differs')
@@ -205,7 +222,7 @@ def load_test_scope(root):
         require(current['files'] == baseline['files'] | additions['files'] | amended,
                 'current files do not preserve the prior release')
         require(set(current['test_ids']) == set(baseline['test_ids']) | set(additions['test_ids']),
-                'current identities do not preserve all 451 old identities')
+                'current identities do not preserve all 472 old identities')
         require(type(current['file_count']) is int and current['file_count'] == len(current['files'])
                 and type(current['test_count']) is int and current['test_count'] == len(current['test_ids']),
                 'declared current counts differ')
