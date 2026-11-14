@@ -47,7 +47,9 @@
     const item = materials[path];
     return item ? `${item.bytes} exact bytes · SHA-256 ${item.sha256}` : "Full original material was not supplied.";
   };
-  const latest = rows("auth_policy_activations").reduce((best, row) => !best || row.epoch > best.epoch ? row : best, null);
+  // Identity strings arrive losslessly before JSON.parse. Compare epoch order
+  // exactly: decimal text order would put "10" before "9".
+  const latest = rows("auth_policy_activations").reduce((best, row) => !best || BigInt(row.epoch) > BigInt(best.epoch) ? row : best, null);
   const policyAt = hash => rows("auth_policy_snapshots").find(row => row.policy_hash === hash);
   const headPolicy = latest ? parse((policyAt(latest.policy_hash) || {}).payload) : null;
   const isProtected = rows("auth_configuration").length > 0;
@@ -155,7 +157,7 @@
     if (candidates.length > 1) box.append(notice("MULTIPLE_CANDIDATES: every observed physical row is listed. No candidate is declared the one used when this old run was created. Full physical binding remains ambiguous."));
     for (const candidate of candidates) {
       const button = el("button", "Inspect local physical row " + candidate.id + " · " + candidate.status, "candidate-button");
-      button.type = "button"; button.dataset.receiptRow = String(candidate.id);
+      button.type = "button"; button.dataset.receiptRow = candidate.id;
       button.addEventListener("click", () => showOrigin(candidate)); box.append(button);
     }
     if (candidates.length === 1) showOrigin(candidates[0]);

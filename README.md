@@ -4,7 +4,7 @@ Personal project by Ümit Bora Günaydın
 
 I built this project to study reconciliation when records arrive late or are corrected after an evaluation. It uses synthetic ledger, investor and custody data, and keeps earlier findings available for inspection.
 
-Python and SQLite · Package **0.9.0** · Financial rule `stage2-v2` · SQLite schema `5`
+Python and SQLite · Package **0.9.1** · Financial rule `stage2-v2` · SQLite schema `5`
 
 [Example](#example) · [Run locally](#run-locally) · [Design notes](docs/model_contract.md) · [Türkçe](docs/showcase/README.tr.md)
 
@@ -70,6 +70,15 @@ This produces **9 synthetic scenarios / 24 saved evaluations**, an offline expor
 Expected synthetic `MISMATCH` and `INCOMPLETE` findings are not application failures. The reproduction exits 0 only when its checks pass. Its deliberately invalid rank must exit 2 and publish no queue; an unexpected subprocess exit or incomplete output fails the reproduction.
 
 ## Verification
+
+The 0.9.1 maintenance release verifies that effect-referencing replays follow
+the original committed attempt and preserves SQLite identifiers exactly in the
+offline page, including adjacent values above JavaScript's safe integer range.
+Financial results and authoritative evidence formats are unchanged. Old 0.9.0
+page assets may receive `PRESENTATION_INTEGRITY`; when the closed database and
+materials remain available, export a fresh bundle into a new directory. See the
+[maintenance contract](docs/stage11_1/contract.md) and
+[handoff](docs/stage11_1/HANDOFF.md) for the compatibility boundary.
 
 Stage 11 adds a portable explanation of one saved run. I wanted to follow a
 finding through its actual recorded inputs, physical receipt candidates and

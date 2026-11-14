@@ -302,7 +302,27 @@ def _presentation(data, run, capture, report, manifest):
     for name in ('index.html', 'app.js', 'style.css'):
         _need(data[name] == bounded_file(assets/name, MAX_JSON), 'PRESENTATION_INTEGRITY', 'unrecognized offline asset: ' + name)
     material = {name: value for name, value in manifest['files'].items() if name.startswith('materials/')}
-    payload = {'run': run, 'capture': capture, 'report': report, 'materials': material}
+    # Independently derive the display projection from already typed raw SQL
+    # rows. Do not trust exporter labels or share its presentation builder.
+    identity_columns = {
+        'receipts': ('id',), 'delivery_effects': ('sequence', 'core_receipt_id'),
+        'delivery_attempts': ('id', 'sequence', 'effect_sequence'), 'auth_configuration': ('id',),
+        'auth_policy_activations': ('epoch', 'previous_epoch'), 'auth_keys': ('first_epoch',),
+        'auth_decisions': ('id', 'epoch', 'sequence'),
+        'auth_delivery_links': ('sequence', 'decision_id', 'core_receipt_id'),
+        'auth_attempt_links': ('attempt_id', 'decision_id'),
+    }
+    shown_tables = {}
+    for table, rows in capture['tables'].items():
+        shown_tables[table] = []
+        for original in rows:
+            row = dict(original)
+            for column in identity_columns.get(table, ()):
+                if row[column] is not None:
+                    row[column] = str(row[column])
+            shown_tables[table].append(row)
+    shown_capture = {**capture, 'tables': shown_tables}
+    payload = {'run': run, 'capture': shown_capture, 'report': report, 'materials': material}
     expected = b'window.PROVENANCE_DATA = JSON.parse(' + canonical(canonical(payload).decode('ascii')) + b');\n'
     _need(data['data.js'] == expected, 'PRESENTATION_INTEGRITY', 'offline data differs from the independently verified payloads')
 
@@ -459,6 +479,13 @@ def _deliveries(t, physical, expected, policies, keys, current_keys, claims, con
             _need(pos not in committed, 'DELIVERY_RELATION', 'more than one original committed attempt')
             committed[pos] = aid
     _need(set(committed) == set(effects), 'DELIVERY_RELATION', 'effect lacks its sole original COMMITTED attempt')
+    for (aid,), attempt in attempts.items():
+        if attempt['effect_stream_id'] is not None:
+            pos = attempt['stream_id'], attempt['sequence']
+            # The effect and its COMMITTED attempt are inserted atomically.
+            # An earlier GAP without an effect reference remains admissible.
+            _need(aid >= committed[pos], 'DELIVERY_CAUSALITY',
+                  'effect-referencing attempt precedes its original COMMITTED attempt')
     for pos, effect in effects.items():
         _need(_positive(pos[1], streams[(pos[0],)]['planned_lines']), 'DELIVERY_RELATION', 'effect sequence outside signed plan')
         raw = _blob(effect['payload'], 65536)
@@ -483,6 +510,15 @@ def _deliveries(t, physical, expected, policies, keys, current_keys, claims, con
     _need(len(decision_refs) == len(set(decision_refs)) and set(decisions) == {(d,) for d in decision_refs}
           and {d['endorsement_id'] for d in decisions.values()} == set(claims),
           'PROTECTED_LINK', 'decision/endorsement inventory differs from selected attempts')
+    for (aid,), attempt in attempts.items():
+        pos = attempt['stream_id'], attempt['sequence']
+        if attempt['effect_stream_id'] is not None and aid != committed[pos]:
+            original_did = attempt_links[(committed[pos],)]['decision_id']
+            # Compare persistent IDs within each table, never across namespaces
+            # or via list position / untrusted observed_at wall-clock values.
+            _need(attempt_links[(aid,)]['decision_id'] > original_did,
+                  'DELIVERY_CAUSALITY',
+                  'effect-referencing decision precedes its original COMMITTED decision')
     for (did,), decision in decisions.items():
         epoch = decision['epoch']
         _need(epoch in policies and decision['policy_hash'] == expected['policies'][epoch-1]['policy_hash']

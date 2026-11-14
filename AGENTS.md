@@ -1,5 +1,22 @@
 # Project working agreement
 
+## Current Stage 11.1 maintenance authorization
+
+Repair only S11-F1 selected-effect causality and S11-F2 lossless derived view
+identities on stage11/run-provenance from accepted task head
+296a7c187cb516b2ecdbc030ebc8321a5cce4647; package 0.9.1. Keep stage2-v2,
+schema 5, authoritative v1 formats, financial/admission/auth runtime, policy/crypto,
+historical evidence and frozen experiment unchanged. Preserve all 641 old test
+identities and behavior assertions. Only current release/scope metadata and the
+explicitly authorized derived-view test fixture may change with reversible proofs.
+Keep all prior scope anchors; add a separate pinned 0.9.0 ancestor. New docs belong
+in docs/stage11_1 and actual evidence outside Git in stage11_1-output. Do not rerun
+the accepted baseline full suite or frozen experiment. Complete focused RED/GREEN
+first, then sealed sdist/wheel source/installed profiles and financial equality.
+Normal task-branch commits/pushes and draft PR #3 updates are authorized. No main
+merge, branch deletion, force push, dispatch, tag/release/PyPI or unrelated repair.
+The following task sections are historical and retain their original boundaries.
+
 ## Current Stage 11 provenance authorization
 
 Develop run-provenance-bundle-v1 on stage11/run-provenance from accepted main

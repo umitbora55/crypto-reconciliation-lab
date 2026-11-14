@@ -463,7 +463,69 @@ def provenance(gate, python, source, mode):
     gate.persist()
 
 
-def wheel_manifest(wheel, version='0.9.0'):
+MAINTENANCE_RESULTS = {
+    'rotation': (0, 'VERIFIED_FOR_CAPTURE', []),
+    'later_replay_promoted': (2, 'FAILED', ['DELIVERY_CAUSALITY']),
+    'large_ids': (0, 'VERIFIED_FOR_CAPTURE', []),
+    'tampered_transport': (2, 'FAILED', ['PRESENTATION_INTEGRITY']),
+}
+
+
+def validate_provenance_maintenance(setup, results):
+    require(setup.get('format') == 'release-provenance-maintenance-v1'
+            and setup.get('package_version') == '0.9.1', 'maintenance setup identity differs')
+    require(setup.get('f1_preservation') == {'external_changed_fields': ['capture_digest'],
+            'raw_run_equal': True, 'signed_materials_equal': True}, 'maintenance F1 preservation differs')
+    require(setup.get('f2_authoritative_capture_unchanged') is True, 'maintenance F2 raw capture changed')
+    paths = setup.get('f2_identity_paths')
+    require(type(paths) is list and len(paths) == 4
+            and {row.get('receipt_id') for row in paths} == {
+                '9007199254740991', '9007199254740992', '9007199254740993', '9223372036854775807'}
+            and all(type(row.get('effect_count')) is int and row['effect_count'] == 1 for row in paths),
+            'maintenance exact SQL identity coverage differs')
+    require(set(setup.get('fixtures', {})) == set(results) == set(MAINTENANCE_RESULTS),
+            'maintenance CLI control inventory differs')
+    for name, (code, status, reasons) in MAINTENANCE_RESULTS.items():
+        result = results[name]
+        require(type(result.get('exit_code')) is int and result['exit_code'] == code
+                and result.get('status') == status
+                and sorted({row['code'] for row in result.get('reasons', [])}) == reasons,
+                'maintenance semantic CLI result differs: ' + name)
+        require(result.get('run_creation_authorization_cut') == 'NOT_RECORDED'
+                and result.get('financial_recomputation') == 'NOT_PERFORMED', 'maintenance limits disappeared')
+    return {'status': 'PASS', 'case_count': 4, 'case_ids': sorted(MAINTENANCE_RESULTS)}
+
+
+def provenance_maintenance(gate, python, source, mode):
+    target = gate.output / (mode + '-provenance-maintenance')
+    flags = ['-I'] if mode == 'installed' else []
+    cwd = None if mode == 'installed' else source
+    helper = source / 'scripts/release_provenance_maintenance.py'
+    # -c leaves source mode's cwd importable; installed mode is isolated and only
+    # the explicit test-helper directory is added after the package import.
+    launcher = 'import runpy,sys; p=sys.argv.pop(1); runpy.run_path(p,run_name="__main__")'
+    setup = json.loads(gate.run(mode + '-provenance-maintenance-setup',
+        [python, '-B', *flags, '-c', launcher, helper, '--tests', source / 'tests', '--output', target], cwd))
+    require(Path(setup['environment']['origin']).resolve() == Path(gate.record[mode + '_import']['origin']).resolve(),
+            'maintenance setup imported a different source/package')
+    require(setup['environment']['isolated'] is (mode == 'installed'), 'maintenance import isolation differs')
+    results, controls = {}, {}
+    for name, (code, _, _) in MAINTENANCE_RESULTS.items():
+        results[name] = json.loads(gate.run(mode + '-maintenance-verify-' + name,
+            [python, '-B', *flags, '-m', 'crypto_reconciliation_lab', 'verify-provenance',
+             '--bundle', target / name / 'bundle', '--expectations', target / name / 'expectations.json'], cwd, expected=code))
+        path = target / name / 'verification.json'
+        save(path, results[name])
+        controls[name] = {'path': str(path), **digest(path), 'result': results[name]}
+    coverage = validate_provenance_maintenance(setup, results)
+    summary = {'status': 'PASS', 'coverage': coverage, 'setup': setup,
+               'setup_identity': digest(target / 'setup.json'), 'cli_controls': controls}
+    save(target / 'summary.json', summary)
+    gate.record[mode + '_provenance_maintenance'] = summary
+    gate.persist()
+
+
+def wheel_manifest(wheel, version='0.9.1'):
     with zipfile.ZipFile(wheel) as archive:
         members = archive.infolist()
         require(len(members) <= 1000 and sum(item.file_size for item in members) <= 32 * 1024**2, 'wheel member/size limit exceeded')
@@ -663,17 +725,21 @@ def main(argv=None):
             recovery(gate, python, source, 'source')
             source_auth(gate, python, source, 'source')
             provenance(gate, python, source, 'source')
+            provenance_maintenance(gate, python, source, 'source')
         reproduce(gate, python, source, 'installed', reference, args.profile != 'full')
         recovery(gate, python, source, 'installed')
         if args.profile != 'core':
             source_auth(gate, python, source, 'installed')
             provenance(gate, python, source, 'installed')
+            provenance_maintenance(gate, python, source, 'installed')
         else:
             gate.record['installed_source_auth'] = {'status': 'NOT_RUN', 'reason': 'core has no auth dependency; refusal checked separately'}
             gate.record['installed_provenance'] = {'status': 'NOT_RUN', 'reason': 'core has no auth dependency; all new command refusals checked separately'}
+            gate.record['installed_provenance_maintenance'] = {'status': 'NOT_RUN', 'reason': 'core has no auth dependency; provenance refusals checked before output'}
         if args.profile != 'full':
             gate.record['source_tests'] = gate.record['installed_tests'] = {'status': 'NOT_RUN', 'reason': 'full suite requires both optional extras'}
             gate.record['source_provenance'] = {'status': 'NOT_RUN', 'reason': 'source feature check belongs to the full profile; installed auth-only check remains separate'}
+            gate.record['source_provenance_maintenance'] = {'status': 'NOT_RUN', 'reason': 'source maintenance checks belong to the full profile'}
         if args.financial:
             inputs, outputs = gate.output / 'financial-input', gate.output / 'financial-matrix'
             generated = json.loads(gate.run('financial-generate', [python, '-B', '-I', '-m', 'crypto_reconciliation_lab', 'lab-generate', '--output', inputs,

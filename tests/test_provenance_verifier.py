@@ -49,7 +49,21 @@ def refresh(bundle, expectations, *, repin=False):
         assert all(expected[k] == original[k] for k in ('run_id', 'run_payload_sha256', 'configuration_digest', 'policies', 'policy_head'))
     material = {p.relative_to(bundle).as_posix(): fingerprint(p.read_bytes())
                 for p in sorted((bundle/'materials').rglob('*')) if p.is_file()}
-    value = {'run': run, 'capture': capture, 'report': report, 'materials': material}
+    # Fixture-only 0.9.1 display serialization; raw capture and every semantic
+    # assertion stay unchanged. Do not import the production view builder.
+    shown = copy.deepcopy(capture)
+    fields = {'receipts': ('id',), 'delivery_effects': ('sequence', 'core_receipt_id'),
+              'delivery_attempts': ('id', 'sequence', 'effect_sequence'), 'auth_configuration': ('id',),
+              'auth_policy_activations': ('epoch', 'previous_epoch'), 'auth_keys': ('first_epoch',),
+              'auth_decisions': ('id', 'epoch', 'sequence'),
+              'auth_delivery_links': ('sequence', 'decision_id', 'core_receipt_id'),
+              'auth_attempt_links': ('attempt_id', 'decision_id')}
+    for table, columns in fields.items():
+        for row in shown['tables'][table]:
+            for column in columns:
+                if type(row[column]) is int:
+                    row[column] = str(row[column])
+    value = {'run': run, 'capture': shown, 'report': report, 'materials': material}
     (bundle/'data.js').write_bytes(b'window.PROVENANCE_DATA = JSON.parse(' + encoded(encoded(value).decode('ascii')) + b');\n')
     manifest = load(bundle/'manifest.json')
     manifest['files'] = {p.relative_to(bundle).as_posix(): fingerprint(p.read_bytes())
