@@ -282,6 +282,7 @@ expandable record, physical candidate, original admission, signature, policy and
 raw line details. Links/downloads name exact bytes and hashes. It has no network
 dependencies, backend, CDN, external fonts or institution branding. All data is
 rendered as text, never executable source HTML. Keyboard controls and narrow
-layouts remain usable. A separate optional verification-record import may show
-the result only when its manifest binding matches, with its externally observed
-status clearly distinguished from the page's own unverified capture view.
+layouts remain usable. This v1 page does not import verification records and
+remains an unverified capture view. CLI results are read separately. Any future
+record-import feature would need an external manifest binding and a status
+clearly distinguished from the page's own view; it is not implemented here.

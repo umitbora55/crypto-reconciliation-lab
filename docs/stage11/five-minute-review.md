@@ -18,9 +18,10 @@ python3 -m venv .venv-provenance
    physical receipt candidates. All assets are local; no server is required.
 2. **Separate export from verification.** A newly exported page is a capture
    view. It does not certify itself. Run the independent command below, which
-   uses the TEST-ONLY fixture observation outside the bundle. A verifier result
-   can be imported into the page as a separate record only when its manifest
-   identity agrees. The sealed bundle is not edited to add a verified badge.
+   uses the TEST-ONLY fixture observation outside the bundle. Read its result
+   separately in the CLI output; this page does not import verification records
+   and remains CREATED / source verification NOT_PERFORMED. The sealed bundle
+   is not edited to add a verified badge.
 3. **Follow original authority.** Inspect the original committed effect,
    admission decision, endorsement, exact signed snapshot and policy epoch.
    The rotation example has more than three epochs. Original admission and the
