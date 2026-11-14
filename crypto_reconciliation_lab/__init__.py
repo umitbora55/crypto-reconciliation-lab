@@ -1,5 +1,5 @@
 """Synthetic, local crypto reconciliation reference model."""
-__version__ = "0.8.2"
+__version__ = "0.9.0"
 from .engine import reconcile
 from .store import Store
 

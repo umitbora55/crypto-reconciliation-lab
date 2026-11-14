@@ -25,7 +25,7 @@ from urllib.parse import unquote
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = "0.8.2"
+VERSION = "0.9.0"
 TOP_FILES = ("README.md", "AGENTS.md", "LICENSE", "pyproject.toml", "MANIFEST.in", ".gitignore", "requirements-build.txt", "requirements-auth.txt")
 SCRIPTS = ("build_release.py", "reproduce_review.py", "verify_release.py",
            "release_test_scope.py", "release_financial_scope.py", "release_admission_scope.py",
@@ -54,6 +54,7 @@ DOCS = ("docs/model_contract.md", "docs/correction_semantics.md", "docs/problem_
         "contracts/release-test-scope-0.8.0.json",
         "contracts/release-test-scope-0.8.1.json",
         "contracts/release-test-scope-0.8.2.json",
+        "contracts/release-test-scope-0.9.0.json",
         "docs/stage10/fixture-changes.md",
         "contracts/source-auth-scope-v1.json",
         "crypto_reconciliation_lab/source_auth/experiment_scope_v1.json")
@@ -121,6 +122,7 @@ def selected_files(root):
                 ("docs/stage10", {".md"}),
                 ("docs/stage10_1", {".md"}),
                 ("docs/stage10_2", {".md"}),
+                ("docs/stage11", {".md"}),
                 (".github/workflows", {".yml", ".yaml"}))
     for folder, suffixes in patterns:
         for path in (root / folder).rglob("*"):
@@ -145,7 +147,8 @@ def check_links(root):
              *(Path(root) / "docs/stage9_1").glob("*.md"),
              *(Path(root) / "docs/stage10").glob("*.md"),
              *(Path(root) / "docs/stage10_1").glob("*.md"),
-             *(Path(root) / "docs/stage10_2").glob("*.md")]
+             *(Path(root) / "docs/stage10_2").glob("*.md"),
+             *(Path(root) / "docs/stage11").glob("*.md")]
     for path in paths:
         for target in re.findall(r"\]\(([^)]+)\)", path.read_text(encoding="utf-8")):
             if re.match(r"[A-Za-z][A-Za-z0-9+.-]*:", target) or target.startswith("#"):

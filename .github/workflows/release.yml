@@ -91,6 +91,16 @@ jobs:
             ${{ runner.temp }}/release-full/installed-source-auth/**/*.json
             ${{ runner.temp }}/release-full/installed-source-auth/**/*.jsonl
             ${{ runner.temp }}/release-full/installed-source-auth/**/*.md
+            ${{ runner.temp }}/release-full/source-provenance/summary.json
+            ${{ runner.temp }}/release-full/source-provenance/summary.md
+            ${{ runner.temp }}/release-full/source-provenance/*.release-verification.json
+            ${{ runner.temp }}/release-full/source-provenance/cases/*/verification.json
+            ${{ runner.temp }}/release-full/source-provenance/cases/*/commands/verify/*
+            ${{ runner.temp }}/release-full/installed-provenance/summary.json
+            ${{ runner.temp }}/release-full/installed-provenance/summary.md
+            ${{ runner.temp }}/release-full/installed-provenance/*.release-verification.json
+            ${{ runner.temp }}/release-full/installed-provenance/cases/*/verification.json
+            ${{ runner.temp }}/release-full/installed-provenance/cases/*/commands/verify/*
           if-no-files-found: error
           retention-days: 7
 
@@ -166,5 +176,10 @@ jobs:
             ${{ runner.temp }}/release-auth-only/installed-source-auth/**/*.json
             ${{ runner.temp }}/release-auth-only/installed-source-auth/**/*.jsonl
             ${{ runner.temp }}/release-auth-only/installed-source-auth/**/*.md
+            ${{ runner.temp }}/release-auth-only/installed-provenance/summary.json
+            ${{ runner.temp }}/release-auth-only/installed-provenance/summary.md
+            ${{ runner.temp }}/release-auth-only/installed-provenance/*.release-verification.json
+            ${{ runner.temp }}/release-auth-only/installed-provenance/cases/*/verification.json
+            ${{ runner.temp }}/release-auth-only/installed-provenance/cases/*/commands/verify/*
           if-no-files-found: error
           retention-days: 7

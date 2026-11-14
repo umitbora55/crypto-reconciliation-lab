@@ -1,5 +1,23 @@
 # Project working agreement
 
+## Current Stage 11 provenance authorization
+
+Develop run-provenance-bundle-v1 on stage11/run-provenance from accepted main
+6cb02dee2c2b36bd53d79c2a80dbc7ed6ae90b3f. Package 0.9.0 keeps stage2-v2,
+schema 5, old formats, financial/auth runtime, existing review UI and fixed
+source-auth verifier unchanged. Preserve all 575 old test identities and behavior
+assertions; only current release/scope fixture metadata may change with reversible
+diffs. The new read-only exporter, independent external-trust verifier, finite
+synthetic demo and offline page belong under provenance/. Write the contract first.
+Never infer run-creation authority from later capture links: NOT_RECORDED remains.
+Keep historical scope anchors, 373 financial reference files, frozen experiment and
+old documents/outputs unchanged. New docs belong in docs/stage11; actual execution
+and release/CI/archive evidence stays outside Git in stage11-output. Finish focused
+scenarios before one final full gate; rerun only for an actual failure or code change.
+Normal task-branch commits/pushes and a new draft PR are authorized. No main merge,
+force push, branch deletion, dispatch, release/tag/PyPI, frozen experiment or new stage.
+Earlier no-feature/no-publication notes describe historical task boundaries.
+
 ## Current Stage 10.2 maintenance authorization
 
 The explicit task authorizes only S10-F2 persistent-key and stream inventory
