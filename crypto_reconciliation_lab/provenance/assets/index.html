@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'none'; img-src 'none'; font-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Saved run · source provenance</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="data.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#finding-detail">Skip to finding details</a>
+  <header class="masthead">
+    <div><p class="eyebrow">Crypto reconciliation lab / Offline review</p><h1>A saved finding, with its source records</h1></div>
+    <span class="tag neutral">Capture view</span>
+  </header>
+  <section class="context" aria-label="Selected saved run">
+    <div><span class="label">Selected run</span><code id="run-id"></code></div>
+    <div><span class="label">Economic cut</span><span id="balance-at"></span></div>
+    <div><span class="label">Knowledge cut</span><span id="knowledge-at"></span></div>
+    <div class="context-download"><a href="run.json" download="run.json">Download original run JSON</a><span class="label">Exact saved UTF-8 bytes</span></div>
+  </section>
+  <section class="trust-note" aria-label="Verification scope">
+    <strong>CREATED · source verification NOT_PERFORMED</strong>
+    <p>This page displays the saved financial result and relationships observed in a closed database capture. It does not authenticate its own data. Verify the bundle with separately selected operator expectations using <code>verify-provenance</code>.</p>
+    <div class="limits"><span>Run creation authorization cut: <strong>NOT_RECORDED</strong></span><span>Financial recomputation: <strong>NOT_PERFORMED</strong></span></div>
+  </section>
+  <main class="workspace">
+    <aside class="finding-navigation">
+      <div class="panel-heading"><h2>Saved findings</h2><span id="finding-count" class="count" aria-live="polite"></span></div>
+      <label for="asset-filter">Asset</label><select id="asset-filter"><option value="">All assets</option></select>
+      <nav id="findings" aria-label="Choose a saved finding"></nav>
+      <p class="small">Amounts are shown per asset. Difference means expected minus reported. A valid signature does not make a reported quantity correct.</p>
+      <details><summary>Capture identity and limitations</summary><dl id="capture-summary"></dl><p class="small">The database hash identifies the observed file. Without the database bytes, it does not prove this SQL projection. The separate operator input must pin the capture digest.</p><a href="capture.json" download="capture.json">Download captured relationships</a><br><a href="report.json" download="report.json">Download scope report</a></details>
+    </aside>
+    <section id="finding-detail" class="detail" tabindex="-1" aria-label="Selected finding">
+      <div id="finding-heading"></div>
+      <div id="financial-summary" class="amount-grid"></div>
+      <p id="financial-state"></p>
+      <div id="finding-issues"></div>
+      <section aria-labelledby="evidence-title"><h3 id="evidence-title">1. Saved evidence</h3><p class="help">Open a reported balance or other saved record, then choose a receipt hash. Report versions and amounts below are copied from the saved run.</p><div id="evidence"></div></section>
+      <section id="receipt-section" hidden aria-labelledby="receipt-title"><h3 id="receipt-title" tabindex="-1">2. Physical receipt candidates</h3><div id="receipt-detail"></div></section>
+      <section id="origin-section" hidden aria-labelledby="origin-title"><h3 id="origin-title" tabindex="-1">3. Original admission and source line</h3><div id="origin-detail"></div></section>
+      <details><summary>Original finding JSON</summary><pre id="finding-json"></pre></details>
+    </section>
+  </main>
+  <footer><p>One immutable financial run. One observed capture. A separate operator trust decision. No network connection is needed.</p></footer>
+  <noscript><p>This local view requires JavaScript. Original run.json, capture.json and report.json remain available as plain files.</p></noscript>
+</body>
+</html>

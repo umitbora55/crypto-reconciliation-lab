@@ -4,7 +4,7 @@ Personal project by Ümit Bora Günaydın
 
 I built this project to study reconciliation when records arrive late or are corrected after an evaluation. It uses synthetic ledger, investor and custody data, and keeps earlier findings available for inspection.
 
-Python and SQLite · Package **0.8.2** · Financial rule `stage2-v2` · SQLite schema `5`
+Python and SQLite · Package **0.9.1** · Financial rule `stage2-v2` · SQLite schema `5`
 
 [Example](#example) · [Run locally](#run-locally) · [Design notes](docs/model_contract.md) · [Türkçe](docs/showcase/README.tr.md)
 
@@ -70,6 +70,41 @@ This produces **9 synthetic scenarios / 24 saved evaluations**, an offline expor
 Expected synthetic `MISMATCH` and `INCOMPLETE` findings are not application failures. The reproduction exits 0 only when its checks pass. Its deliberately invalid rank must exit 2 and publish no queue; an unexpected subprocess exit or incomplete output fails the reproduction.
 
 ## Verification
+
+The 0.9.1 maintenance release verifies that effect-referencing replays follow
+the original committed attempt and preserves SQLite identifiers exactly in the
+offline page, including adjacent values above JavaScript's safe integer range.
+Financial results and authoritative evidence formats are unchanged. Old 0.9.0
+page assets may receive `PRESENTATION_INTEGRITY`; when the closed database and
+materials remain available, export a fresh bundle into a new directory. See the
+[maintenance contract](docs/stage11_1/contract.md) and
+[handoff](docs/stage11_1/HANDOFF.md) for the compatibility boundary.
+
+Stage 11 adds a portable explanation of one saved run. I wanted to follow a
+finding through its actual recorded inputs, physical receipt candidates and
+original signed admission, while being explicit about what the saved model
+cannot establish. The exporter preserves the exact saved financial payload; a
+separate offline verifier checks its listed evidence against operator-selected
+expectations outside the bundle. It does not recalculate the balances.
+
+```sh
+python3 -m venv .venv-provenance
+.venv-provenance/bin/python -m pip install '.[auth]'
+.venv-provenance/bin/python -m crypto_reconciliation_lab demo-provenance --output provenance-demo-new
+.venv-provenance/bin/python -m crypto_reconciliation_lab verify-provenance --bundle provenance-demo-new/cases/clean/bundle --expectations provenance-demo-new/cases/clean/expectations.json
+```
+
+Read `provenance-demo-new/summary.md` and open
+`provenance-demo-new/cases/clean/bundle/index.html` locally. The small demonstration
+uses explicitly TEST-ONLY policies and independently observed fixture pins. A
+verified source can still report a financial `MISMATCH +1`; missing full source
+bytes, legacy receipts and multiple physical candidates remain partial. No
+run-creation authorization cut was recorded in the original model, so even a
+successful verification retains `NOT_RECORDED` and financial recomputation stays
+`NOT_PERFORMED`. Export `CREATED` is not a verification verdict. See the
+[five-minute walkthrough](docs/stage11/five-minute-review.md),
+[portable contract](docs/stage11/provenance-contract.md) and
+[trust boundaries](docs/stage11/trust-and-sources.md).
 
 In 0.8.2 I closed two remaining SQL inventory gaps in the source-auth evidence
 reader. Persistent keys must match the activated policy history, and every stream

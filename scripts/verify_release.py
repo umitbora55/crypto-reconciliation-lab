@@ -272,6 +272,33 @@ def core_auth_denied(gate, python):
     gate.persist()
 
 
+def core_provenance_denied(gate, python):
+    """Every new command reports the missing auth extra before output effects."""
+    target = gate.output / 'core-provenance-must-not-exist'
+    commands = {
+        'demo': ['demo-provenance', '--output', target],
+        'export': ['export-provenance', '--db', gate.external / 'absent.sqlite',
+                   '--run-id', '0' * 64, '--materials', gate.external / 'absent-materials', '--output', target],
+        'verify': ['verify-provenance', '--bundle', gate.external / 'absent-bundle',
+                   '--expectations', gate.external / 'absent-expectations.json'],
+    }
+    observed = {}
+    for operation, arguments in commands.items():
+        name = 'core-provenance-' + operation + '-unavailable'
+        stdout = gate.run(name, [python, '-B', '-I', '-m', 'crypto_reconciliation_lab', *arguments], expected=2)
+        stderr = (gate.output / 'logs' / (name + '.stderr.txt')).read_text(encoding='utf-8')
+        require('AUTH_DEPENDENCY' in stdout + stderr and not target.exists(),
+                'core provenance command did not fail explicitly before creating output')
+        if operation == 'verify':
+            result = json.loads(stdout)
+            require(result['status'] == 'FAILED' and result['exit_code'] == 2
+                    and [reason['code'] for reason in result['reasons']] == ['AUTH_DEPENDENCY'],
+                    'core provenance verifier did not report the missing dependency')
+        observed[operation] = {'status': 'PASS', 'exit_code': 2, 'reason': 'AUTH_DEPENDENCY', 'output_absent': True}
+    gate.record['core_provenance_refusal'] = {'status': 'PASS', 'operations': observed}
+    gate.persist()
+
+
 def source_auth(gate, python, source, mode):
     """Run the new independent auth gate, keeping historical recovery v2 intact."""
     target = gate.output / (mode + '-source-auth')
@@ -293,7 +320,212 @@ def source_auth(gate, python, source, mode):
     gate.persist()
 
 
-def wheel_manifest(wheel, version='0.8.2'):
+PROVENANCE_GROUPS = {
+    'clean_two_publishers': ['clean'],
+    'signed_custody_difference': ['signed_mismatch'],
+    'historical_correction_quarantine': ['history_original', 'history_corrected', 'history_quarantine'],
+    'rotation_and_revocation': ['rotation'],
+    'exact_replay': ['replay'],
+    'multiple_physical_candidates': ['ambiguous'],
+    'missing_full_snapshot': ['missing_snapshot', 'prefix_only'],
+    'legacy_and_protected': ['legacy', 'broken_protected_link', 'protected_downgrade'],
+    'external_expectations': ['wrong_run', 'wrong_capture', 'wrong_policy', 'hidden_policy_head'],
+    'semantic_relations': ['removed_receipt', 'changed_receipt', 'removed_quarantine', 'removed_correction',
+                           'changed_effect', 'changed_endorsement', 'broken_link_and_missing_snapshot'],
+}
+# Release-owned literals. Neither the demo's expected labels nor an exporter
+# inventory defines what this independent gate is required to observe.
+PROVENANCE_RESULTS = {
+    **{name: (0, 'VERIFIED_FOR_CAPTURE', []) for name in
+       ('clean', 'signed_mismatch', 'history_original', 'history_corrected', 'history_quarantine', 'rotation', 'replay')},
+    'ambiguous': (3, 'PARTIAL', ['MULTIPLE_RECEIPT_CANDIDATES']),
+    'missing_snapshot': (3, 'PARTIAL', ['MISSING_SIGNED_SNAPSHOT']),
+    'prefix_only': (3, 'PARTIAL', ['MISSING_SIGNED_SNAPSHOT']),
+    'legacy': (3, 'PARTIAL', ['UNSIGNED_LEGACY']),
+    **{name: (2, 'FAILED', [code]) for name, code in {
+        'broken_protected_link': 'PROTECTED_LINK', 'protected_downgrade': 'PROFILE_MISMATCH',
+        'wrong_run': 'RUN_IDENTITY', 'wrong_capture': 'CAPTURE_BINDING', 'wrong_policy': 'POLICY_BINDING',
+        'hidden_policy_head': 'POLICY_BINDING', 'removed_receipt': 'EVIDENCE_SCOPE',
+        'changed_receipt': 'RECEIPT_BINDING', 'removed_quarantine': 'EVIDENCE_SCOPE',
+        'removed_correction': 'EVIDENCE_SCOPE', 'changed_effect': 'DELIVERY_RELATION',
+        'changed_endorsement': 'ENDORSEMENT_BINDING', 'broken_link_and_missing_snapshot': 'PROTECTED_LINK',
+    }.items()},
+}
+
+
+def validate_provenance_demo(report):
+    require(type(report) is dict and report.get('format') == 'provenance-demo-v1'
+            and report.get('status') == 'PASS', 'provenance demo did not complete')
+    require(report.get('run_creation_authorization_cut') == 'NOT_RECORDED'
+            and report.get('financial_recomputation') == 'NOT_PERFORMED', 'provenance limits disappeared')
+    groups, rows = report.get('scenario_groups'), report.get('cases')
+    require(type(groups) is list and len(groups) == len(PROVENANCE_GROUPS)
+            and all(type(row) is dict and type(row.get('id')) is str for row in groups),
+            'provenance scenario group inventory differs')
+    actual_groups = {row['id']: row.get('case_ids') for row in groups}
+    require(len(actual_groups) == len(groups) and actual_groups == PROVENANCE_GROUPS
+            and all(row.get('passed') is True for row in groups), 'provenance scenario group coverage differs')
+    require(type(rows) is list and len(rows) == len(PROVENANCE_RESULTS)
+            and all(type(row) is dict and type(row.get('id')) is str for row in rows),
+            'provenance case inventory differs')
+    cases = {row['id']: row for row in rows}
+    require(len(cases) == len(rows) and set(cases) == set(PROVENANCE_RESULTS), 'provenance case identities differ')
+    for group_id, case_ids in PROVENANCE_GROUPS.items():
+        for name in case_ids:
+            row = cases[name]
+            actual = row.get('actual', {})
+            wanted_exit, wanted_status, wanted_reasons = PROVENANCE_RESULTS[name]
+            require(row.get('group_id') == group_id and row.get('passed') is True
+                    and type(actual.get('exit_code')) is int
+                    and (actual['exit_code'], actual.get('status'), actual.get('reasons'))
+                    == (wanted_exit, wanted_status, wanted_reasons),
+                    'provenance semantic result differs: ' + name)
+    for name in ('clean', 'signed_mismatch'):
+        findings = cases[name].get('financial', {}).get('findings')
+        require(type(findings) is list and len(findings) == 6, 'provenance financial finding coverage differs')
+        actual = {(row['asset'], row['comparison'], row['scope']):
+                  (row['expected'], row['reported'], row['difference'], row['data_state'], row['reconciliation_state'])
+                  for row in findings}
+        wanted = {('TOKEN_X', 'A', 'Aster'): ('7', '7', '0', 'COMPLETE', 'MATCHED'),
+                  ('TOKEN_X', 'A', 'Birch'): ('4', '4', '0', 'COMPLETE', 'MATCHED'),
+                  ('TOKEN_X', 'B', 'customer_liability'): ('11', '11', '0', 'COMPLETE', 'MATCHED'),
+                  ('TOKEN_Y', 'A', 'Aster'): ('0.3', '0.3', '0', 'COMPLETE', 'MATCHED'),
+                  ('TOKEN_Y', 'A', 'Birch'): ('0.2', '0.2', '0', 'COMPLETE', 'MATCHED'),
+                  ('TOKEN_Y', 'B', 'customer_liability'): ('0.5', '0.5', '0', 'COMPLETE', 'MATCHED')}
+        if name == 'signed_mismatch':
+            wanted[('TOKEN_X', 'B', 'customer_liability')] = ('11', '10', '1', 'COMPLETE', 'MISMATCH')
+        require(actual == wanted, 'provenance literal financial result differs: ' + name)
+    return {'status': 'PASS', 'scenario_count': 10, 'case_count': 24, 'case_ids': sorted(cases),
+            'expected_results_source': 'release-owned literals; demo expected labels are not an oracle'}
+
+
+def provenance_command_record(target, name, python, flags, cwd, verification):
+    folder = Path(target) / 'cases' / name / 'commands' / 'verify'
+    command = json.loads((folder / 'command.json').read_text(encoding='utf-8'))
+    argv = list(map(str, [python, '-B', *flags, '-m', 'crypto_reconciliation_lab', 'verify-provenance',
+        '--bundle', Path(target) / 'cases' / name / 'bundle',
+        '--expectations', Path(target) / 'cases' / name / 'expectations.json']))
+    require(command.get('argv') == argv and Path(command['cwd']).resolve() == Path(cwd).resolve()
+            and type(command.get('exit_code')) is int and command['exit_code'] == verification['exit_code'],
+            'provenance actual CLI identity or exit differs: ' + name)
+    for kind in ('stdout', 'stderr'):
+        relative = 'cases/' + name + '/commands/verify/' + kind + '.txt'
+        require(command.get(kind) == relative and command.get(kind + '_sha256') == digest(folder / (kind + '.txt'))['sha256'],
+                'provenance command log identity differs: ' + name)
+    require(json.loads((folder / 'stdout.txt').read_text(encoding='utf-8')) == verification,
+            'provenance command stdout differs from saved verification: ' + name)
+    return {'command': digest(folder / 'command.json'), 'stdout': digest(folder / 'stdout.txt'),
+            'stderr': digest(folder / 'stderr.txt'), 'exit_code': command['exit_code']}
+
+
+def provenance(gate, python, source, mode):
+    target = gate.output / (mode + '-provenance')
+    flags = ['-I'] if mode == 'installed' else []
+    cwd = None if mode == 'installed' else source
+    gate.run(mode + '-provenance', [python, '-B', *flags, '-m', 'crypto_reconciliation_lab',
+             'demo-provenance', '--output', target], cwd)
+    report = json.loads((target / 'summary.json').read_text(encoding='utf-8'))
+    coverage = validate_provenance_demo(report)
+    origin = Path(report['environment']['import_origin']).resolve()
+    require(origin == Path(gate.record[mode + '_import']['origin']).resolve(),
+            'provenance demo imported a different source/package')
+    records = {}
+    for row in report['cases']:
+        path = target / 'cases' / row['id'] / 'verification.json'
+        actual = json.loads(path.read_text(encoding='utf-8'))
+        expected_exit, expected_status, expected_reasons = PROVENANCE_RESULTS[row['id']]
+        require(type(actual.get('exit_code')) is int
+                and (actual['exit_code'], actual.get('status'), sorted({reason['code'] for reason in actual['reasons']}))
+                == (expected_exit, expected_status, expected_reasons),
+                'provenance saved verification differs: ' + row['id'])
+        require(actual.get('run_creation_authorization_cut') == 'NOT_RECORDED'
+                and actual.get('financial_recomputation') == 'NOT_PERFORMED', 'provenance saved limits disappeared')
+        observed_command = provenance_command_record(target, row['id'], python, flags,
+                                                     gate.external if mode == 'installed' else source, actual)
+        records[row['id']] = {'path': str(path), **digest(path), 'actual_cli': observed_command}
+    controls = {}
+    for name in ('clean', 'broken_protected_link'):
+        code, status, reasons = PROVENANCE_RESULTS[name]
+        verified = json.loads(gate.run(mode + '-verify-provenance-' + name,
+            [python, '-B', *flags, '-m', 'crypto_reconciliation_lab', 'verify-provenance',
+             '--bundle', target / 'cases' / name / 'bundle',
+             '--expectations', target / 'cases' / name / 'expectations.json'], cwd, expected=code))
+        require(type(verified.get('exit_code')) is int and verified['exit_code'] == code and verified['status'] == status
+                and sorted({reason['code'] for reason in verified['reasons']}) == reasons,
+                'independent provenance CLI control differs: ' + name)
+        path = target / (name + '.release-verification.json')
+        save(path, verified)
+        controls[name] = {'path': str(path), **digest(path), 'result': verified}
+    gate.record[mode + '_provenance'] = {'status': 'PASS', 'path': str(target), 'coverage': coverage,
+        'summary_identity': digest(target / 'summary.json'), 'verification_records': records, 'independent_cli_controls': controls,
+        'operator_anchor': 'TEST-ONLY controlled fixture observation outside each bundle',
+        'run_creation_authorization_cut': 'NOT_RECORDED', 'financial_recomputation': 'NOT_PERFORMED'}
+    gate.persist()
+
+
+MAINTENANCE_RESULTS = {
+    'rotation': (0, 'VERIFIED_FOR_CAPTURE', []),
+    'later_replay_promoted': (2, 'FAILED', ['DELIVERY_CAUSALITY']),
+    'large_ids': (0, 'VERIFIED_FOR_CAPTURE', []),
+    'tampered_transport': (2, 'FAILED', ['PRESENTATION_INTEGRITY']),
+}
+
+
+def validate_provenance_maintenance(setup, results):
+    require(setup.get('format') == 'release-provenance-maintenance-v1'
+            and setup.get('package_version') == '0.9.1', 'maintenance setup identity differs')
+    require(setup.get('f1_preservation') == {'external_changed_fields': ['capture_digest'],
+            'raw_run_equal': True, 'signed_materials_equal': True}, 'maintenance F1 preservation differs')
+    require(setup.get('f2_authoritative_capture_unchanged') is True, 'maintenance F2 raw capture changed')
+    paths = setup.get('f2_identity_paths')
+    require(type(paths) is list and len(paths) == 4
+            and {row.get('receipt_id') for row in paths} == {
+                '9007199254740991', '9007199254740992', '9007199254740993', '9223372036854775807'}
+            and all(type(row.get('effect_count')) is int and row['effect_count'] == 1 for row in paths),
+            'maintenance exact SQL identity coverage differs')
+    require(set(setup.get('fixtures', {})) == set(results) == set(MAINTENANCE_RESULTS),
+            'maintenance CLI control inventory differs')
+    for name, (code, status, reasons) in MAINTENANCE_RESULTS.items():
+        result = results[name]
+        require(type(result.get('exit_code')) is int and result['exit_code'] == code
+                and result.get('status') == status
+                and sorted({row['code'] for row in result.get('reasons', [])}) == reasons,
+                'maintenance semantic CLI result differs: ' + name)
+        require(result.get('run_creation_authorization_cut') == 'NOT_RECORDED'
+                and result.get('financial_recomputation') == 'NOT_PERFORMED', 'maintenance limits disappeared')
+    return {'status': 'PASS', 'case_count': 4, 'case_ids': sorted(MAINTENANCE_RESULTS)}
+
+
+def provenance_maintenance(gate, python, source, mode):
+    target = gate.output / (mode + '-provenance-maintenance')
+    flags = ['-I'] if mode == 'installed' else []
+    cwd = None if mode == 'installed' else source
+    helper = source / 'scripts/release_provenance_maintenance.py'
+    # -c leaves source mode's cwd importable; installed mode is isolated and only
+    # the explicit test-helper directory is added after the package import.
+    launcher = 'import runpy,sys; p=sys.argv.pop(1); runpy.run_path(p,run_name="__main__")'
+    setup = json.loads(gate.run(mode + '-provenance-maintenance-setup',
+        [python, '-B', *flags, '-c', launcher, helper, '--tests', source / 'tests', '--output', target], cwd))
+    require(Path(setup['environment']['origin']).resolve() == Path(gate.record[mode + '_import']['origin']).resolve(),
+            'maintenance setup imported a different source/package')
+    require(setup['environment']['isolated'] is (mode == 'installed'), 'maintenance import isolation differs')
+    results, controls = {}, {}
+    for name, (code, _, _) in MAINTENANCE_RESULTS.items():
+        results[name] = json.loads(gate.run(mode + '-maintenance-verify-' + name,
+            [python, '-B', *flags, '-m', 'crypto_reconciliation_lab', 'verify-provenance',
+             '--bundle', target / name / 'bundle', '--expectations', target / name / 'expectations.json'], cwd, expected=code))
+        path = target / name / 'verification.json'
+        save(path, results[name])
+        controls[name] = {'path': str(path), **digest(path), 'result': results[name]}
+    coverage = validate_provenance_maintenance(setup, results)
+    summary = {'status': 'PASS', 'coverage': coverage, 'setup': setup,
+               'setup_identity': digest(target / 'setup.json'), 'cli_controls': controls}
+    save(target / 'summary.json', summary)
+    gate.record[mode + '_provenance_maintenance'] = summary
+    gate.persist()
+
+
+def wheel_manifest(wheel, version='0.9.1'):
     with zipfile.ZipFile(wheel) as archive:
         members = archive.infolist()
         require(len(members) <= 1000 and sum(item.file_size for item in members) <= 32 * 1024**2, 'wheel member/size limit exceeded')
@@ -473,6 +705,7 @@ def main(argv=None):
             validate_core_probe(installed)
             validate_auth_absent(installed)
             core_auth_denied(gate, python)
+            core_provenance_denied(gate, python)
         elif args.profile == 'auth-only':
             validate_core_probe(installed)
             validate_auth_pins(installed, source)
@@ -491,14 +724,22 @@ def main(argv=None):
             reproduce(gate, python, source, 'source', reference, False)
             recovery(gate, python, source, 'source')
             source_auth(gate, python, source, 'source')
+            provenance(gate, python, source, 'source')
+            provenance_maintenance(gate, python, source, 'source')
         reproduce(gate, python, source, 'installed', reference, args.profile != 'full')
         recovery(gate, python, source, 'installed')
         if args.profile != 'core':
             source_auth(gate, python, source, 'installed')
+            provenance(gate, python, source, 'installed')
+            provenance_maintenance(gate, python, source, 'installed')
         else:
             gate.record['installed_source_auth'] = {'status': 'NOT_RUN', 'reason': 'core has no auth dependency; refusal checked separately'}
+            gate.record['installed_provenance'] = {'status': 'NOT_RUN', 'reason': 'core has no auth dependency; all new command refusals checked separately'}
+            gate.record['installed_provenance_maintenance'] = {'status': 'NOT_RUN', 'reason': 'core has no auth dependency; provenance refusals checked before output'}
         if args.profile != 'full':
             gate.record['source_tests'] = gate.record['installed_tests'] = {'status': 'NOT_RUN', 'reason': 'full suite requires both optional extras'}
+            gate.record['source_provenance'] = {'status': 'NOT_RUN', 'reason': 'source feature check belongs to the full profile; installed auth-only check remains separate'}
+            gate.record['source_provenance_maintenance'] = {'status': 'NOT_RUN', 'reason': 'source maintenance checks belong to the full profile'}
         if args.financial:
             inputs, outputs = gate.output / 'financial-input', gate.output / 'financial-matrix'
             generated = json.loads(gate.run('financial-generate', [python, '-B', '-I', '-m', 'crypto_reconciliation_lab', 'lab-generate', '--output', inputs,
@@ -522,6 +763,7 @@ def main(argv=None):
             f"Financial matrix: {gate.record['financial_matrix']['status']}.\n\n"
             f"Admission recovery: {gate.record['installed_recovery']['scope']['executed_count']} fixed scenarios, observed crash barriers and negative controls PASS.\n\n"
             f"Source authentication: {gate.record['installed_source_auth']['status']}. Profile-specific dependency absence/pins are in the import probe.\n\n"
+            f"Saved-run provenance: {gate.record['installed_provenance']['status']}. Run-creation authorization remains NOT_RECORDED; financial recomputation NOT_PERFORMED.\n\n"
             "All commands, actual exits, import origins, dependency versions, byte proofs and logs are in verification.json. "
             "No main triage generation, training, or final holdout evaluation was invoked by this gate.\n", encoding='utf-8')
         print(json.dumps({'status': 'PASS', 'profile': args.profile, 'report': str(gate.output / 'verification.json')}))

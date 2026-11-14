@@ -88,6 +88,16 @@ def main(argv=None):
     auth_verify = commands.add_parser("verify-source-auth", help="independently verify source-auth evidence against a local anchor")
     auth_verify.add_argument("--bundle", required=True)
     auth_verify.add_argument("--anchor", required=True, help="local operator anchor JSON or explicit demo-test-only")
+    provenance_export = commands.add_parser("export-provenance", help="capture one saved run and observed source relations without recomputing finance")
+    provenance_export.add_argument("--db", required=True, help="closed schema-5 SQLite copy")
+    provenance_export.add_argument("--run-id", required=True)
+    provenance_export.add_argument("--materials", required=True, help="directory containing snapshots/<sha256>.jsonl")
+    provenance_export.add_argument("--output", required=True, help="new bundle directory")
+    provenance_verify = commands.add_parser("verify-provenance", help="verify a portable run bundle against separately selected operator expectations")
+    provenance_verify.add_argument("--bundle", required=True)
+    provenance_verify.add_argument("--expectations", required=True, help="regular provenance-expectations-v1 file outside the bundle")
+    provenance_demo = commands.add_parser("demo-provenance", help="generate the bounded TEST-ONLY run provenance demonstration")
+    provenance_demo.add_argument("--output", required=True, help="new directory; no main experiment or training")
     protect = commands.add_parser("auth-enable", help="atomically protect an empty schema-5 database using local operator policy")
     protect.add_argument("--db", required=True)
     protect.add_argument("--receiver", required=True)
@@ -137,9 +147,24 @@ def main(argv=None):
     args = parser.parse_args(argv)
     store = None
     try:
-        if args.command in ("demo-source-auth", "verify-source-auth", "auth-enable", "auth-activate-policy", "ingest-signed"):
+        if args.command in ("demo-source-auth", "verify-source-auth", "auth-enable", "auth-activate-policy", "ingest-signed", "export-provenance", "demo-provenance"):
             from .source_auth.crypto import require_auth
             require_auth()  # Before creating any output or opening a mutable database.
+        if args.command == "export-provenance":
+            from .provenance.exporter import export_provenance
+            result = export_provenance(args.db, args.run_id, args.materials, args.output)
+            print(json.dumps(result, sort_keys=True))
+            return 0
+        if args.command == "verify-provenance":
+            from .provenance.verifier import verify_bundle
+            result = verify_bundle(args.bundle, args.expectations)
+            print(json.dumps(result, sort_keys=True))
+            return result["exit_code"]
+        if args.command == "demo-provenance":
+            from .provenance.demo import run_demo
+            result = run_demo(args.output)
+            print(json.dumps(result, sort_keys=True))
+            return 0 if result["status"] == "PASS" else 2
         if args.command == "demo-source-auth":
             from .source_auth.demo import demo_source_auth
             result = demo_source_auth(args.output, seed=args.seed)

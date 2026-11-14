@@ -1,5 +1,40 @@
 # Project working agreement
 
+## Current Stage 11.1 maintenance authorization
+
+Repair only S11-F1 selected-effect causality and S11-F2 lossless derived view
+identities on stage11/run-provenance from accepted task head
+296a7c187cb516b2ecdbc030ebc8321a5cce4647; package 0.9.1. Keep stage2-v2,
+schema 5, authoritative v1 formats, financial/admission/auth runtime, policy/crypto,
+historical evidence and frozen experiment unchanged. Preserve all 641 old test
+identities and behavior assertions. Only current release/scope metadata and the
+explicitly authorized derived-view test fixture may change with reversible proofs.
+Keep all prior scope anchors; add a separate pinned 0.9.0 ancestor. New docs belong
+in docs/stage11_1 and actual evidence outside Git in stage11_1-output. Do not rerun
+the accepted baseline full suite or frozen experiment. Complete focused RED/GREEN
+first, then sealed sdist/wheel source/installed profiles and financial equality.
+Normal task-branch commits/pushes and draft PR #3 updates are authorized. No main
+merge, branch deletion, force push, dispatch, tag/release/PyPI or unrelated repair.
+The following task sections are historical and retain their original boundaries.
+
+## Current Stage 11 provenance authorization
+
+Develop run-provenance-bundle-v1 on stage11/run-provenance from accepted main
+6cb02dee2c2b36bd53d79c2a80dbc7ed6ae90b3f. Package 0.9.0 keeps stage2-v2,
+schema 5, old formats, financial/auth runtime, existing review UI and fixed
+source-auth verifier unchanged. Preserve all 575 old test identities and behavior
+assertions; only current release/scope fixture metadata may change with reversible
+diffs. The new read-only exporter, independent external-trust verifier, finite
+synthetic demo and offline page belong under provenance/. Write the contract first.
+Never infer run-creation authority from later capture links: NOT_RECORDED remains.
+Keep historical scope anchors, 373 financial reference files, frozen experiment and
+old documents/outputs unchanged. New docs belong in docs/stage11; actual execution
+and release/CI/archive evidence stays outside Git in stage11-output. Finish focused
+scenarios before one final full gate; rerun only for an actual failure or code change.
+Normal task-branch commits/pushes and a new draft PR are authorized. No main merge,
+force push, branch deletion, dispatch, release/tag/PyPI, frozen experiment or new stage.
+Earlier no-feature/no-publication notes describe historical task boundaries.
+
 ## Current Stage 10.2 maintenance authorization
 
 The explicit task authorizes only S10-F2 persistent-key and stream inventory
