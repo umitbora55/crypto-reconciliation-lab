@@ -1,0 +1,43 @@
+{
+  "crash_barriers": {
+    "crash_after_disposition": "delivery_before_commit",
+    "crash_after_receipt": "delivery_after_receipt",
+    "crash_after_record": "ingest_before_receipt",
+    "lost_ack": "delivery_after_commit",
+    "save_run_crash": "save_before_commit"
+  },
+  "fault_model": "Application process SIGKILL after initialized task-owned rollback-journal DB, plus bounded writer contention. No power/kernel/disk/network/distributed/Byzantine guarantee.",
+  "format": "admission-recovery-scope-v1",
+  "negative_models": [
+    "premature_ack",
+    "empty_cursor"
+  ],
+  "release": "0.7.0",
+  "scenario_ids": [
+    "clean",
+    "custody_difference",
+    "transport_replay",
+    "economic_duplicate",
+    "economic_conflict",
+    "transport_conflict",
+    "gap_recovery",
+    "invalid_payload",
+    "crash_after_record",
+    "crash_after_receipt",
+    "crash_after_disposition",
+    "lost_ack",
+    "ack_restart",
+    "writers_same_stream",
+    "writers_separate_stream",
+    "busy_retry",
+    "save_run_crash",
+    "changed_prefix",
+    "truncated_file",
+    "new_receipt_economic_parity",
+    "rejected_json"
+  ],
+  "writer_scenarios": [
+    "writers_same_stream",
+    "writers_separate_stream"
+  ]
+}

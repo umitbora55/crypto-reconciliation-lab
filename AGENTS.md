@@ -1,5 +1,43 @@
 # Project working agreement
 
+## Current Stage 9.1 maintenance authorization
+
+The explicit Stage 9.1 task authorizes only the S9-F1 malformed-frame diagnostic
+repair and S9-F2 independent semantic recovery coverage repair. Target package
+0.7.1 preserves stage2-v2, schema 4, financial/review/triage v1 formats, all 451
+previous test identities and the immutable 373-file financial reference. Do not
+run the frozen main experiment or change financial normalization/calculation.
+
+Keep docs/stage9, prior source snapshots, contracts and evidence unchanged.
+Current decisions and fixture diffs belong in docs/stage9_1; execution evidence
+belongs outside Git in stage9_1-output. Preserve actual same-test RED/GREEN logs.
+The task explicitly allows the named report_fixture conversion, its listed fixture
+mutation paths and necessary version/path/format metadata; bind each old/new hash
+and focused diff. Do not remove assertions or broadly permit old-test rewrites.
+New recovery v2 evidence must not relabel historical v1 reports as v2 success.
+
+Use the task-owned clone; normal commits/pushes to stage9/restartable-admission
+and an updated draft PR #1 are authorized. Do not merge main, force push, change
+protection/visibility, publish releases/tags/PyPI, or send third-party messages.
+Observe actual writer settings without changing PRAGMAs; no migration is needed.
+
+## Current Stage 9 restartable admission authorization
+
+The explicit Stage 9 task authorizes a finite local JSONL admission protocol, shared
+core transaction body, additive schema 4, package 0.7.0, narrow read-only adapter
+compatibility, new tests and fixed release scope, necessary allowlist/CI updates,
+and documented schema/version fixture changes. Earlier Stage 7/8 freeze notes below
+are historical and do not prohibit these changes. Preserve all 400 old test IDs,
+financial assertions, stage2-v2, existing v1 financial contracts, fixed 373-file
+reference and the Stage 8 showcase. Do not run the frozen main experiment.
+
+Work in a task-owned clone and branch. Keep original projects, historical databases,
+distributions and old evidence untouched. Record actual process barriers, exits,
+source/installed test identities, migration and release proofs in stage9-output.
+Current design and decisions belong in docs/stage9. Normal task-branch pushes and a
+draft PR are authorized; never merge into main, force push or alter repo protection.
+No new service, dependency, source authentication, payment or AI feature is planned.
+
 ## Current Stage 8 showcase authorization
 
 The current task authorizes a personal engineering README, a complete Turkish account and small presentation assets under docs/showcase, based on the supplied design inputs and actual synthetic demo captures. This narrowly supersedes the Stage 7 publication-copy edit limit. Only README.md, new docs/showcase files, explicit showcase filenames in build_release.py and MANIFEST.in, and this task note may change. Preserve all earlier stage records below.

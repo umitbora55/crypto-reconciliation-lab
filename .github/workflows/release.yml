@@ -79,6 +79,12 @@ jobs:
             ${{ runner.temp }}/release-full/installed-reproduction/index.md
             ${{ runner.temp }}/release-full/installed-reproduction/reproduction.json
             ${{ runner.temp }}/release-full/installed-reproduction/manifest.json
+            ${{ runner.temp }}/release-full/source-recovery/schedule.json
+            ${{ runner.temp }}/release-full/source-recovery/delivery-summary.json
+            ${{ runner.temp }}/release-full/source-recovery/report.md
+            ${{ runner.temp }}/release-full/installed-recovery/schedule.json
+            ${{ runner.temp }}/release-full/installed-recovery/delivery-summary.json
+            ${{ runner.temp }}/release-full/installed-recovery/report.md
           if-no-files-found: error
           retention-days: 7
 
@@ -115,5 +121,8 @@ jobs:
             ${{ runner.temp }}/release-core/installed-reproduction/index.md
             ${{ runner.temp }}/release-core/installed-reproduction/reproduction.json
             ${{ runner.temp }}/release-core/installed-reproduction/manifest.json
+            ${{ runner.temp }}/release-core/installed-recovery/schedule.json
+            ${{ runner.temp }}/release-core/installed-recovery/delivery-summary.json
+            ${{ runner.temp }}/release-core/installed-recovery/report.md
           if-no-files-found: error
           retention-days: 7

@@ -54,7 +54,7 @@ class ReceiptIndexTests(unittest.TestCase):
     def test_fresh_index_is_exactly_one_nonunique_binary_ascending_column(self):
         store = self.fresh()
         validate_current(store.db)
-        self.assertEqual(store.db.execute('PRAGMA user_version').fetchone()[0], 3)
+        self.assertEqual(store.db.execute('PRAGMA user_version').fetchone()[0], 4)
         listed = {r[1]: r for r in store.db.execute('PRAGMA index_list(receipts)')}
         self.assertEqual(set(listed), {'receipts_time', INDEX_NAME})
         self.assertEqual(tuple(listed[INDEX_NAME][2:]), (0, 'c', 0))
@@ -103,7 +103,7 @@ class ReceiptIndexTests(unittest.TestCase):
                 migrate_connection(db, fail)
             self.assertEqual(application_snapshot(db), before, point)
         self.assertTrue(migrate_connection(db))
-        self.assertEqual(db.execute('SELECT version FROM schema_migrations ORDER BY version').fetchall(), [(2,), (3,)])
+        self.assertEqual(db.execute('SELECT version FROM schema_migrations ORDER BY version').fetchall(), [(2,), (3,), (4,)])
         self.assertEqual(db.execute('SELECT description FROM schema_migrations WHERE version=2').fetchone()[0],
                          'Add immutable correction groups/effects; retain all Stage 1 columns')
         assert_preserved(db, before)
@@ -157,7 +157,7 @@ class ReceiptIndexTests(unittest.TestCase):
                 path = self.path / (case + '.sqlite3')
                 store = Store(path, self.config)
                 if case == 'future':
-                    store.db.execute('PRAGMA user_version=4')
+                    store.db.execute('PRAGMA user_version=5')
                 else:
                     store.db.execute('DROP INDEX receipts_hash_lookup')
                     if case == 'wrong_index':

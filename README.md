@@ -4,7 +4,7 @@ Personal project by Ümit Bora Günaydın
 
 I built this project to study reconciliation when records arrive late or are corrected after an evaluation. It uses synthetic ledger, investor and custody data, and keeps earlier findings available for inspection.
 
-Python and SQLite · Package **0.6.1** · Financial rule `stage2-v2` · SQLite schema `3`
+Python and SQLite · Package **0.7.1** · Financial rule `stage2-v2` · SQLite schema `4`
 
 [Example](#example) · [Run locally](#run-locally) · [Design notes](docs/model_contract.md) · [Türkçe](docs/showcase/README.tr.md)
 
@@ -70,6 +70,19 @@ This produces **9 synthetic scenarios / 24 saved evaluations**, an offline expor
 Expected synthetic `MISMATCH` and `INCOMPLETE` findings are not application failures. The reproduction exits 0 only when its checks pass. Its deliberately invalid rank must exit 2 and publish no queue; an unexpected subprocess exit or incomplete output fails the reproduction.
 
 ## Verification
+
+Stage 9 adds [restartable finite JSONL admission](docs/stage9/admission-contract.md):
+an immutable input plan, exact delivery identities and a committed attempt history.
+Run `python3 -m crypto_reconciliation_lab demo-recovery --output recovery-output-new --seed 19`
+to inspect the fixed process-crash and replay experiment. ACK records a durable
+delivery result; it does not assert financial validity or MATCHED. See the
+[recovery report](docs/stage9/recovery-report.md) and [decisions](docs/stage9/decisions.md).
+Stage 9.1 preserves malformed-frame rejection diagnostics with escaped Unicode
+and requires independent per-scenario work and evidence in the recovery v2 gate.
+See the [maintenance handoff](docs/stage9_1/HANDOFF.md) for the two repairs,
+same-test RED/GREEN evidence, fixture exceptions and unchanged financial contracts.
+The Stage 8 diagrams, real screenshot and Turkish account remain the historical
+0.6.1 showcase; their financial example is unchanged.
 
 The **0.6.1** source at [commit 80d3f87](https://github.com/umitbora55/crypto-reconciliation-lab/commit/80d3f87a2fe397eebb67490bb7fa943b6c487719) passed [run 43445168309](https://github.com/umitbora55/crypto-reconciliation-lab/actions/runs/43445168309) on **13 November 2026**. This is the dated baseline evidence, not a claim about a later documentation commit.
 

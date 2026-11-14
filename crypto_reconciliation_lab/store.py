@@ -22,12 +22,19 @@ CREATE TABLE IF NOT EXISTS evidence (run_id TEXT NOT NULL REFERENCES runs(id), e
 
 
 class Store:
-    def __init__(self, path, config=None):
+    def __init__(self, path, config=None, *, busy_timeout_ms=None):
         config = config_validate(config) if config is not None else None
-        self.db = sqlite3.connect(path, isolation_level=None)
+        if busy_timeout_ms is not None and (type(busy_timeout_ms) is not int or not 0 <= busy_timeout_ms <= 5000):
+            raise ValueError("DELIVERY_INPUT: busy timeout must be an integer between 0 and 5000 ms")
+        self.db = sqlite3.connect(path, isolation_level=None,
+                                  timeout=5.0 if busy_timeout_ms is None else busy_timeout_ms / 1000)
         self.db.row_factory = sqlite3.Row
         self.db.execute("PRAGMA foreign_keys=ON")
-        existing = self.db.execute("SELECT name,type FROM sqlite_master").fetchall()
+        try:
+            existing = self.db.execute("SELECT name,type FROM sqlite_master").fetchall()
+        except sqlite3.Error:
+            self.close()
+            raise
         if not existing and self.db.execute("PRAGMA user_version").fetchone()[0] != 0:
             self.close()
             raise ValueError("SCHEMA_INVALID: a versioned database cannot have an empty schema")
@@ -45,7 +52,11 @@ class Store:
         except (ValueError, sqlite3.Error):
             self.close()
             raise
-        saved = self.db.execute("SELECT payload FROM configuration WHERE id=1").fetchone()
+        try:
+            saved = self.db.execute("SELECT payload FROM configuration WHERE id=1").fetchone()
+        except sqlite3.Error:
+            self.close()
+            raise
         if saved:
             self.config = json.loads(saved[0])
             if config is not None and config != self.config:
@@ -73,6 +84,14 @@ class Store:
         self.db.close()
 
     def ingest(self, raw, received_at, *, fault=None):
+        with transaction(self.db):
+            result, _ = self._ingest_in_transaction(raw, received_at, fault=fault)
+        return result
+
+    def _ingest_in_transaction(self, raw, received_at, *, fault=None):
+        """Shared core body; the caller owns the single transaction and commit."""
+        if not self.db.in_transaction:
+            raise ValueError("core ingest requires an owned transaction")
         envelope = {"record": raw, "received_at": received_at}
         raw_text = dumps(envelope)
         receipt_hash = digest(envelope)
@@ -80,20 +99,30 @@ class Store:
         record_id = None
         error = None
         status = "INVALID"
-        with transaction(self.db):
-            try:
-                normalized_time = timestamp(received_at)
-                record, key = normalize(raw, self.config)
-                record_id = digest(record)
-                variants = self.db.execute("SELECT id FROM records WHERE logical_key=?", (key,)).fetchall()
-                status = "ACCEPTED" if not variants else ("DUPLICATE" if {x[0] for x in variants} == {record_id} else "CONFLICT")
-                self.db.execute("INSERT OR IGNORE INTO records VALUES (?, ?, ?, ?)", (record_id, key, record["kind"], dumps(record)))
-            except (ValueError, TypeError, KeyError) as exc:
-                error = str(exc)
-            inject(fault, "ingest_before_receipt")
-            self.db.execute("INSERT INTO receipts(receipt_hash,record_id,received_at,raw,error,status) VALUES (?,?,?,?,?,?)",
-                            (receipt_hash, record_id, normalized_time, raw_text, error, status))
-        return {"receipt_id": receipt_hash, "record_id": record_id, "status": status, "error": error, "reason_code": error.split(":", 1)[0] if error and ":" in error else None}
+        try:
+            normalized_time = timestamp(received_at)
+            record, key = normalize(raw, self.config)
+            record_id = digest(record)
+            variants = self.db.execute("SELECT id FROM records WHERE logical_key=?", (key,)).fetchall()
+            status = "ACCEPTED" if not variants else ("DUPLICATE" if {x[0] for x in variants} == {record_id} else "CONFLICT")
+            self.db.execute("INSERT OR IGNORE INTO records VALUES (?, ?, ?, ?)", (record_id, key, record["kind"], dumps(record)))
+        except (ValueError, TypeError, KeyError) as exc:
+            error = str(exc)
+        inject(fault, "ingest_before_receipt")
+        cursor = self.db.execute("INSERT INTO receipts(receipt_hash,record_id,received_at,raw,error,status) VALUES (?,?,?,?,?,?)",
+                                (receipt_hash, record_id, normalized_time, raw_text, error, status))
+        result = {"receipt_id": receipt_hash, "record_id": record_id, "status": status, "error": error, "reason_code": error.split(":", 1)[0] if error and ":" in error else None}
+        return result, cursor.lastrowid
+
+    def ingest_delivery(self, stream_id, sequence, payload, plan, *, observed_at=None,
+                        busy_timeout_ms=250, fault=None):
+        from .admission.runtime import ingest_delivery
+        return ingest_delivery(self, stream_id, sequence, payload, plan,
+                               observed_at=observed_at, busy_timeout_ms=busy_timeout_ms, fault=fault)
+
+    def feed_status(self, stream_id):
+        from .admission.runtime import feed_status
+        return feed_status(self, stream_id)
 
     def known(self, knowledge_at):
         rows = self.db.execute("""SELECT p.*, r.logical_key, r.payload FROM receipts p
