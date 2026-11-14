@@ -263,6 +263,243 @@ def _index(rows,key):
     return out
 
 
+# Literal identities from the retained schema, independent of runtime/DDL imports.
+_SQL_KEYS = {
+    'records': (('id', str),), 'receipts': (('id', int),), 'runs': (('id', str),),
+    'admission_streams': (('stream_id', str),),
+    'delivery_effects': (('stream_id', str), ('sequence', int)),
+    'delivery_attempts': (('id', int),),
+    'auth_configuration': (('id', int),),
+    'auth_policy_snapshots': (('policy_hash', str),),
+    'auth_policy_activations': (('epoch', int),),
+    'auth_keys': (('key_id', str),), 'auth_streams': (('stream_id', str),),
+    'auth_endorsements': (('id', str),), 'auth_decisions': (('id', int),),
+    'auth_delivery_links': (('stream_id', str), ('sequence', int)),
+    'auth_attempt_links': (('attempt_id', int),), 'auth_rejections': (('id', int),),
+}
+
+
+def _typed_index(rows, fields, label):
+    result = {}
+    for row in rows:
+        if type(row) is not dict:_fail('SQL row type '+label)
+        values = []
+        for key, kind in fields:
+            value = row[key]
+            if type(value) is not kind or (kind is int and value < 1) or (kind is str and not value):
+                _fail('SQL identity type '+label+'/'+key)
+            values.append(value)
+        identity = tuple(values)
+        if identity in result:_fail('duplicate SQL identity '+label)
+        result[identity] = row
+    return result
+
+
+def _sql_inventory(state):
+    result = {name: _typed_index(_rows(state, name), fields, name) for name, fields in _SQL_KEYS.items()}
+    # SQLite integer foreign keys are integers, not JSON booleans that compare
+    # equal to 0/1 in Python. Validate references as well as primary identities.
+    integers = {'sequence','epoch','first_epoch','decision_id','attempt_id',
+                'input_bytes','planned_lines'}
+    nullable_integers = {'core_receipt_id','previous_epoch','effect_sequence'}
+    references = {'auth_decisions':('epoch','sequence','endorsement_id','policy_hash'),
+                  'auth_delivery_links':('decision_id','core_receipt_id'),
+                  'auth_attempt_links':('decision_id',), 'auth_keys':('first_epoch',),
+                  'auth_policy_activations':('previous_epoch','previous_hash','policy_hash'),
+                  'delivery_effects':('core_receipt_id',),
+                  'delivery_attempts':('sequence','effect_sequence','effect_stream_id','plan_hash'),
+                  'admission_streams':('input_bytes','planned_lines')}
+    for table, fields in references.items():
+        for row in _rows(state,table):
+            for field in fields:
+                value = row[field]
+                if value is None and field in nullable_integers | {'previous_hash','effect_stream_id'}:continue
+                kind = int if field in integers | nullable_integers else str
+                if type(value) is not kind or (kind is int and value < 1):_fail('SQL reference type '+table+'/'+field)
+    for table, field, kind in (('auth_keys', 'fingerprint', str),
+                              ('auth_delivery_links', 'decision_id', int),
+                              ('delivery_effects', 'core_receipt_id', int)):
+        rows = [r for r in _rows(state, table) if r[field] is not None]
+        _typed_index(rows, ((field, kind),), table+'/'+field)
+    return result
+
+
+def _transition(before, after, additions=None):
+    """A finite readback relation, not a database or financial replay engine."""
+    left, right = _sql_inventory(before), _sql_inventory(after)
+    delta = {}
+    for table in _SQL_KEYS:
+        for key, row in left[table].items():
+            if key not in right[table] or not _same(row, right[table][key]):
+                _fail('append-only readback changed '+table)
+        delta[table] = {k:v for k,v in right[table].items() if k not in left[table]}
+        if additions is not None and table not in additions and delta[table]:
+            _fail('unexpected readback transition '+table)
+    return delta
+
+
+def _fields(actual, expected, label):
+    if type(actual) is not dict or any(k not in actual or not _same(actual[k], v) for k,v in expected.items()):
+        _fail(label)
+
+
+def _operation_scope(cid, index, claim):
+    # These are the already fixed experiment's operation kinds. Snapshot line
+    # counts come from verified bytes, never the candidate response list.
+    if cid in ('revoked_replay', 'new_key_resume', 'authorized_plan_conflict', 'hijack_populated') and index == 0:
+        return 1, 'INCOMPLETE'
+    if cid == 'revoked_replay':return 1, 'DENIED'
+    if cid == 'authorized_plan_conflict':return 1, 'BLOCKED'
+    if cid in ('valid_publishers', 'wrong_custody', 'invalid_amount', 'normal_replay', 'lost_ack', 'precommit_kill', 'new_key_resume'):
+        if claim is None:_fail('required verified operation input')
+        return claim['statement']['plan']['planned_lines'], 'COMPLETE'
+    return 0, 'DENIED'
+
+
+def _check_operation(op, cid, index, claim):
+    before, after, result = op['before'], op['after'], op['result']
+    delta = _transition(before, after)
+    responses = result['responses']
+    count, status = _operation_scope(cid, index, claim)
+    if type(responses) is not list or len(responses) != count:_fail('required response inventory '+cid)
+    _fields(result, {'format':'source-auth-admission-v1', 'status':status,
+                     'financial_evaluation':'NOT_RUN'}, 'operation result contract')
+    if status != 'DENIED' and result['rejection'] is not None:_fail('unexpected operation rejection')
+    if claim is not None:
+        s = claim['statement']
+        _fields(result, {'source':s['source'], 'stream_id':s['stream_id'], 'plan':s['plan'],
+                         'statement_hash':_hash(claim['payload']), 'snapshot_hash':_hash(claim['snapshot'])},
+                'operation verified input binding')
+    elif any(result[k] is not None for k in ('source','stream_id','plan','statement_hash','snapshot_hash')):
+        _fail('invalid preflight claims an accepted binding')
+    attempts = sorted(delta['delivery_attempts'].values(), key=lambda a:a['id'])
+    if len(attempts) != count:_fail('response/attempt transition inventory')
+    if len(delta['auth_decisions']) != count or len(delta['auth_attempt_links']) != count:
+        _fail('operation decision/attempt inventory')
+    if len(delta['auth_rejections']) != (1 if status == 'DENIED' else 0):_fail('operation rejection transition')
+    if status == 'DENIED' and (result['rejection']['audit_id'],) not in delta['auth_rejections']:
+        _fail('operation reused historical rejection')
+    if any(delta[t] for t in ('auth_configuration','auth_keys','runs')):_fail('operation changed setup or evaluations')
+    if cid != 'policy_race' and any(delta[t] for t in ('auth_policy_snapshots','auth_policy_activations')):
+        _fail('operation changed policy')
+    effects = {(r['stream_id'], r['sequence']):r for r in after['delivery_effects']}
+    links = {(r['stream_id'], r['sequence']):r for r in after['auth_delivery_links']}
+    decisions = _index(after['auth_decisions'], 'id')
+    endorsements = _index(after['auth_endorsements'], 'id')
+    attempt_links = _index(after['auth_attempt_links'], 'attempt_id')
+    prior_effects = {(r['stream_id'], r['sequence']) for r in before['delivery_effects']}
+    seen_effects = set(prior_effects)
+    prior_attempts = list(before['delivery_attempts'])
+    new_effects = set()
+    for sequence, (response, attempt) in enumerate(zip(responses, attempts), 1):
+        identity = (claim['statement']['stream_id'], sequence)
+        line = claim['snapshot'].splitlines(keepends=True)[sequence-1]
+        _fields(attempt, {'stream_id':identity[0], 'sequence':sequence, 'payload':line.hex(),
+                          'payload_sha256':_hash(line), 'plan_hash':_hash(_canonical(claim['statement']['plan']))},
+                'attempt differs from operation input')
+        effect = effects.get(identity)
+        outcome = attempt['outcome']
+        old_blocked = any(a['stream_id']==identity[0] and a['outcome'] in ('PLAN_CONFLICT','TRANSPORT_CONFLICT') for a in prior_attempts)
+        if old_blocked and outcome != 'BLOCKED':_fail('permanent block priority')
+        if outcome == 'COMMITTED':
+            if identity in seen_effects or effect is None:_fail('committed attempt effect transition')
+            seen_effects.add(identity);new_effects.add(identity)
+        elif outcome == 'REPLAY':
+            if identity not in seen_effects or effect is None or effect['payload'] != line.hex():_fail('replay changed original effect')
+        elif outcome not in ('BLOCKED','PLAN_CONFLICT','TRANSPORT_CONFLICT','GAP','OUT_OF_RANGE'):
+            _fail('attempt outcome')
+        if outcome == 'BLOCKED' and not old_blocked:_fail('block has no original conflict')
+        prefix_sequences = sorted(seq for stream,seq in seen_effects if stream==identity[0])
+        if prefix_sequences != list(range(1,len(prefix_sequences)+1)):_fail('noncontiguous effect prefix')
+        prior_attempts.append(attempt)
+        blocked = old_blocked or outcome in ('PLAN_CONFLICT','TRANSPORT_CONFLICT')
+        core = _json(effect['core_result'].encode()) if effect and effect['core_result'] is not None else None
+        _fields(attempt, {'effect_stream_id':identity[0] if effect else None,
+                          'effect_sequence':sequence if effect else None}, 'attempt effect reference')
+        _fields(response, {'format':'delivery-response-v1','stream_id':identity[0], 'sequence':sequence,
+                           'attempt_id':attempt['id'], 'outcome':outcome, 'ack':outcome in ('COMMITTED','REPLAY'),
+                           'durable':True, 'committed_prefix':len(prefix_sequences), 'blocked':blocked,
+                           'reason':attempt['reason'], 'disposition':effect['disposition'] if effect else None,
+                           'core_receipt_row_id':effect['core_receipt_id'] if effect else None, 'core_result':core},
+                'response delivery/effect/receipt linkage')
+        if sequence < count and response['ack'] is not True:_fail('responses continue after negative acknowledgement')
+        decision = decisions[attempt_links[attempt['id']]['decision_id']]
+        end = endorsements[decision['endorsement_id']]
+        if end['envelope'] != claim['envelope'].hex() or end['payload'] != claim['payload'].hex():
+            _fail('response decision belongs to another operation endorsement')
+        epoch = max(r['epoch'] for r in after['auth_policy_activations'])
+        if decision['epoch'] != epoch:_fail('response decision is not current operation policy')
+        link = links.get(identity)
+        _fields(response['authorization'], {'decision_id':decision['id'], 'decision':decision['decision'],
+                'epoch':decision['epoch'], 'policy_hash':decision['policy_hash'], 'key_id':end['key_id'],
+                'key_status':decision['current_key_status'], 'currently_authorized':decision['decision']=='CURRENT',
+                'endorsement_id':end['id'], 'original_decision_id':link['decision_id'] if link else None},
+                'response authorization linkage')
+    used_endorsements = {(d['endorsement_id'],) for d in delta['auth_decisions'].values()}
+    old_endorsements = {(d['id'],) for d in before['auth_endorsements']}
+    if set(delta['auth_endorsements']) != used_endorsements-old_endorsements:_fail('unexplained operation endorsement')
+    if {k[0] for k in delta['records']} != {r['record_id'] for r in delta['receipts'].values() if r['record_id'] is not None} - {r['id'] for r in before['records']}:
+        _fail('unexplained operation normalized record')
+    if set(delta['delivery_effects']) != new_effects or set(delta['auth_delivery_links']) != new_effects:
+        _fail('operation effects not explained by responses')
+    if {key[0] for key in delta['receipts']} != {effects[k]['core_receipt_id'] for k in new_effects if effects[k]['core_receipt_id'] is not None}:
+        _fail('operation receipts not explained by effects')
+    if status == 'BLOCKED' and (not responses or responses[-1]['blocked'] is not True or responses[-1]['ack'] is not False):
+        _fail('blocked operation lacks blocking response')
+    if status in ('COMPLETE','INCOMPLETE') and any(r['ack'] is not True for r in responses):
+        _fail('successful operation has negative acknowledgement')
+
+
+def _check_history(case):
+    cid = case['id'];ops = case['operations'];final = case['sql_final']
+    expected_ops = {'valid_publishers':2,'wrong_custody':2,'normal_replay':2,'revoked_replay':2,
+                    'new_key_resume':2,'hijack_populated':2,'authorized_plan_conflict':3,
+                    'unsigned_paths':0,'stale_policy':0}.get(cid, 1)
+    if type(ops) is not list or len(ops) != expected_ops:_fail('fixed operation inventory')
+    initial = case['interrupted']['before'] if 'interrupted' in case else (ops[0]['before'] if ops else final)
+    setup = {'auth_configuration','auth_keys','auth_policy_activations','auth_policy_snapshots'}
+    if any(_rows(initial,t) for t in _SQL_KEYS if t not in setup):_fail('fixed experiment contains invented prehistory')
+    if len(initial['auth_policy_activations']) != (2 if cid=='stale_policy' else 1):_fail('initial policy history')
+    for previous, current in zip(ops, ops[1:]):
+        allowed = ('auth_policy_snapshots','auth_policy_activations') if cid in ('revoked_replay','new_key_resume') else ()
+        _transition(previous['after'], current['before'], allowed)
+    if 'interrupted' in case:
+        item = case['interrupted'];interrupted_delta = _transition(item['before'], item['after'])
+        if cid == 'precommit_kill' and any(interrupted_delta.values()):_fail('precommit kill retained uncommitted changes')
+        if cid == 'lost_ack':
+            for table in ('delivery_attempts','auth_decisions','auth_attempt_links','delivery_effects','auth_delivery_links','receipts'):
+                if len(interrupted_delta[table]) != 1:_fail('lost ACK committed boundary inventory')
+            attempt = next(iter(interrupted_delta['delivery_attempts'].values()))
+            if attempt['outcome']!='COMMITTED' or attempt['sequence']!=1:_fail('lost ACK lacks original committed attempt')
+            if interrupted_delta['auth_rejections'] or interrupted_delta['runs']:_fail('lost ACK invented side effect')
+            for table in setup:
+                if interrupted_delta[table]:_fail('lost ACK changed setup or policy')
+            if set(interrupted_delta['records']) != {(r['record_id'],) for r in interrupted_delta['receipts'].values() if r['record_id'] is not None}:
+                _fail('lost ACK unexplained normalized record')
+            if set(interrupted_delta['auth_endorsements']) != {(d['endorsement_id'],) for d in interrupted_delta['auth_decisions'].values()}:
+                _fail('lost ACK unexplained endorsement')
+            streams = {(stream,) for stream,sequence in interrupted_delta['delivery_effects']}
+            if set(interrupted_delta['admission_streams']) != streams or set(interrupted_delta['auth_streams']) != streams:
+                _fail('lost ACK unexplained stream')
+        if cid == 'policy_race':
+            _transition(item['before'],ops[0]['before'],());_transition(ops[0]['before'],item['before'],())
+            _transition(item['after'],ops[0]['after'],());_transition(ops[0]['after'],item['after'],())
+            if item['snapshot']!=ops[0]['snapshot'] or item['envelope']!=ops[0]['envelope']:_fail('worker operation input')
+        else:
+            _transition(item['after'],ops[0]['before'],());_transition(ops[0]['before'],item['after'],())
+    if ops:_transition(ops[-1]['after'],final,('runs',) if cid in ('valid_publishers','wrong_custody') else ())
+    status = case['auth_status'];tables = status['tables']
+    for name in _SQL_KEYS:
+        if name.startswith('auth_'):
+            left = _typed_index(_rows(tables,name),_SQL_KEYS[name],name)
+            right = _typed_index(_rows(final,name),_SQL_KEYS[name],name)
+            if not _same(left,right):_fail('auth status/readback disagreement')
+    _fields(status,{'format':'source-auth-status-v1','protected':final['auth_configuration'][0]},'auth status protection')
+    active = max(final['auth_policy_activations'],key=lambda r:r['epoch'])
+    payload = _json(next(r['payload'] for r in final['auth_policy_snapshots'] if r['policy_hash']==active['policy_hash']).encode())
+    _fields(status['active_policy'],{**active,'payload':payload},'auth status active policy')
+
+
 def _normalized_policy(value):
     value=copy.deepcopy(value)
     value['keys']=sorted(value['keys'],key=lambda k:k['key_id'])
@@ -286,6 +523,7 @@ def _expected_policy(case_id,rotated=False):
 
 
 def _check_sql(state,claims,anchor,case_id):
+    _sql_inventory(state)
     receipts=_index(_rows(state,'receipts'),'id')
     effects={(r['stream_id'],r['sequence']):r for r in _rows(state,'delivery_effects')}
     links={(r['stream_id'],r['sequence']):r for r in _rows(state,'auth_delivery_links')}
@@ -300,10 +538,10 @@ def _check_sql(state,claims,anchor,case_id):
     if set(effects)!=set(links) or set(owners)!=set(streams):_fail('every effect/stream needs immutable authorization linkage')
     if set(epochs)!=set(range(1,len(epochs)+1)):_fail('policy epoch gap')
     protected=_rows(state,'auth_configuration')
-    if len(protected)!=1 or protected[0]['receiver']!=anchor['receiver'] or protected[0]['configuration_digest']!=anchor['configuration_digest']:_fail('protected binding')
+    if len(protected)!=1 or protected[0]['id']!=1 or protected[0]['receiver']!=anchor['receiver'] or protected[0]['configuration_digest']!=anchor['configuration_digest']:_fail('protected binding')
     if not epochs or protected[0]['initial_policy_hash']!=epochs[1]['policy_hash']:_fail('initial policy binding')
     previous_keys={}
-    for epoch,row in epochs.items():
+    for epoch,row in sorted(epochs.items()):
         if row['policy_hash'] not in policies:_fail('activation without policy')
         p=_json(policies[row['policy_hash']]['payload'].encode())
         if not _same(p,_expected_policy(case_id,epoch>1)):_fail('policy differs from independent case fixture')
@@ -359,6 +597,8 @@ def _check_sql(state,claims,anchor,case_id):
         end=endorsements[d['endorsement_id']];s=_json(bytes.fromhex(end['payload']))
         owner=owners.get(identity[0]);core_id=e.get('core_receipt_id')
         if not owner or any(owner[k]!=s[k] for k in ('source','receiver','configuration_digest')) or owner['plan_hash']!=end['plan_hash']:_fail('stream owner linkage')
+        _fields(streams[identity[0]], {**{k:s['plan'][k] for k in ('input_sha256','input_bytes','planned_lines','framing')},
+                                      'plan_hash':end['plan_hash']}, 'stream original signed plan')
         if link['core_receipt_id']!=core_id or core_id not in receipts:_fail('core receipt link')
         claim=next(c for c in claims if c['envelope'].hex()==end['envelope'])
         line=claim['snapshot'].splitlines(keepends=True)[identity[1]-1]
@@ -366,7 +606,7 @@ def _check_sql(state,claims,anchor,case_id):
         env=_json(line);r=receipts[core_id]
         if _json(r['raw'].encode())!=env or r['receipt_hash']!=_hash(_canonical(env)):_fail('receipt raw/hash linkage')
         core=_json(e['core_result'].encode())
-        if core['receipt_id']!=r['receipt_hash'] or core['record_id']!=r['record_id'] or core['status']!=r['status'] or e['core_receipt_hash']!=r['receipt_hash'] or e['disposition']!=r['status']:_fail('effect core result linkage')
+        if core['receipt_id']!=r['receipt_hash'] or core['record_id']!=r['record_id'] or core['status']!=r['status'] or not _same(core['error'],r['error']) or r['received_at']!=env['received_at'] or e['core_receipt_hash']!=r['receipt_hash'] or e['disposition']!=r['status']:_fail('effect core result linkage')
         if r['record_id'] is not None:
             record=next((x for x in state['records'] if x['id']==r['record_id']),None)
             if record is None or _hash(_canonical(_json(record['payload'].encode())))!=record['id']:_fail('normalized record identity')
@@ -377,6 +617,13 @@ def _check_sql(state,claims,anchor,case_id):
     for l in sorted(attempt_links,key=lambda x:x['attempt_id']):
         if l['attempt_id'] not in attempts or l['decision_id'] not in decisions:_fail('attempt decision link')
         a=attempts[l['attempt_id']];d=decisions[l['decision_id']]
+        end=endorsements[d['endorsement_id']]
+        claim=next(c for c in claims if c['envelope'].hex()==end['envelope'])
+        identity=(d['stream_id'],d['sequence']);effect=effects.get(identity)
+        line=claim['snapshot'].splitlines(keepends=True)[d['sequence']-1]
+        _fields(a,{'payload':line.hex(),'payload_sha256':_hash(line),'plan_hash':end['plan_hash'],
+                   'effect_stream_id':identity[0] if effect else None,'effect_sequence':identity[1] if effect else None},
+                'SQL attempt exact signed input/effect linkage')
         if (a['stream_id'],a['sequence'])!=(d['stream_id'],d['sequence']) or d['epoch']<last_epoch:_fail('attempt identity/policy order')
         last_epoch=d['epoch']
         if d['decision']=='HISTORICAL_REPLAY' and a['outcome'] not in ('REPLAY','BLOCKED'):_fail('historical approval created new transport effect')
@@ -422,7 +669,7 @@ def derive_controls(case,root):
         else:
             a=_path(root,case['financial']);b=_path(root,case['legacy_financial'])
             out['paired_financial_identity']=(a.read_bytes()==b.read_bytes() and a.with_suffix('.md').read_bytes()==b.with_suffix('.md').read_bytes()
-                and all(case['sql_final'][table]==case['legacy_sql'][table] for table in ('records','receipts','runs')))
+                and all(_same(_typed_index(case['sql_final'][table],_SQL_KEYS[table],table),_typed_index(case['legacy_sql'][table],_SQL_KEYS[table],table)) for table in ('records','receipts','runs')))
     elif cid=='invalid_amount':
         out.update(status=ops[0]['result']['status'],core_status=state['receipts'][0]['status'])
     elif cid=='unsigned_paths':
@@ -441,13 +688,13 @@ def derive_controls(case,root):
         response=ops[-1]['result']['responses'][0];auth=response['authorization']
         out.update(prefix_receipts=len(ops[0]['after']['receipts']),replayed=auth['decision'],currently_authorized=auth['currently_authorized'],suffix=ops[-1]['result']['status'])
     elif cid=='new_key_resume':
-        links=state['auth_delivery_links'];decisions={d['id']:d for d in state['auth_decisions']}
+        links=sorted(state['auth_delivery_links'],key=lambda r:(r['stream_id'],r['sequence']));decisions={d['id']:d for d in state['auth_decisions']}
         out.update(old_epoch=decisions[links[0]['decision_id']]['epoch'],new_epoch=decisions[links[1]['decision_id']]['epoch'],
                    old_evidence_preserved=all(row in state[table] for table in ('receipts','auth_decisions','auth_endorsements','auth_delivery_links') for row in ops[0]['after'][table]))
     elif cid=='stale_policy':out.update(rejected=case['stale_update']['rejected'],active_epoch=case['auth_status']['active_policy']['epoch'])
     elif cid=='authorized_plan_conflict':
         out.update(outcome=ops[1]['result']['responses'][0]['outcome'],replay=ops[2]['result']['responses'][0]['outcome'],
-                   original_readable=ops[0]['after']['receipts']==state['receipts'])
+                   original_readable=_same(_index(ops[0]['after']['receipts'],'id'),_index(state['receipts'],'id')))
     elif cid=='verifier_mutations':out=case['mutations']
     else:
         op=ops[-1];before=op['before'];after=op['after']
@@ -494,8 +741,7 @@ def _verify(root,anchor,mutation_phase=False):
             if set(case['mutations'])<set(contract['required_mutations']):_fail('mutation coverage')
             continue
         if not _same(_normalized_policy(case['initial_policy']),_expected_policy(cid)):_fail('operator case setup policy differs')
-        if any(not _same(rows,case['sql_final'][name]) for name,rows in case['auth_status']['tables'].items()):_fail('auth status/readback disagreement')
-        claims=[]
+        claims=[];operation_claims=[]
         for op in case['operations']:
             data=_path(root,op['snapshot']).read_bytes();envelope=_path(root,op['envelope']).read_bytes()
             _denial_input_condition(case,op,data,envelope,anchor)
@@ -507,30 +753,23 @@ def _verify(root,anchor,mutation_phase=False):
                 claims.append(claim)
                 if op['result']['status'] not in ('COMPLETE','INCOMPLETE','DENIED','BLOCKED'):_fail('operation status')
             _denial_policy_and_audit(op,data,envelope,claim)
+            operation_claims.append(claim)
         if 'interrupted' in case:
             item=case['interrupted'];claims.append(_verified_claim(_path(root,item['snapshot']).read_bytes(),_path(root,item['envelope']).read_bytes(),anchor))
         _check_sql(case['sql_final'],claims,anchor,cid)
-        for op in case['operations']:
+        _check_history(case)
+        for index,(op,claim) in enumerate(zip(case['operations'],operation_claims)):
+            _check_sql(op['before'],claims,anchor,cid)
             _check_sql(op['after'],claims,anchor,cid)
-            for response in op['result'].get('responses',[]):
-                auth=response.get('authorization')
-                if auth:
-                    decisions={d['id']:d for d in op['after']['auth_decisions']}
-                    if auth['decision_id'] not in decisions:_fail('response decision removed')
-                    d=decisions[auth['decision_id']]
-                    if any(auth[k]!=d[k] for k in ('epoch','policy_hash','decision')):_fail('response authorization contradicts immutable decision')
-                    end=next(e for e in op['after']['auth_endorsements'] if e['id']==d['endorsement_id'])
-                    link=next((x for x in op['after']['auth_delivery_links'] if (x['stream_id'],x['sequence'])==(d['stream_id'],d['sequence'])),None)
-                    if auth['key_id']!=end['key_id'] or auth['endorsement_id']!=end['id'] or auth['key_status']!=d['current_key_status'] or auth['currently_authorized'] is not (d['decision']=='CURRENT'):_fail('response current key authority')
-                    if auth['original_decision_id']!=(link['decision_id'] if link else None):_fail('response original decision')
-                    if not any(a['attempt_id']==response['attempt_id'] and a['decision_id']==d['id'] for a in op['after']['auth_attempt_links']):_fail('response attempt decision')
-                    if response.get('core_receipt_row_id') is not None and response['core_receipt_row_id'] not in {r['id'] for r in op['after']['receipts']}:_fail('response receipt missing')
+            _check_operation(op,cid,index,claim)
         if 'process' in case:
             p=case['process'];obs=p['observations']
             if type(p['pid']) is not int or p['pid']<=0 or p['joined'] is not True or any(o['pid']!=p['pid'] for o in obs):_fail('process identity/join')
             if [o['type'] for o in obs[:2]]!=['READY','BARRIER'] or obs[1]['point']!=p['requested_barrier']:_fail('named process barrier')
             if cid!='policy_race' and (p['signal']!='SIGKILL' or p['exit']!=-9 or p['sender']!='UNKNOWN' or any(o['type']=='RESULT' for o in obs)):_fail('process kill/unknown response')
             if cid=='policy_race' and (p['signal'] is not None or p['exit']!=0 or len([o for o in obs if o['type']=='RESULT'])!=1):_fail('policy race response')
+            if cid=='policy_race' and not _same(next(o['result'] for o in obs if o['type']=='RESULT'),case['operations'][0]['result']):_fail('worker RESULT differs from operation')
+            _check_sql(case['interrupted']['before'],claims,anchor,cid)
             _check_sql(case['interrupted']['after'],claims,anchor,cid)
     return {'format':'source-auth-verification-v1','status':'PASSED','families':len(contract['families']),
             'scenarios':len(contract['scenarios']),'scope_sha256':SCOPE_SHA256,

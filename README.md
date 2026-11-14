@@ -4,7 +4,7 @@ Personal project by Ümit Bora Günaydın
 
 I built this project to study reconciliation when records arrive late or are corrected after an evaluation. It uses synthetic ledger, investor and custody data, and keeps earlier findings available for inspection.
 
-Python and SQLite · Package **0.8.0** · Financial rule `stage2-v2` · SQLite schema `5`
+Python and SQLite · Package **0.8.1** · Financial rule `stage2-v2` · SQLite schema `5`
 
 [Example](#example) · [Run locally](#run-locally) · [Design notes](docs/model_contract.md) · [Türkçe](docs/showcase/README.tr.md)
 
@@ -70,6 +70,14 @@ This produces **9 synthetic scenarios / 24 saved evaluations**, an offline expor
 Expected synthetic `MISMATCH` and `INCOMPLETE` findings are not application failures. The reproduction exits 0 only when its checks pass. Its deliberately invalid rank must exit 2 and publish no queue; an unexpected subprocess exit or incomplete output fails the reproduction.
 
 ## Verification
+
+In 0.8.1 I repaired an independent-review finding in the source-auth evidence
+reader: complete response coverage, exact attempt/decision/effect/receipt links,
+unique SQL identities and worker results must agree. Rehashed contradictory
+reports are rejected while valid 0.8.0 evidence remains readable. This maintenance
+change preserves the admission runtime and financial calculation. The
+[repair record](docs/stage10_1/HANDOFF.md) separates regression evidence from the
+historical Stage 10 experiment.
 
 Stage 10 adds an opt-in source admission boundary. In a newly protected local
 database, each new receipt from the public ingestion path is committed with the

@@ -55,3 +55,7 @@ include docs/stage10/fixture-changes.md
 include contracts/source-auth-scope-v1.json
 include crypto_reconciliation_lab/source_auth/experiment_scope_v1.json
 recursive-include docs/stage10 *.md
+
+# Stage 10.1 verifier-only maintenance; old scope remains immutable.
+include contracts/release-test-scope-0.8.1.json
+recursive-include docs/stage10_1 *.md

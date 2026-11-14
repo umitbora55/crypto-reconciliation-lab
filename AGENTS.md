@@ -1,5 +1,19 @@
 # Project working agreement
 
+## Current Stage 10.1 maintenance authorization
+
+The explicit maintenance task authorizes only S10-F1 evidence-reader consistency,
+new rejection regressions and package 0.8.1 metadata. Preserve stage2-v2, schema 5,
+the auth v1 scope/producer/worker and runtime, recovery v2, the 373-file reference,
+all 540 previous test identities/assertions and the frozen main experiment.
+Only the named current-release fields in two old tests may change; record reversible
+hashes/diffs under docs/stage10_1. Keep the historical 0.7.1 test-scope anchor.
+Use the current stage10/source-auth task worktree. Normal commits/pushes and draft
+PR #2 updates are authorized; no merge, force push, release/tag or PyPI publication.
+Retain same-test RED/GREEN, actual CLI exits, local gates, final CI and archive
+proof outside Git in stage10_1-output. Do not commit final CI/SHA evidence back
+into source. Historical docs/stage10 and all earlier evidence remain unchanged.
+
 ## Current Stage 10 authorization
 
 The explicit Stage 10 task authorizes optional pinned Ed25519/DSSE source admission,
