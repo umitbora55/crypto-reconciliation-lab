@@ -116,7 +116,12 @@ def _destination(output, inputs):
     requested = Path(output).expanduser().absolute()
     if os.path.lexists(requested):
         raise ReplayError('REPLAY_OUTPUT', 'output already exists (including final symlink)')
-    destination = (requested.parent.resolve()/requested.name).resolve()
+    try:
+        destination = (requested.parent.resolve()/requested.name).resolve()
+    except RuntimeError as exc:
+        # Python 3.12 reports a symlink loop here as RuntimeError. Limit this
+        # classification to output canonicalization, preserving the child result.
+        raise ReplayError('REPLAY_OUTPUT', str(exc)) from None
     if os.path.lexists(destination):
         raise ReplayError('REPLAY_OUTPUT', 'canonical output already exists')
     if any(destination == path or path in destination.parents for path in inputs):

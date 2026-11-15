@@ -250,6 +250,12 @@ See the [release guide](docs/stage6_1/release-guide.md) and [scope contract](doc
 
 </details>
 
+Maintenance 0.11.1 adds two narrow offline replay checks: captured decisions must
+match their linked delivery attempt's stream and sequence, and an output-path
+failure preserves a completed comparison in a structured error report. Financial
+calculation, schema6 and stage2-v2 are unchanged. See the
+[repair contract](docs/stage13_1/repair-contract.md).
+
 ## AI experiment
 
 I compared one fixed model with FIFO and simple rules for prioritizing synthetic unresolved cases. Historical model-minus-rules recall was **0 percentage points on test** and **−2.083 on challenge**: the experiment demonstrated no additional model benefit.

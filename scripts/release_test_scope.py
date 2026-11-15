@@ -8,7 +8,7 @@ from pathlib import Path, PurePosixPath
 import re
 import stat
 
-RELEASE = '0.11.0'
+RELEASE = '0.11.1'
 ANCHOR_PATH = 'contracts/release-tests-baseline-0.6.0.json'
 ANCHOR_BYTES = 42896
 ANCHOR_SHA256 = 'd69bb489b06f94643ef9b6def46e0723d0533c08a263c4d0c81ca6ee8bc919e1'
@@ -42,11 +42,14 @@ EXECUTION_SHA256 = '80ab84b011000db8b710b267e850963ec2da0a15063ee516896f14119d5e
 EXECUTION_REPAIR_PATH = 'contracts/release-test-scope-0.10.1.json'
 EXECUTION_REPAIR_BYTES = 219024
 EXECUTION_REPAIR_SHA256 = '2ac30fd8f96a5223b174b899484b72aaad2982c64de6c168b34670c419aa8427'
-CONTRACT_PATH = 'contracts/release-test-scope-0.11.0.json'
+REPLAY_PATH = 'contracts/release-test-scope-0.11.0.json'
+REPLAY_BYTES = 245263
+REPLAY_SHA256 = '3bbd2f2252947c90395f69161849ce790fc183a80f3ecf63075d48b18080cdb1'
+CONTRACT_PATH = 'contracts/release-test-scope-0.11.1.json'
 SEMANTIC_FIXTURE_PATH = 'tests/fixtures/admission-semantic-report-v2.json'
 # Frozen only after reviewed additions and explicit metadata fixture exceptions.
-CONTRACT_BYTES = 245263
-CONTRACT_SHA256 = '3bbd2f2252947c90395f69161849ce790fc183a80f3ecf63075d48b18080cdb1'
+CONTRACT_BYTES = 254949
+CONTRACT_SHA256 = 'dc0f5a41934bfee4669df79fba6cd62535e795c99cf3869bf1e79248ea9559b6'
 
 # Stage 12 permission is finite: current version/schema metadata and genuine
 # historical schema-5 setup only. Every changed old byte is reversibly pinned.
@@ -97,13 +100,13 @@ EXECUTION_METADATA_EDITS = {
          "            self.assertEqual([r[0] for r in store.db.execute('SELECT version FROM schema_migrations ORDER BY version')], [2, 3, 4, 5, 6])"),
     ],
     'tests/test_release_test_scope.py': [
-        ("CONTRACT_PATH = 'contracts/release-test-scope-0.9.1.json'", "CONTRACT_PATH = 'contracts/release-test-scope-0.11.0.json'"),
+        ("CONTRACT_PATH = 'contracts/release-test-scope-0.9.1.json'", "CONTRACT_PATH = 'contracts/release-test-scope-0.11.1.json'"),
         ("                 'sha256':hashlib.sha256(current.read_bytes()).hexdigest(), 'release':'0.9.1'}",
-         "                 'sha256':hashlib.sha256(current.read_bytes()).hexdigest(), 'release':'0.11.0'}"),
+         "                 'sha256':hashlib.sha256(current.read_bytes()).hexdigest(), 'release':'0.11.1'}"),
     ],
     'tests/test_provenance_maintenance_release.py': [
         ("    setup = {'format': 'release-provenance-maintenance-v1', 'package_version': '0.9.1',",
-         "    setup = {'format': 'release-provenance-maintenance-v1', 'package_version': '0.11.0',"),
+         "    setup = {'format': 'release-provenance-maintenance-v1', 'package_version': '0.11.1',"),
     ],
 }
 
@@ -112,13 +115,13 @@ EXECUTION_METADATA_EDITS = {
 # Stage12.1 is a separate finite authorization, not a wider schema fixture grant.
 EXECUTION_REPAIR_METADATA_EDITS = {
     'tests/test_release_test_scope.py': [
-        ("CONTRACT_PATH = 'contracts/release-test-scope-0.10.0.json'", "CONTRACT_PATH = 'contracts/release-test-scope-0.11.0.json'"),
+        ("CONTRACT_PATH = 'contracts/release-test-scope-0.10.0.json'", "CONTRACT_PATH = 'contracts/release-test-scope-0.11.1.json'"),
         ("                 'sha256':hashlib.sha256(current.read_bytes()).hexdigest(), 'release':'0.10.0'}",
-         "                 'sha256':hashlib.sha256(current.read_bytes()).hexdigest(), 'release':'0.11.0'}"),
+         "                 'sha256':hashlib.sha256(current.read_bytes()).hexdigest(), 'release':'0.11.1'}"),
     ],
     'tests/test_provenance_maintenance_release.py': [
         ("    setup = {'format': 'release-provenance-maintenance-v1', 'package_version': '0.10.0',",
-         "    setup = {'format': 'release-provenance-maintenance-v1', 'package_version': '0.11.0',"),
+         "    setup = {'format': 'release-provenance-maintenance-v1', 'package_version': '0.11.1',"),
     ],
 }
 PROCESS_FIXTURE_PATH = 'tests/test_recorded_execution_release_gate.py'
@@ -129,15 +132,44 @@ PROCESS_FIXTURE_PINS = {'literal_result': {'original': {'bytes': 1305, 'sha256':
 # links use their original text and the same new endpoint, never caller views.
 REPLAY_METADATA_EDITS = {
     'tests/test_release_test_scope.py': [
-        ("CONTRACT_PATH = 'contracts/release-test-scope-0.10.1.json'", "CONTRACT_PATH = 'contracts/release-test-scope-0.11.0.json'"),
+        ("CONTRACT_PATH = 'contracts/release-test-scope-0.10.1.json'", "CONTRACT_PATH = 'contracts/release-test-scope-0.11.1.json'"),
         ("                 'sha256':hashlib.sha256(current.read_bytes()).hexdigest(), 'release':'0.10.1'}",
-         "                 'sha256':hashlib.sha256(current.read_bytes()).hexdigest(), 'release':'0.11.0'}"),
+         "                 'sha256':hashlib.sha256(current.read_bytes()).hexdigest(), 'release':'0.11.1'}"),
     ],
     'tests/test_provenance_maintenance_release.py': [
         ("    setup = {'format': 'release-provenance-maintenance-v1', 'package_version': '0.10.1',",
-         "    setup = {'format': 'release-provenance-maintenance-v1', 'package_version': '0.11.0',"),
+         "    setup = {'format': 'release-provenance-maintenance-v1', 'package_version': '0.11.1',"),
     ],
 }
+
+
+# Stage13.1 permits exactly six current metadata literals in three old files.
+REPLAY_REPAIR_METADATA_EDITS = {'tests/test_release_test_scope.py': [("CONTRACT_PATH = 'contracts/release-test-scope-0.11.0.json'",
+                                       "CONTRACT_PATH = 'contracts/release-test-scope-0.11.1.json'"),
+                                      ('                 '
+                                       "'sha256':hashlib.sha256(current.read_bytes()).hexdigest(), "
+                                       "'release':'0.11.0'}",
+                                       '                 '
+                                       "'sha256':hashlib.sha256(current.read_bytes()).hexdigest(), "
+                                       "'release':'0.11.1'}")],
+ 'tests/test_provenance_maintenance_release.py': [("    setup = {'format': "
+                                                   "'release-provenance-maintenance-v1', 'package_version': "
+                                                   "'0.11.0',",
+                                                   "    setup = {'format': "
+                                                   "'release-provenance-maintenance-v1', 'package_version': "
+                                                   "'0.11.1',")],
+ 'tests/test_execution_replay_scope.py': [('"CONTRACT_PATH = \'contracts/release-test-scope-0.11.0.json\'"',
+                                           '"CONTRACT_PATH = \'contracts/release-test-scope-0.11.1.json\'"'),
+                                          ('"                 '
+                                           "'sha256':hashlib.sha256(current.read_bytes()).hexdigest(), "
+                                           '\'release\':\'0.11.0\'}"',
+                                           '"                 '
+                                           "'sha256':hashlib.sha256(current.read_bytes()).hexdigest(), "
+                                           '\'release\':\'0.11.1\'}"'),
+                                          ('"    setup = {\'format\': \'release-provenance-maintenance-v1\', '
+                                           '\'package_version\': \'0.11.0\',"',
+                                           '"    setup = {\'format\': \'release-provenance-maintenance-v1\', '
+                                           '\'package_version\': \'0.11.1\',"')]}
 
 
 def require(condition, message):
@@ -376,8 +408,17 @@ def validate_replay_fixture_exception(exception):
     validate_fixture_exception(exception)
 
 
+def validate_replay_repair_fixture_exception(exception):
+    """Only the six exact metadata literals authorized for Stage13.1."""
+    pairs = REPLAY_REPAIR_METADATA_EDITS.get(exception.get('path'))
+    require(pairs is not None and exception.get('kind', 'metadata-lines-v1') == 'metadata-lines-v1'
+            and exception.get('changes') == [dict(old_text=a, new_text=b, count=1) for a, b in pairs],
+            'replay repair fixture exceeds fixed metadata authorization')
+    validate_fixture_exception(exception)
+
+
 def load_test_scope(root):
-    """Retain every historical anchor, including the accepted 778-ID release."""
+    """Retain every historical anchor, including the reviewed 858-ID release."""
     root = Path(root).resolve()
     try:
         anchor = checked_document(root, ANCHOR_PATH, ANCHOR_BYTES, ANCHOR_SHA256)
@@ -391,6 +432,7 @@ def load_test_scope(root):
         maintenance = checked_document(root, MAINTENANCE_PATH, MAINTENANCE_BYTES, MAINTENANCE_SHA256)
         execution = checked_document(root, EXECUTION_PATH, EXECUTION_BYTES, EXECUTION_SHA256)
         execution_repair = checked_document(root, EXECUTION_REPAIR_PATH, EXECUTION_REPAIR_BYTES, EXECUTION_REPAIR_SHA256)
+        replay = checked_document(root, REPLAY_PATH, REPLAY_BYTES, REPLAY_SHA256)
         scope = checked_document(root, CONTRACT_PATH, CONTRACT_BYTES, CONTRACT_SHA256)
         require(anchor['format'] == 'independent-stage6-baseline-test-inventory-v1'
                 and anchor['package'] == '0.6.0' and anchor['test_count'] == 375
@@ -631,6 +673,32 @@ def load_test_scope(root):
         require(all(current['files'].get(name) == amendments.get(name, proof)
                     for name, proof in execution_repair['current']['files'].items()),
                 'accepted 0.10.1 files differ outside authorized metadata')
+        require(replay['format'] == 'release-test-scope-v1' and replay['release'] == '0.11.0'
+                and replay['baseline'] == scope['baseline']
+                and replay['current']['test_count'] == 858 and replay['current']['file_count'] == 89,
+                'reviewed replay release metadata differs')
+        binding = scope['replay_release']
+        require(type(binding) is dict and set(binding) == {'path', 'bytes', 'sha256', 'fixture_exceptions'}
+                and {key: binding[key] for key in ('path', 'bytes', 'sha256')}
+                == {'path': REPLAY_PATH, 'bytes': REPLAY_BYTES, 'sha256': REPLAY_SHA256},
+                'reviewed replay release binding differs')
+        check_files(replay['current']['files']); check_ids(replay['current']['test_ids'], 'reviewed replay release')
+        require(set(replay['current']['test_ids']) <= set(current['test_ids']),
+                'current identities do not preserve all 858 reviewed identities')
+        amendments = {}
+        require(type(binding['fixture_exceptions']) is list, 'replay repair exceptions must be explicit')
+        for exception in binding['fixture_exceptions']:
+            name = exception['path']
+            require(name not in amendments and name in replay['current']['files']
+                    and exception['original'] == replay['current']['files'][name],
+                    'replay repair original file identity differs')
+            validate_replay_repair_fixture_exception(exception)
+            amendments[name] = exception['current']
+        require(set(amendments) == set(REPLAY_REPAIR_METADATA_EDITS),
+                'replay repair metadata fixture inventory differs')
+        require(all(current['files'].get(name) == amendments.get(name, proof)
+                    for name, proof in replay['current']['files'].items()),
+                'reviewed 0.11.0 files differ outside authorized metadata')
         return scope
     except (OSError, UnicodeError, ValueError, KeyError, TypeError) as error:
         if str(error).startswith('TEST_SCOPE:'):
@@ -675,6 +743,8 @@ def validate_test_files(root, scope=None):
         for exception in scope['execution_release']['fixture_exceptions']:
             restore_fixture_source(file_bytes(root / exception['path']), exception)
         for exception in scope['execution_repair_release']['fixture_exceptions']:
+            restore_fixture_source(file_bytes(root / exception['path']), exception)
+        for exception in scope['replay_release']['fixture_exceptions']:
             restore_fixture_source(file_bytes(root / exception['path']), exception)
         return {'status': 'PASS', 'scope_identity': identity(), 'baseline': scope['baseline'],
                 'expected_count': scope['current']['test_count'], 'file_count': len(actual),

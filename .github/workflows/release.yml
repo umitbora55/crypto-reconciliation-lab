@@ -73,6 +73,9 @@ jobs:
             ${{ runner.temp }}/release-full/verification.json
             ${{ runner.temp }}/release-full/verification.md
             ${{ runner.temp }}/release-full/logs/*.txt
+            ${{ runner.temp }}/release-full/installed-replay-maintenance/summary.json
+            ${{ runner.temp }}/release-full/installed-replay-maintenance/commands/*/*.txt
+            ${{ runner.temp }}/release-full/installed-replay-maintenance/commands/*/command.json
             ${{ runner.temp }}/release-full/source-execution-replay/summary.json
             ${{ runner.temp }}/release-full/source-execution-replay/summary.md
             ${{ runner.temp }}/release-full/source-execution-replay/catalog.json
@@ -161,6 +164,9 @@ jobs:
             ${{ runner.temp }}/release-core/verification.json
             ${{ runner.temp }}/release-core/verification.md
             ${{ runner.temp }}/release-core/logs/*.txt
+            ${{ runner.temp }}/release-core/installed-replay-maintenance/summary.json
+            ${{ runner.temp }}/release-core/installed-replay-maintenance/commands/*/*.txt
+            ${{ runner.temp }}/release-core/installed-replay-maintenance/commands/*/command.json
             ${{ runner.temp }}/release-core/installed-execution-replay/summary.json
             ${{ runner.temp }}/release-core/installed-execution-replay/summary.md
             ${{ runner.temp }}/release-core/installed-execution-replay/catalog.json
@@ -211,6 +217,9 @@ jobs:
             ${{ runner.temp }}/release-auth-only/verification.json
             ${{ runner.temp }}/release-auth-only/verification.md
             ${{ runner.temp }}/release-auth-only/logs/*.txt
+            ${{ runner.temp }}/release-auth-only/installed-replay-maintenance/summary.json
+            ${{ runner.temp }}/release-auth-only/installed-replay-maintenance/commands/*/*.txt
+            ${{ runner.temp }}/release-auth-only/installed-replay-maintenance/commands/*/command.json
             ${{ runner.temp }}/release-auth-only/installed-execution-replay/summary.json
             ${{ runner.temp }}/release-auth-only/installed-execution-replay/summary.md
             ${{ runner.temp }}/release-auth-only/installed-execution-replay/catalog.json

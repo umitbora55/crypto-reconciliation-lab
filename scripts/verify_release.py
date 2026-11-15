@@ -492,7 +492,7 @@ MAINTENANCE_RESULTS = {
 
 def validate_provenance_maintenance(setup, results):
     require(setup.get('format') == 'release-provenance-maintenance-v1'
-            and setup.get('package_version') == '0.11.0', 'maintenance setup identity differs')
+            and setup.get('package_version') == '0.11.1', 'maintenance setup identity differs')
     require(setup.get('f1_preservation') == {'external_changed_fields': ['capture_digest'],
             'raw_run_equal': True, 'signed_materials_equal': True}, 'maintenance F1 preservation differs')
     require(setup.get('f2_authoritative_capture_unchanged') is True, 'maintenance F2 raw capture changed')
@@ -963,7 +963,7 @@ def core_execution_denied(gate, python):
     gate.persist()
 
 
-def wheel_manifest(wheel, version='0.11.0'):
+def wheel_manifest(wheel, version='0.11.1'):
     with zipfile.ZipFile(wheel) as archive:
         members = archive.infolist()
         require(len(members) <= 1000 and sum(item.file_size for item in members) <= 32 * 1024**2, 'wheel member/size limit exceeded')
@@ -1098,6 +1098,19 @@ def execution_replay(gate, python, source, mode):
     gate.persist()
 
 
+def replay_maintenance(gate, python, source):
+    target = gate.output / 'installed-replay-maintenance'
+    gate.run('installed-replay-maintenance', [python, '-I', '-B',
+             source / 'scripts/release_replay_maintenance.py', '--tests', source / 'tests', '--output', target])
+    result = json.loads((target / 'summary.json').read_bytes())
+    require(result['status'] == 'PASS' and result['case_count'] == 8
+            and result['package_version'] == gate.record['expected_version']
+            and result['origin'] == gate.record['installed_import']['origin'], 'replay maintenance identity differs')
+    gate.record['installed_replay_maintenance'] = {'status': 'PASS', 'summary': digest(target / 'summary.json'),
+                                                  'result': result}
+    gate.persist()
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--profile', choices=('full', 'core', 'auth-only'), required=True)
@@ -1205,6 +1218,7 @@ def main(argv=None):
         recovery(gate, python, source, 'installed')
         execution_demo(gate, python, source, 'installed', 'legacy' if args.profile == 'core' else 'protected')
         execution_replay(gate, python, source, 'installed')
+        replay_maintenance(gate, python, source)
         if args.profile != 'core':
             source_auth(gate, python, source, 'installed')
             provenance(gate, python, source, 'installed')

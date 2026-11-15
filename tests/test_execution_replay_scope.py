@@ -14,13 +14,13 @@ SPEC.loader.exec_module(scope)
 ANCHOR = 'contracts/release-test-scope-0.10.1.json'
 EXACT_EDITS = {
     'tests/test_release_test_scope.py': [
-        ("CONTRACT_PATH = 'contracts/release-test-scope-0.10.1.json'", "CONTRACT_PATH = 'contracts/release-test-scope-0.11.0.json'"),
+        ("CONTRACT_PATH = 'contracts/release-test-scope-0.10.1.json'", "CONTRACT_PATH = 'contracts/release-test-scope-0.11.1.json'"),
         ("                 'sha256':hashlib.sha256(current.read_bytes()).hexdigest(), 'release':'0.10.1'}",
-         "                 'sha256':hashlib.sha256(current.read_bytes()).hexdigest(), 'release':'0.11.0'}"),
+         "                 'sha256':hashlib.sha256(current.read_bytes()).hexdigest(), 'release':'0.11.1'}"),
     ],
     'tests/test_provenance_maintenance_release.py': [
         ("    setup = {'format': 'release-provenance-maintenance-v1', 'package_version': '0.10.1',",
-         "    setup = {'format': 'release-provenance-maintenance-v1', 'package_version': '0.11.0',"),
+         "    setup = {'format': 'release-provenance-maintenance-v1', 'package_version': '0.11.1',"),
     ],
 }
 

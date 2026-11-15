@@ -1,5 +1,23 @@
 # Project working agreement
 
+## Current Stage13.1 narrow replay maintenance authorization
+
+Start from reviewed 0ecf194c80d82f363b1868585787361abab84f57 on the existing
+stage13/offline-execution-replay branch and draft PR #5. Package 0.11.1 repairs
+only captured decision/attempt position consistency in replay/validation.py and
+output-path canonicalization classification in replay/api.py. Preserve completed
+comparison details, stage2-v2/schema6, replay v1, financial/auth/capture behavior,
+858 old test identities/assertions, historical contracts and frozen experiment.
+Only the six explicitly authorized metadata literals in three old test files may
+change, with exact byte reversal and a separate pinned 0.11.0 scope binding.
+Keep earlier notes and Stage13 docs historical. New docs belong in docs/stage13_1;
+actual RED/GREEN, distributions, CI and archive evidence belong outside Git in
+stage13_1-output. Run unchanged 0.11.0 focused RED witnesses before the fixes, then
+one sealed final source/installed gate and the existing financial/profile gates.
+Do not rerun baseline full suites or heavy/frozen experiments. Normal task-branch
+commit/push and draft PR update are authorized; no main merge, force push, branch
+deletion, workflow dispatch, release/tag/PyPI or new feature stage.
+
 ## Current Stage13 offline replay authorization
 
 Start from accepted main9db7fd80dcd32d7bada9ff7e4054eb083254da8e on

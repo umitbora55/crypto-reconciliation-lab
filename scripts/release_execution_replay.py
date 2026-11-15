@@ -96,7 +96,7 @@ def validate_demo(root, *, package_origin, executable, isolated, cwd):
     require(catalog == {'format': 'execution-replay-demo-catalog-v1', 'cases': expected_catalog},
             'fixed catalog contents differ')
     require(summary.get('format') == 'execution-replay-demo-v1' and summary.get('status') == 'PASS'
-            and summary.get('package_version') == '0.11.0' and summary.get('case_count') == 7,
+            and summary.get('package_version') == '0.11.1' and summary.get('case_count') == 7,
             'demonstration did not complete all seven cases')
     rows = summary.get('cases')
     require(type(rows) is list and len(rows) == 7
@@ -147,7 +147,7 @@ def validate_demo(root, *, package_origin, executable, isolated, cwd):
                 and (result.get('exit_code'), result.get('status'), result.get('reason_code'),
                      result.get('comparison', {}).get('state')) == CASES[name], 'report result or claims differ: ' + name)
         runtime = result['runtime']
-        require(runtime.get('package_version') == '0.11.0' and runtime.get('rule_version') == 'stage2-v2'
+        require(runtime.get('package_version') == '0.11.1' and runtime.get('rule_version') == 'stage2-v2'
                 and runtime.get('executable') == str(executable) and runtime.get('identity_scope') == 'THIS_REPLAY_ONLY'
                 and set(runtime.get('modules', {})) == set(MODULES), 'replay runtime coverage differs')
         for module, item in runtime['modules'].items():

@@ -85,3 +85,7 @@ recursive-include docs/stage13 *.md
 include crypto_reconciliation_lab/replay/demo_catalog_v1.json
 include crypto_reconciliation_lab/replay/fixtures/protected-context.json
 include crypto_reconciliation_lab/replay/fixtures/protected-run.json
+
+# Stage13.1 preserves replay v1 and adds only the two narrow repair checks.
+include contracts/release-test-scope-0.11.1.json scripts/release_replay_maintenance.py
+recursive-include docs/stage13_1 *.md

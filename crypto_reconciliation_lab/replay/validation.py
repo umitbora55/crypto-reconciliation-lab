@@ -134,7 +134,7 @@ def _inventory_types(tables):
 
 
 def _declared_references(tables):
-    """Declared FK closure only; no signatures, policy replay or invented prefix."""
+    """Captured reference closure; no signatures, policy replay or invented prefix."""
     epochs = {r['epoch'] for r in tables['auth_policy_activations']}
     require(all(r['first_epoch'] in epochs for r in tables['auth_keys']), 'key first epoch is absent')
     effects = {(r['stream_id'], r['sequence']) for r in tables['delivery_effects']}
@@ -144,6 +144,15 @@ def _declared_references(tables):
                 'attempt effect reference is incomplete or missing')
         require(linked == (None, None) or linked == (row['stream_id'], row['sequence']),
                 'attempt effect refers to another position')
+    attempts = {row['id']: row for row in tables['delivery_attempts']}
+    decisions = {row['id']: row for row in tables['auth_decisions']}
+    # Existing inventory validation has already established both link targets.
+    for link in tables['auth_attempt_links']:
+        attempt = attempts[link['attempt_id']]
+        decision = decisions[link['decision_id']]
+        require((attempt['stream_id'], attempt['sequence'])
+                == (decision['stream_id'], decision['sequence']),
+                'auth decision and linked attempt refer to different positions')
 
 
 def _declared_domains(tables):
