@@ -1,5 +1,23 @@
 # Project working agreement
 
+## Current Stage13 offline replay authorization
+
+Start from accepted main9db7fd80dcd32d7bada9ff7e4054eb083254da8e on
+stage13/offline-execution-replay. Package0.11.0 adds only offline two-file
+recorded execution replay, with required external identity and unchanged
+stage2-v2/schema6. Implement docs/stage13/replay-contract.md before code.
+Preserve financial/Store/admission/auth/migration behavior, existing formats,
+778 old test IDs/assertions, all historical scope anchors and373 references.
+Only the three user-listed current metadata strings in two old tests may change
+with exact reversible proofs and composed current scope endpoints. No new
+runtime dependency, baseline full rerun, frozen generation/training/holdout,
+UI or heavy benchmark. Use finite child validation/computation and input-only
+adapter; do not claim historical executable identity or independent financial
+truth. Evidence belongs outside Git in stage13-output. Normal task-branch
+commit/push and a new draft PR are authorized; no main merge, force push,
+branch deletion, workflow dispatch, tag/release/PyPI or next stage.
+Earlier task-specific sections below remain historical.
+
 ## Current Stage 12.1 maintenance authorization
 
 Start from reviewed candidate 43708e4e1d94bc18412ba53b1706fa45018e320a.

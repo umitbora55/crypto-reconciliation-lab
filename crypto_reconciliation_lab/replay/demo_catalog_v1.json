@@ -1,0 +1,54 @@
+{
+  "cases": [
+    {
+      "comparison": "EQUAL",
+      "exit_code": 0,
+      "id": "clean",
+      "reason_code": "REPLAY_REPRODUCED",
+      "status": "REPRODUCED"
+    },
+    {
+      "comparison": "EQUAL",
+      "exit_code": 0,
+      "id": "custody_difference",
+      "reason_code": "REPLAY_REPRODUCED",
+      "status": "REPRODUCED"
+    },
+    {
+      "comparison": "EQUAL",
+      "exit_code": 0,
+      "id": "old_cut_offline",
+      "reason_code": "REPLAY_REPRODUCED",
+      "status": "REPRODUCED"
+    },
+    {
+      "comparison": "NOT_EVALUATED",
+      "exit_code": 2,
+      "id": "wrong_identity",
+      "reason_code": "REPLAY_INTEGRITY",
+      "status": "ERROR"
+    },
+    {
+      "comparison": "DIFFERENT",
+      "exit_code": 1,
+      "id": "numeric_divergence",
+      "reason_code": "REPLAY_DIVERGED",
+      "status": "DIVERGED"
+    },
+    {
+      "comparison": "DIFFERENT",
+      "exit_code": 1,
+      "id": "trace_divergence",
+      "reason_code": "REPLAY_DIVERGED",
+      "status": "DIVERGED"
+    },
+    {
+      "comparison": "EQUAL",
+      "exit_code": 0,
+      "id": "protected_recorded",
+      "reason_code": "REPLAY_REPRODUCED",
+      "status": "REPRODUCED"
+    }
+  ],
+  "format": "execution-replay-demo-catalog-v1"
+}
