@@ -4,273 +4,84 @@ Personal project by Ümit Bora Günaydın
 
 I built this project to study reconciliation when records arrive late or are corrected after an evaluation. It uses synthetic ledger, investor and custody data, and keeps earlier findings available for inspection.
 
-Python and SQLite · Package **0.11.0** · Financial rule `stage2-v2` · SQLite schema `6`
+Python **3.12+** · Package **0.11.1** · Financial rule `stage2-v2` · SQLite schema `6`
 
-[Example](#example) · [Run locally](#run-locally) · [Design notes](docs/model_contract.md) · [Türkçe](docs/showcase/README.tr.md)
+[Example](#example) · [Run locally](#run-locally) · [Five-minute review](docs/stage13_1/five-minute-project-review.md) · [Evidence](#verification) · [Türkçe](docs/stage13_1/project-overview.tr.md)
 
 ## Why I built this
 
-A difference in amounts is only part of a reconciliation result. I wanted to examine how late records, incomplete deliveries and historical corrections change what can reasonably be concluded from the available data.
-
-I kept the implementation local and synthetic so that these cases can be reproduced, inspected and tested without customer data or institutional access. The result includes a financial calculation, an explicit statement of data completeness and references to the records used.
+A difference in amounts is only part of a reconciliation result. I wanted to examine how late records, incomplete deliveries and historical corrections change what can reasonably be concluded from the available data. I kept the implementation local and synthetic so that these cases can be inspected without customer data or institutional access.
 
 ## Example
 
-In `custody_difference / initial / ASSET_A`, the two investor reports agree with the ledger. The customer custody reports do not cover the ledger-derived liability. Both comparisons have complete inputs at the selected cuts.
+In `custody_difference / initial / ASSET_A`, comparison **A** agrees with both investor reports: **I1 = 7, I2 = 4**. Their ledger-derived customer liability is **11**. Comparison **B** sees **2** held for customers by the platform and **8** at the external custodian: **10** in total. With complete inputs, B is `COMPLETE / MISMATCH`: expected minus reported is **+1**.
 
-![Synthetic ASSET_A custody_difference example: comparison A matches I1 at 7 and I2 at 4. Their ledger-derived liability is 11. Platform customer custody is 2 and external customer custody is 8, so comparison B is COMPLETE / MISMATCH with expected minus reported equal to +1.](docs/showcase/case-study.svg)
+![ASSET_A: investor balances 7 and 4 match; liability 11 minus customer custody 2 + 8 gives a difference of +1.](docs/showcase/case-study.svg)
 
-The **+1** is a discrepancy to investigate. It does not establish a cause, prove a loss or imply insolvency. B uses the sum of **ledger-derived balances**; agreement in investor reports cannot substitute for that calculation. Assets are evaluated separately, with no cross-asset offsetting.
+The +1 is a discrepancy to investigate. It does not establish a cause, prove a loss or imply insolvency. B uses **ledger-derived balances**; matching investor reports cannot replace that calculation. Assets never offset one another, and platform customer custody is separate from the platform's own assets.
+
+Incomplete information changes the verdict. In `late_event`, a manifest exposes a missing withdrawal: the visible **12 vs 11** remains `INCOMPLETE / NOT_EVALUATED`. Once the withdrawal is known, a new evaluation gives **11 vs 11**, `COMPLETE / MATCHED`. The earlier result stays available.
 
 ### Inspect the saved finding
 
-The image below is captured from the existing offline reviewer after running the small reproduction. It shows the saved ASSET_A custody finding and links to its event evidence; it is not a proposed interface.
+![Historical offline viewer showing the saved ASSET_A B finding: COMPLETE / MISMATCH, expected 11, reported 10, difference 1, with Open evidence links.](docs/showcase/demo-overview.png)
 
-![Actual offline review of custody_difference, initial, ASSET_A: saved finding detail with COMPLETE / MISMATCH, expected 11, reported 10, difference 1, and Open evidence links.](docs/showcase/demo-overview.png)
-
-The [asset and capture record](docs/showcase/assets-manifest.json) identifies the screenshot source, run and capture settings. The reviewer reads saved results without recalculating historical balances. Use [Run locally](#run-locally) to open the interactive file on your computer; GitHub displays the image and HTML source, not a hosted application.
+This is a real **0.6.1 historical capture**, showing the same preserved financial example, not a new 0.11.1 screenshot. The [capture record](docs/showcase/assets-manifest.json) identifies its source and settings. The case diagram explains this example, not the architecture of every later feature.
 
 ## How it works
 
-![Data flow: ledger, opening balances, independent reports, receipts and manifests enter time selection and completeness checks. Independent A and B comparisons produce saved findings and evidence, which the offline reviewer reads.](docs/showcase/architecture.svg)
+I kept financial calculation, delivery acceptance and evidence claims separate:
 
-`occurred_at` locates an economic event; `received_at` records when it became known. `balance_at` selects the balance being compared, while `knowledge_at` limits the information available to that evaluation. Report selection uses the highest valid report version known at that cut for the exact balance time.
-
-In the separate `late_event` demo, the balance cut stays **2026-11-10 23:59:59 UTC**. At knowledge time **2026-11-11 01:00 UTC**, a missing withdrawal leaves a provisional liability comparison of **12 vs 11**, with `INCOMPLETE / NOT_EVALUATED`. At **03:00 UTC**, the withdrawal is known and a new evaluation gives **11 vs 11**, `COMPLETE / MATCHED`. The earlier saved evaluation remains available. These are knowledge cuts, not the withdrawal's occurrence time.
-
-Historical corrections use full `VOID` or amount-only `REPLACE` at the original event's economic position. Investor and custody reports remain independent: a correction does not create or revise either report. Each changes only when its own valid new version is received.
-
-## Engineering decisions
-
-| Decision | Why I chose it; what it does not establish |
+| Capability | Decision and contract |
 |---|---|
-| Exact `Decimal` quantities | Preserve decimal amounts without silent rounding. Each asset has its own precision and is reconciled separately; no prices or currency conversions are introduced. |
-| Completeness before a verdict | Required delivery manifests and valid record coverage determine whether comparison is justified. Missing data yields `INCOMPLETE / NOT_EVALUATED`; a visible partial difference stays provisional. |
-| Economic time and knowledge time | Separate when an event affects a balance from when an evaluation could know it. Synthetic timestamps are input assertions, not authenticated ingestion clocks. |
-| Preserved source records and saved history | Keep earlier reports, receipts and evaluations inspectable after later information arrives. SQLite mutation guards are not protection against an adversarial database owner. |
-| Independent A/B comparisons | Compare each investor with their report and ledger-derived total liability with customer custody. A matching investor report cannot hide a custody difference. |
-| Offline, read-only review | Inspect saved findings and follow evidence references without migrating sources or recalculating their historical results. The viewer is not a correction or payment workflow. |
+| Exact amounts and time selection | `Decimal`, per-asset precision and zero tolerance; economic time and knowledge time select eligible records. [Model](docs/model_contract.md) |
+| Corrections and history | Full `VOID` or amount-only `REPLACE` at the original economic position; reports keep independent versions. [Semantics](docs/correction_semantics.md) |
+| Redelivery and interruption | Finite JSONL delivery, committed attempts and retries; an ACK is not a financial verdict. [Admission](docs/stage9/admission-contract.md) |
+| Optional signed acceptance | Bind accepted bytes to a publisher key under local policy; revocation controls new effects. [Boundary](docs/stage10/admission.md) |
+| Recorded execution context | Save the observed inputs and admission context with the calculation; older unrecorded context remains `NOT_RECORDED`. [Execution](docs/stage12/execution-contract.md) |
+| Offline review | Read saved findings and follow their evidence without recalculating balances. [Provenance](docs/stage11/provenance-contract.md) |
+| Financial replay | Recalculate from two exported files, compare the complete result, and require a separately selected execution identity. [Replay](docs/stage13/replay-contract.md) |
 
-The [model contract](docs/model_contract.md) defines the equations and selection rules; [correction semantics](docs/correction_semantics.md) explains atomic corrections and independent report versions. The [five-minute review](docs/stage6/five-minute-review.md) provides a shorter route through the implementation and its historical measurements.
+`occurred_at` is economic time; `received_at` is when a record became known. `balance_at` names the balance cut; `knowledge_at` limits available knowledge. Different balance cuts are not compared as if simultaneous. Completeness is checked before issuing a definitive financial verdict.
 
 ## Run locally
 
-With **Python 3.12 or later**, use a new output directory for every run:
+From a checkout's project root, with Python 3.12+, run these existing commands. Both output directories must be new:
 
 ```sh
-git clone https://github.com/umitbora55/crypto-reconciliation-lab.git
-cd crypto-reconciliation-lab
-python3 scripts/reproduce_review.py --output review-output-new
+python3 scripts/reproduce_review.py --output review-final-new
+python3 -m crypto_reconciliation_lab demo-execution-replay --output replay-final-new
 ```
 
-Open `review-output-new/index.md`, then `review-output-new/review/bundle/index.html`.
+Open `review-final-new/index.md`, then `review-final-new/review/bundle/index.html`. The first command produces **9 scenarios / 24 saved evaluations**, the offline viewer and limited scoring with the existing JSON model. It needs no API key or optional AI/auth packages; it does not generate, train or final-evaluate the frozen experiment. Expected financial mismatches are not application failures: the outer command exits 0 when its checks pass.
 
-This produces **9 synthetic scenarios / 24 saved evaluations**, an offline export, a limited ranking with the existing JSON model and a negative check for contradictory future-source input. Core execution uses the Python standard library; no API key, customer data or institution connection is required. It does not regenerate, train or final-evaluate the frozen main experiment.
+Read `replay-final-new/summary.md` for **seven fixed replay cases**. A correctly reproduced financial mismatch is `REPRODUCED / 0`; a consistently rehashed wrong answer is `DIVERGED / 1`; a wrong external identity is `ERROR / 2`. The demo itself exits 0 when all expected outcomes agree.
 
-Expected synthetic `MISMATCH` and `INCOMPLETE` findings are not application failures. The reproduction exits 0 only when its checks pass. Its deliberately invalid rank must exit 2 and publish no queue; an unexpected subprocess exit or incomplete output fails the reproduction.
-
-## Offline execution replay
-
-I added a way to recalculate an exported recorded execution from just its
-`context.json` and `run.json`, without the source database or a network connection.
-The caller supplies the execution ID separately. The verifier checks the exact
-input bytes and recorded inventory, then feeds every captured record and receipt
-to the unchanged financial engine through a private two-table memory database.
-It compares the complete newly calculated payload, including trace and evidence.
-
-```sh
-python3 -m crypto_reconciliation_lab demo-execution-replay --output replay-demo-new
-python3 -m crypto_reconciliation_lab verify-execution-replay \
-  --context /path/to/context.json --run /path/to/run.json \
-  --expected-execution-id EXTERNALLY_SELECTED_64_LOWERCASE_HEX_ID \
-  --output replay-report-new
-```
-
-The small demo includes clean results, a reproduced custody difference of +1,
-an old knowledge cut with its source removed, a wrong identity, two consistently
-rehashed wrong answers and consumption of genuine protected 0.10.1 inputs.
-It needs neither the AI nor the auth extra. Read `summary.md` and the recorded
-CLI evidence; the expected case catalog is fixed independently of the verifier.
-
-`REPRODUCED` exits **0**, including faithfully reproduced financial `MISMATCH`,
-`INCOMPLETE` or `CONFLICT`. A valid bound input whose full calculated answer
-differs returns `DIVERGED`/**1**. Input, deadline or publication errors return
-`ERROR`/**2**. The optional fresh output directory contains `report.json` and
-`report.md`; stdout carries the structured result.
-
-This establishes reproducibility using the engine running now. The original
-executable identity remains `NOT_RECORDED`; signatures, external capture
-completeness and actor authorization are not established by replay. A self-made
-replacement input and matching new pin can reproduce its own result. Only the
-two explicit files are checked; the other export presentation files are outside
-this claim. See the [five-minute review](docs/stage13/five-minute-review.md),
-[contract](docs/stage13/replay-contract.md) and [decisions](docs/stage13/decisions.md).
-
-## Recorded execution context
-
-Maintenance 0.10.1 preserves export paths and original acceptance epochs, classifies UTC overflow as an input error, and checks recorded process request bindings. Incorrect older epoch summaries are rejected without rewriting their bytes; see the [maintenance notes](docs/stage12_1/decisions.md).
-
-A financial run identifies a saved calculation. A recorded execution also keeps
-which eligible physical receipts and admission policy were visible inside that
-calculation's transaction. Repeating the same request returns its original
-execution; a new request can observe later receipts or policy revocation while
-sharing the same financial run ID. An ordinary historical run still says
-`NOT_RECORDED` about its original execution context.
-
-```sh
-python3 -m crypto_reconciliation_lab demo-execution-context --profile legacy --output execution-legacy-new
-```
-
-This standard-library demonstration runs **9 fixed CLI cases**. With the optional
-`auth` extra installed, use `--profile protected` for **17 cases** including a
-second physical receipt, policy revocation, immutable retry and a correctly
-signed custody mismatch. Read `summary.md`, the actual calls under `commands/`
-and the exact saved bytes under `exports/`. The demonstration makes no browser
-page and does not run the frozen experiment.
-
-`RECORDED` describes a complete local input/admission observation. It does not
-mean `MATCHED`, perform new signature verification or grant an actor permission
-to reconcile. Real process interruption and competing-writer tests run separately
-inside the full release suites; their retained evidence distinguishes rollback,
-durable commit before ACK, busy responses and retries. See the
-[five-minute walkthrough](docs/stage12/five-minute-review.md),
-[execution contract](docs/stage12/execution-contract.md) and
-[decisions](docs/stage12/decisions.md). Existing v1 provenance exports remain a
-schema-5 contract; schema 6 is never relabelled as historical v1 capture.
+The [five-minute review](docs/stage13_1/five-minute-project-review.md) connects these outputs, actual viewer controls and the two replay input files. The viewer reads a saved answer; replay calculates again with the current engine. Five minutes is a reading target, not a promise about setup or CI duration.
 
 ## Verification
 
-The 0.9.1 maintenance release verifies that effect-referencing replays follow
-the original committed attempt and preserves SQLite identifiers exactly in the
-offline page, including adjacent values above JavaScript's safe integer range.
-Financial results and authoritative evidence formats are unchanged. Old 0.9.0
-page assets may receive `PRESENTATION_INTEGRITY`; when the closed database and
-materials remain available, export a fresh bundle into a new directory. See the
-[maintenance contract](docs/stage11_1/contract.md) and
-[handoff](docs/stage11_1/HANDOFF.md) for the compatibility boundary.
+The application baseline on **15 November 2026** is [commit b2df4f1](https://github.com/umitbora55/crypto-reconciliation-lab/commit/b2df4f13eb7e2fc6b048f17eaaa24f02bf0bd29e), verified by [main CI run 43741674664](https://github.com/umitbora55/crypto-reconciliation-lab/actions/runs/43741674664). Its five jobs succeeded. This dated evidence is not the CI result of a later documentation commit.
 
-Stage 11 adds a portable explanation of one saved run. I wanted to follow a
-finding through its actual recorded inputs, physical receipt candidates and
-original signed admission, while being explicit about what the saved model
-cannot establish. The exporter preserves the exact saved financial payload; a
-separate offline verifier checks its listed evidence against operator-selected
-expectations outside the bundle. It does not recalculate the balances.
-
-```sh
-python3 -m venv .venv-provenance
-.venv-provenance/bin/python -m pip install '.[auth]'
-.venv-provenance/bin/python -m crypto_reconciliation_lab demo-provenance --output provenance-demo-new
-.venv-provenance/bin/python -m crypto_reconciliation_lab verify-provenance --bundle provenance-demo-new/cases/clean/bundle --expectations provenance-demo-new/cases/clean/expectations.json
-```
-
-Read `provenance-demo-new/summary.md` and open
-`provenance-demo-new/cases/clean/bundle/index.html` locally. The small demonstration
-uses explicitly TEST-ONLY policies and independently observed fixture pins. A
-verified source can still report a financial `MISMATCH +1`; missing full source
-bytes, legacy receipts and multiple physical candidates remain partial. No
-run-creation authorization cut was recorded in the original model, so even a
-successful verification retains `NOT_RECORDED` and financial recomputation stays
-`NOT_PERFORMED`. Export `CREATED` is not a verification verdict. See the
-[five-minute walkthrough](docs/stage11/five-minute-review.md),
-[portable contract](docs/stage11/provenance-contract.md) and
-[trust boundaries](docs/stage11/trust-and-sources.md).
-
-In 0.8.2 I closed two remaining SQL inventory gaps in the source-auth evidence
-reader. Persistent keys must match the activated policy history, and every stream
-and owner must be explained by its original committed effect. The earlier response,
-receipt and worker checks remain in place. Valid 0.8.0 and 0.8.1 evidence stays
-readable; admission and financial calculation are unchanged. The
-[maintenance record](docs/stage10_2/HANDOFF.md) separates these repairs and their
-regressions from the historical experiment.
-
-Stage 10 adds an opt-in source admission boundary. In a newly protected local
-database, each new receipt from the public ingestion path is committed with the
-authorized publisher, exact signed file and policy epoch that permitted it. A
-rejected request cannot reserve or block a legitimate stream. Revocation stops
-new effects while previously committed receipts remain available through exact
-historical replay; another authorized key for the same publisher can resume.
-
-I kept source authority separate from financial correctness: the signed wrong
-custody example still produces MISMATCH. The bounded experiment includes real
-SIGKILL barriers, policy rotation and independent evidence mutations. Its trust
-anchor and keys are explicitly TEST-ONLY. See the [usage](docs/stage10/usage.md),
-[admission boundary](docs/stage10/admission.md), [signing profile](docs/stage10/signing.md)
-and [fixed experiment](docs/stage10/experiment.md).
-
-```sh
-python3 -m venv .venv-auth
-.venv-auth/bin/python -m pip install '.[auth]'
-.venv-auth/bin/python -m crypto_reconciliation_lab demo-source-auth --output auth-demo-new --seed 19
-.venv-auth/bin/python -m crypto_reconciliation_lab verify-source-auth --bundle auth-demo-new --anchor demo-test-only
-```
-
-Auth is optional and does not require NumPy, SciPy or sklearn. Core installation
-remains standard-library-only. The local operator, selected policy, database owner
-and Python process are trusted. This is not external institutional identity
-certification, clock attestation or protection against storage rollback.
-
-Stage 9 adds [restartable finite JSONL admission](docs/stage9/admission-contract.md):
-an immutable input plan, exact delivery identities and a committed attempt history.
-Run `python3 -m crypto_reconciliation_lab demo-recovery --output recovery-output-new --seed 19`
-to inspect the fixed process-crash and replay experiment. ACK records a durable
-delivery result; it does not assert financial validity or MATCHED. See the
-[recovery report](docs/stage9/recovery-report.md) and [decisions](docs/stage9/decisions.md).
-Stage 9.1 preserves malformed-frame rejection diagnostics with escaped Unicode
-and requires independent per-scenario work and evidence in the recovery v2 gate.
-See the [maintenance handoff](docs/stage9_1/HANDOFF.md) for the two repairs,
-same-test RED/GREEN evidence, fixture exceptions and unchanged financial contracts.
-The Stage 8 diagrams, real screenshot and Turkish account remain the historical
-0.6.1 showcase; their financial example is unchanged.
-
-The **0.6.1** source at [commit 80d3f87](https://github.com/umitbora55/crypto-reconciliation-lab/commit/80d3f87a2fe397eebb67490bb7fa943b6c487719) passed [run 43445168309](https://github.com/umitbora55/crypto-reconciliation-lab/actions/runs/43445168309) on **13 November 2026**. This is the dated baseline evidence, not a claim about a later documentation commit.
-
-| Scope in that run | Verified result |
+| Scope in that run | Result |
 |---|---|
-| Python 3.12 and 3.14 full jobs | 400 fixed test identities in 34 test/fixture files; each source and isolated installed suite discovered and executed every expected ID once, with zero skips/xfails/errors/failures |
-| Financial matrix, Python 3.14 | 69 cases / 162 evaluations; all ten named integer error counters zero |
-| Complete financial comparison | 325 matrix + 12 Stage 1 + 36 Stage 2 = 373 required files equal to the fixed reference; Python 3.12 compares the 48 demo reports and leaves its unrequested matrix `NOT_RUN` |
-| Separate core/no-AI job | Clean wheel installation without sklearn/NumPy/SciPy; demo, export, fixed JSON ranking and negative-input checks passed |
+| Full Python 3.12 and 3.14 | Each source and isolated installed suite: **875** expected = discovered = executed unique IDs; zero skips, xfails, failures or errors |
+| Full Python 3.14 financial check | **69 cases / 162 evaluations**; ten error counters zero; **325 + 12 + 36 = 373** reference files equal |
+| Core / auth-only Python 3.14 | Profile checks passed; core has no AI/auth crypto, auth-only has no AI; full suites `NOT_RUN` |
+| Other financial matrix cells | `NOT_RUN` |
 
-These checks establish a defined verification scope, not capacity or an SLA. The [workflow page](https://github.com/umitbora55/crypto-reconciliation-lab/actions/workflows/release.yml) shows subsequent runs. The [claim–evidence table](docs/stage6/claim-evidence.md) preserves earlier measurements under their original release identities; historical `NOT_RUN` statements remain historical.
-
-<details>
-<summary>Build and verification commands</summary>
-
-```sh
-python3 -m venv .venv-release
-.venv-release/bin/python -m pip install -r requirements-build.txt
-.venv-release/bin/python scripts/verify_release.py --profile full --financial --output release-check-new
-.venv-release/bin/python scripts/verify_release.py --profile core --output core-check-new
-.venv-release/bin/python scripts/verify_release.py --profile auth-only --output auth-check-new
-```
-
-The verifier builds an allowlisted source distribution, safely extracts it, and builds the wheel from that extraction. Installed tests use an outside working directory, `-I` and actual site-packages imports. Fixed test and financial contracts reject incomplete coverage before expensive work. Initial builds may download pinned dependencies; installed core operation is offline.
-
-See the [release guide](docs/stage6_1/release-guide.md) and [scope contract](docs/stage6_1/scope-contract.md). Independent wheel builds are not claimed to be byte-identical.
-
-</details>
-
-Maintenance 0.11.1 adds two narrow offline replay checks: captured decisions must
-match their linked delivery attempt's stream and sequence, and an output-path
-failure preserves a completed comparison in a structured error report. Financial
-calculation, schema6 and stage2-v2 are unchanged. See the
-[repair contract](docs/stage13_1/repair-contract.md).
+Four original artifact ZIPs and five job logs were checked at closure. Financial evidence includes recorded fingerprints and command results; compact artifacts do not contain all 373 raw reports. See the [workflow](https://github.com/umitbora55/crypto-reconciliation-lab/actions/workflows/release.yml), [release guide](docs/stage6_1/release-guide.md) and [replay repair contract](docs/stage13_1/repair-contract.md) for engineering detail.
 
 ## AI experiment
 
-I compared one fixed model with FIFO and simple rules for prioritizing synthetic unresolved cases. Historical model-minus-rules recall was **0 percentage points on test** and **−2.083 on challenge**: the experiment demonstrated no additional model benefit.
-
-That result is retained in the [historical evaluation](docs/stage6/evidence/stage5-evaluation.md) and [model card](docs/stage6/evidence/stage5-model_card.md). Ranking does not change financial balances or reconciliation verdicts, and its scores are not calibrated financial risk. The small reproduction replays an existing model on a declared subset; it supplies no new model-success metric and does not reopen the final holdout.
+I compared a fixed model with FIFO and simple rules for prioritizing synthetic unresolved cases. Historical model-minus-rules recall was **0 percentage points on test** and **−2.083 on challenge**: no model advantage was demonstrated. The [evaluation](docs/stage6/evidence/stage5-evaluation.md) and [model card](docs/stage6/evidence/stage5-model_card.md) retain that result. Ranking changes neither balances nor verdicts; the small JSON-model replay supplies no new success metric or holdout evaluation.
 
 ## Limitations
 
-This is a synthetic reference project, not an official KVMKS client, live institutional integration, compliance certificate or production-system claim. It is not evidence of a current institutional deficiency. The [source register](docs/problem_evidence.md) separates documented concepts and dates from prototype assumptions.
+Replay uses the current financial engine, not an independent algorithm. Original executable identity is `NOT_RECORDED`; replay does not re-establish source signatures or external completeness of the original database. The expected execution ID is an operator-selected pin, not automatically a trusted institutional identity.
 
-Input times and delivery manifests remain synthetic source assertions. Optional
-signed admission verifies a key against an operator-selected local policy; it does
-not establish institutional identity or financial truth. Preserved SQLite history
-does not provide adversarial tamper protection. The named process-kill checks cover
-defined local transaction boundaries, not disk/power loss, production capacity or
-broad operating-system support.
+Signed acceptance authorizes a key under local policy. It proves neither real institution identity, reported amount correctness nor regulatory compliance. Real process-kill checks cover named local transaction boundaries, not disk/power-loss guarantees, production capacity or an SLA.
 
-[MIT license](LICENSE) · [Türkçe anlatım](docs/showcase/README.tr.md)
+This is a synthetic reference project, not an official KVMKS client or live integration, and not evidence of a current institutional deficiency. The [source register](docs/problem_evidence.md) separates documented concepts from design assumptions.
+
+[MIT license](LICENSE) · [Current Turkish account](docs/stage13_1/project-overview.tr.md) · [Historical 0.6.1 showcase](docs/showcase/README.tr.md)
