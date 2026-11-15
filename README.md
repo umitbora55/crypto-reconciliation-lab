@@ -4,7 +4,7 @@ Personal project by Ümit Bora Günaydın
 
 I built this project to study reconciliation when records arrive late or are corrected after an evaluation. It uses synthetic ledger, investor and custody data, and keeps earlier findings available for inspection.
 
-Python and SQLite · Package **0.10.1** · Financial rule `stage2-v2` · SQLite schema `6`
+Python and SQLite · Package **0.11.0** · Financial rule `stage2-v2` · SQLite schema `6`
 
 [Example](#example) · [Run locally](#run-locally) · [Design notes](docs/model_contract.md) · [Türkçe](docs/showcase/README.tr.md)
 
@@ -68,6 +68,43 @@ Open `review-output-new/index.md`, then `review-output-new/review/bundle/index.h
 This produces **9 synthetic scenarios / 24 saved evaluations**, an offline export, a limited ranking with the existing JSON model and a negative check for contradictory future-source input. Core execution uses the Python standard library; no API key, customer data or institution connection is required. It does not regenerate, train or final-evaluate the frozen main experiment.
 
 Expected synthetic `MISMATCH` and `INCOMPLETE` findings are not application failures. The reproduction exits 0 only when its checks pass. Its deliberately invalid rank must exit 2 and publish no queue; an unexpected subprocess exit or incomplete output fails the reproduction.
+
+## Offline execution replay
+
+I added a way to recalculate an exported recorded execution from just its
+`context.json` and `run.json`, without the source database or a network connection.
+The caller supplies the execution ID separately. The verifier checks the exact
+input bytes and recorded inventory, then feeds every captured record and receipt
+to the unchanged financial engine through a private two-table memory database.
+It compares the complete newly calculated payload, including trace and evidence.
+
+```sh
+python3 -m crypto_reconciliation_lab demo-execution-replay --output replay-demo-new
+python3 -m crypto_reconciliation_lab verify-execution-replay \
+  --context /path/to/context.json --run /path/to/run.json \
+  --expected-execution-id EXTERNALLY_SELECTED_64_LOWERCASE_HEX_ID \
+  --output replay-report-new
+```
+
+The small demo includes clean results, a reproduced custody difference of +1,
+an old knowledge cut with its source removed, a wrong identity, two consistently
+rehashed wrong answers and consumption of genuine protected 0.10.1 inputs.
+It needs neither the AI nor the auth extra. Read `summary.md` and the recorded
+CLI evidence; the expected case catalog is fixed independently of the verifier.
+
+`REPRODUCED` exits **0**, including faithfully reproduced financial `MISMATCH`,
+`INCOMPLETE` or `CONFLICT`. A valid bound input whose full calculated answer
+differs returns `DIVERGED`/**1**. Input, deadline or publication errors return
+`ERROR`/**2**. The optional fresh output directory contains `report.json` and
+`report.md`; stdout carries the structured result.
+
+This establishes reproducibility using the engine running now. The original
+executable identity remains `NOT_RECORDED`; signatures, external capture
+completeness and actor authorization are not established by replay. A self-made
+replacement input and matching new pin can reproduce its own result. Only the
+two explicit files are checked; the other export presentation files are outside
+this claim. See the [five-minute review](docs/stage13/five-minute-review.md),
+[contract](docs/stage13/replay-contract.md) and [decisions](docs/stage13/decisions.md).
 
 ## Recorded execution context
 
@@ -212,6 +249,12 @@ The verifier builds an allowlisted source distribution, safely extracts it, and 
 See the [release guide](docs/stage6_1/release-guide.md) and [scope contract](docs/stage6_1/scope-contract.md). Independent wheel builds are not claimed to be byte-identical.
 
 </details>
+
+Maintenance 0.11.1 adds two narrow offline replay checks: captured decisions must
+match their linked delivery attempt's stream and sequence, and an output-path
+failure preserves a completed comparison in a structured error report. Financial
+calculation, schema6 and stage2-v2 are unchanged. See the
+[repair contract](docs/stage13_1/repair-contract.md).
 
 ## AI experiment
 

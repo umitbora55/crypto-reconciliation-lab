@@ -78,3 +78,14 @@ recursive-include docs/stage12 *.md
 include contracts/release-test-scope-0.10.1.json
 recursive-include docs/stage12_1 *.md
 include scripts/release_execution_maintenance.py
+
+# Stage 13 adds bounded offline execution replay; all old formats stay intact.
+include contracts/release-test-scope-0.11.0.json scripts/release_execution_replay.py
+recursive-include docs/stage13 *.md
+include crypto_reconciliation_lab/replay/demo_catalog_v1.json
+include crypto_reconciliation_lab/replay/fixtures/protected-context.json
+include crypto_reconciliation_lab/replay/fixtures/protected-run.json
+
+# Stage13.1 preserves replay v1 and adds only the two narrow repair checks.
+include contracts/release-test-scope-0.11.1.json scripts/release_replay_maintenance.py
+recursive-include docs/stage13_1 *.md

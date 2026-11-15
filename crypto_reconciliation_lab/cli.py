@@ -26,7 +26,15 @@ def strict_loads(text):
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(prog="crypto-reconciliation-lab")
+    class CommandParser(argparse.ArgumentParser):
+        def error(self, message):
+            selected = sys.argv[1:] if argv is None else argv
+            if selected[:1] == ['verify-execution-replay']:
+                from .replay.report import empty_report, fail
+                print(json.dumps(fail(empty_report(None), 'REPLAY_INPUT', message), sort_keys=True))
+                self.exit(2)
+            super().error(message)
+    parser = CommandParser(prog="crypto-reconciliation-lab")
     commands = parser.add_subparsers(dest="command", required=True)
     triage_generate = commands.add_parser("triage-generate", help="generate separate synthetic triage sources and private plans")
     triage_generate.add_argument("--output", required=True)
@@ -140,6 +148,14 @@ def main(argv=None):
     execution_demo = commands.add_parser("demo-execution-context", help="run the small synthetic recorded-execution CLI demonstration")
     execution_demo.add_argument("--output", required=True)
     execution_demo.add_argument("--profile", choices=("legacy", "protected"), default="protected")
+    replay = commands.add_parser("verify-execution-replay", help="recompute two externally pinned recorded inputs offline")
+    replay.add_argument("--context", required=True)
+    replay.add_argument("--run", required=True)
+    replay.add_argument("--expected-execution-id", required=True)
+    replay.add_argument("--output")
+    replay.add_argument("--timeout-seconds", type=int, default=30)
+    replay_demo = commands.add_parser("demo-execution-replay", help="run the fixed small offline replay catalog")
+    replay_demo.add_argument("--output", required=True)
     lab_generate = commands.add_parser("lab-generate", help="create independent Stage 3 truth, inputs and expectations")
     lab_generate.add_argument("--output", required=True)
     lab_generate.add_argument("--seed", type=int, action="append", dest="seeds")
@@ -165,6 +181,17 @@ def main(argv=None):
     args = parser.parse_args(argv)
     store = None
     try:
+        if args.command == "verify-execution-replay":
+            from .replay import verify_execution_replay
+            result = verify_execution_replay(args.context, args.run, args.expected_execution_id,
+                                             output=args.output, timeout_seconds=args.timeout_seconds)
+            print(json.dumps(result, sort_keys=True))
+            return result['exit_code']
+        if args.command == "demo-execution-replay":
+            from .replay.demo import run_demo
+            result = run_demo(args.output)
+            print(json.dumps(result, sort_keys=True))
+            return 0 if result['status'] == 'PASS' else 2
         # These readers own a read-only connection. Do not route through Store,
         # admission or the legacy mutable command dispatch below.
         if args.command == "show-execution":

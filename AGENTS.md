@@ -1,5 +1,41 @@
 # Project working agreement
 
+## Current Stage13.1 narrow replay maintenance authorization
+
+Start from reviewed 0ecf194c80d82f363b1868585787361abab84f57 on the existing
+stage13/offline-execution-replay branch and draft PR #5. Package 0.11.1 repairs
+only captured decision/attempt position consistency in replay/validation.py and
+output-path canonicalization classification in replay/api.py. Preserve completed
+comparison details, stage2-v2/schema6, replay v1, financial/auth/capture behavior,
+858 old test identities/assertions, historical contracts and frozen experiment.
+Only the six explicitly authorized metadata literals in three old test files may
+change, with exact byte reversal and a separate pinned 0.11.0 scope binding.
+Keep earlier notes and Stage13 docs historical. New docs belong in docs/stage13_1;
+actual RED/GREEN, distributions, CI and archive evidence belong outside Git in
+stage13_1-output. Run unchanged 0.11.0 focused RED witnesses before the fixes, then
+one sealed final source/installed gate and the existing financial/profile gates.
+Do not rerun baseline full suites or heavy/frozen experiments. Normal task-branch
+commit/push and draft PR update are authorized; no main merge, force push, branch
+deletion, workflow dispatch, release/tag/PyPI or new feature stage.
+
+## Current Stage13 offline replay authorization
+
+Start from accepted main9db7fd80dcd32d7bada9ff7e4054eb083254da8e on
+stage13/offline-execution-replay. Package0.11.0 adds only offline two-file
+recorded execution replay, with required external identity and unchanged
+stage2-v2/schema6. Implement docs/stage13/replay-contract.md before code.
+Preserve financial/Store/admission/auth/migration behavior, existing formats,
+778 old test IDs/assertions, all historical scope anchors and373 references.
+Only the three user-listed current metadata strings in two old tests may change
+with exact reversible proofs and composed current scope endpoints. No new
+runtime dependency, baseline full rerun, frozen generation/training/holdout,
+UI or heavy benchmark. Use finite child validation/computation and input-only
+adapter; do not claim historical executable identity or independent financial
+truth. Evidence belongs outside Git in stage13-output. Normal task-branch
+commit/push and a new draft PR are authorized; no main merge, force push,
+branch deletion, workflow dispatch, tag/release/PyPI or next stage.
+Earlier task-specific sections below remain historical.
+
 ## Current Stage 12.1 maintenance authorization
 
 Start from reviewed candidate 43708e4e1d94bc18412ba53b1706fa45018e320a.

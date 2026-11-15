@@ -91,6 +91,8 @@ if len(sys.argv) > 3:
     os.environ['CRYPTO_EXECUTION_TEST_EVIDENCE'] = sys.argv[3]
 if len(sys.argv) > 4:
     os.environ['CRYPTO_STAGE12_1_TEST_EVIDENCE'] = sys.argv[4]
+if len(sys.argv) > 5:
+    os.environ['CRYPTO_EXECUTION_REPLAY_TEST_EVIDENCE'] = sys.argv[5]
 source = pathlib.Path(sys.argv[1]).resolve().parent
 row = dict(discovered=0, executed=0, discovered_ids=[], executed_ids=[], skips=0, failures=0,
     errors=0, unexpected_successes=0, expected_failures=0, status='ERROR',
@@ -198,7 +200,8 @@ class Verification:
         target = self.output / (name + '.json')
         evidence = self.output / ('process-evidence-installed' if installed else 'process-evidence-source')
         maintenance = self.output / (('installed' if installed else 'source') + '-execution-maintenance')
-        self.run(name, [python, '-B', *flags, '-c', TEST_RUNNER, source / 'tests', target, evidence, maintenance], None if installed else source)
+        replay = self.output / ('process-evidence-replay-installed' if installed else 'process-evidence-replay-source')
+        self.run(name, [python, '-B', *flags, '-c', TEST_RUNNER, source / 'tests', target, evidence, maintenance, replay], None if installed else source)
         result = json.loads(target.read_text(encoding='utf-8'))
         validate_tests(result, TEST_SCOPE.load_test_scope(source))
         self.record[name] = result
@@ -210,6 +213,8 @@ class Verification:
                          for p in sorted(maintenance.rglob('*')) if p.is_file()}}
         self.record[name + '_execution_processes'] = validate_execution_process_evidence(
             evidence, package_origin=result['origin'], isolated=installed)
+        self.record[name + '_execution_replay_timeout'] = release_helper('release_execution_replay').validate_timeout(
+            replay, executable=python, isolated=installed)
         self.persist()
         return result
 
@@ -487,7 +492,7 @@ MAINTENANCE_RESULTS = {
 
 def validate_provenance_maintenance(setup, results):
     require(setup.get('format') == 'release-provenance-maintenance-v1'
-            and setup.get('package_version') == '0.10.1', 'maintenance setup identity differs')
+            and setup.get('package_version') == '0.11.1', 'maintenance setup identity differs')
     require(setup.get('f1_preservation') == {'external_changed_fields': ['capture_digest'],
             'raw_run_equal': True, 'signed_materials_equal': True}, 'maintenance F1 preservation differs')
     require(setup.get('f2_authoritative_capture_unchanged') is True, 'maintenance F2 raw capture changed')
@@ -958,7 +963,7 @@ def core_execution_denied(gate, python):
     gate.persist()
 
 
-def wheel_manifest(wheel, version='0.10.1'):
+def wheel_manifest(wheel, version='0.11.1'):
     with zipfile.ZipFile(wheel) as archive:
         members = archive.infolist()
         require(len(members) <= 1000 and sum(item.file_size for item in members) <= 32 * 1024**2, 'wheel member/size limit exceeded')
@@ -981,7 +986,10 @@ def wheel_manifest(wheel, version='0.10.1'):
             if name.startswith('crypto_reconciliation_lab/'):
                 require(PurePosixPath(name).suffix in ('.py', '.html', '.css', '.js')
                         or name in ('crypto_reconciliation_lab/admission/recovery_scope_v2.json',
-                                    'crypto_reconciliation_lab/source_auth/experiment_scope_v1.json'),
+                                    'crypto_reconciliation_lab/source_auth/experiment_scope_v1.json',
+                                    'crypto_reconciliation_lab/replay/demo_catalog_v1.json',
+                                    'crypto_reconciliation_lab/replay/fixtures/protected-context.json',
+                                    'crypto_reconciliation_lab/replay/fixtures/protected-run.json'),
                         'wheel contains unexpected package data')
             data = archive.read(item)
             require(len(data) == item.file_size, 'wheel member size mismatch')
@@ -1074,6 +1082,32 @@ def execution_maintenance(gate, python, source, profile):
     require(actual and actual == result['evidence_files'], 'maintenance command evidence differs')
     gate.record['installed_execution_maintenance'] = {**checked, 'coverage': 'FIXED_SUBSET',
         'summary': digest(target / 'summary.json'), 'result': result}
+    gate.persist()
+
+
+def execution_replay(gate, python, source, mode):
+    target = gate.output / (mode + '-execution-replay')
+    flags = ['-I'] if mode == 'installed' else []
+    cwd = gate.external if mode == 'installed' else source
+    gate.run(mode + '-execution-replay', [python, '-B', *flags, '-m', 'crypto_reconciliation_lab',
+             'demo-execution-replay', '--output', target], cwd)
+    checked = release_helper('release_execution_replay').validate_demo(target,
+        package_origin=gate.record[mode + '_import']['origin'], executable=python,
+        isolated=mode == 'installed', cwd=cwd)
+    gate.record[mode + '_execution_replay'] = {**checked, 'path': str(target)}
+    gate.persist()
+
+
+def replay_maintenance(gate, python, source):
+    target = gate.output / 'installed-replay-maintenance'
+    gate.run('installed-replay-maintenance', [python, '-I', '-B',
+             source / 'scripts/release_replay_maintenance.py', '--tests', source / 'tests', '--output', target])
+    result = json.loads((target / 'summary.json').read_bytes())
+    require(result['status'] == 'PASS' and result['case_count'] == 8
+            and result['package_version'] == gate.record['expected_version']
+            and result['origin'] == gate.record['installed_import']['origin'], 'replay maintenance identity differs')
+    gate.record['installed_replay_maintenance'] = {'status': 'PASS', 'summary': digest(target / 'summary.json'),
+                                                  'result': result}
     gate.persist()
 
 
@@ -1179,9 +1213,12 @@ def main(argv=None):
             provenance(gate, python, source, 'source')
             provenance_maintenance(gate, python, source, 'source')
             execution_demo(gate, python, source, 'source', 'protected')
+            execution_replay(gate, python, source, 'source')
         reproduce(gate, python, source, 'installed', reference, args.profile != 'full')
         recovery(gate, python, source, 'installed')
         execution_demo(gate, python, source, 'installed', 'legacy' if args.profile == 'core' else 'protected')
+        execution_replay(gate, python, source, 'installed')
+        replay_maintenance(gate, python, source)
         if args.profile != 'core':
             source_auth(gate, python, source, 'installed')
             provenance(gate, python, source, 'installed')
@@ -1194,6 +1231,9 @@ def main(argv=None):
             execution_maintenance(gate, python, source, args.profile)
             gate.record['source_execution_maintenance'] = {'status': 'NOT_RUN', 'reason': 'source repair tests belong to full profile'}
             gate.record['source_execution'] = {'status': 'NOT_RUN', 'reason': 'source demonstration belongs to full profile'}
+            gate.record['source_execution_replay'] = {'status': 'NOT_RUN', 'reason': 'source replay demonstration belongs to full profile'}
+            gate.record['source_tests_execution_replay_timeout'] = gate.record['installed_tests_execution_replay_timeout'] = {
+                'status': 'NOT_RUN', 'reason': 'real timeout experiment runs within the full suite only'}
             gate.record['source_tests_execution_processes'] = gate.record['installed_tests_execution_processes'] = {
                 'status': 'NOT_RUN', 'reason': 'process experiments run within the full suite only'}
             gate.record['source_tests'] = gate.record['installed_tests'] = {'status': 'NOT_RUN', 'reason': 'full suite requires both optional extras'}
@@ -1224,6 +1264,7 @@ def main(argv=None):
             f"Source authentication: {gate.record['installed_source_auth']['status']}. Profile-specific dependency absence/pins are in the import probe.\n\n"
             f"Saved-run provenance: {gate.record['installed_provenance']['status']}. Run-creation authorization remains NOT_RECORDED; financial recomputation NOT_PERFORMED.\n\n"
             f"Recorded execution: {gate.record['installed_execution']['validation']['case_count']} fixed CLI cases PASS. Process evidence: {gate.record['installed_tests_execution_processes']['status']}.\n\n"
+            f"Offline execution replay: {gate.record['installed_execution_replay']['case_count']} fixed CLI cases PASS; same-engine comparison only.\n\n"
             "All commands, actual exits, import origins, dependency versions, byte proofs and logs are in verification.json. "
             "No main triage generation, training, or final holdout evaluation was invoked by this gate.\n", encoding='utf-8')
         print(json.dumps({'status': 'PASS', 'profile': args.profile, 'report': str(gate.output / 'verification.json')}))

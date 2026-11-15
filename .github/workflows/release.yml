@@ -73,6 +73,21 @@ jobs:
             ${{ runner.temp }}/release-full/verification.json
             ${{ runner.temp }}/release-full/verification.md
             ${{ runner.temp }}/release-full/logs/*.txt
+            ${{ runner.temp }}/release-full/installed-replay-maintenance/summary.json
+            ${{ runner.temp }}/release-full/installed-replay-maintenance/commands/*/*.txt
+            ${{ runner.temp }}/release-full/installed-replay-maintenance/commands/*/command.json
+            ${{ runner.temp }}/release-full/source-execution-replay/summary.json
+            ${{ runner.temp }}/release-full/source-execution-replay/summary.md
+            ${{ runner.temp }}/release-full/source-execution-replay/catalog.json
+            ${{ runner.temp }}/release-full/source-execution-replay/cases/*/*.json
+            ${{ runner.temp }}/release-full/source-execution-replay/commands/*/*
+            ${{ runner.temp }}/release-full/installed-execution-replay/summary.json
+            ${{ runner.temp }}/release-full/installed-execution-replay/summary.md
+            ${{ runner.temp }}/release-full/installed-execution-replay/catalog.json
+            ${{ runner.temp }}/release-full/installed-execution-replay/cases/*/*.json
+            ${{ runner.temp }}/release-full/installed-execution-replay/commands/*/*
+            ${{ runner.temp }}/release-full/process-evidence-replay-source/**/*.json
+            ${{ runner.temp }}/release-full/process-evidence-replay-installed/**/*.json
             ${{ runner.temp }}/release-full/source-execution-maintenance/**/*.json
             ${{ runner.temp }}/release-full/source-execution-maintenance/**/*.txt
             ${{ runner.temp }}/release-full/installed-execution-maintenance/**/*.json
@@ -149,6 +164,14 @@ jobs:
             ${{ runner.temp }}/release-core/verification.json
             ${{ runner.temp }}/release-core/verification.md
             ${{ runner.temp }}/release-core/logs/*.txt
+            ${{ runner.temp }}/release-core/installed-replay-maintenance/summary.json
+            ${{ runner.temp }}/release-core/installed-replay-maintenance/commands/*/*.txt
+            ${{ runner.temp }}/release-core/installed-replay-maintenance/commands/*/command.json
+            ${{ runner.temp }}/release-core/installed-execution-replay/summary.json
+            ${{ runner.temp }}/release-core/installed-execution-replay/summary.md
+            ${{ runner.temp }}/release-core/installed-execution-replay/catalog.json
+            ${{ runner.temp }}/release-core/installed-execution-replay/cases/*/*.json
+            ${{ runner.temp }}/release-core/installed-execution-replay/commands/*/*
             ${{ runner.temp }}/release-core/installed-execution-maintenance/**/*.json
             ${{ runner.temp }}/release-core/installed-execution-maintenance/**/*.txt
             ${{ runner.temp }}/release-core/installed-execution/summary.json
@@ -194,6 +217,14 @@ jobs:
             ${{ runner.temp }}/release-auth-only/verification.json
             ${{ runner.temp }}/release-auth-only/verification.md
             ${{ runner.temp }}/release-auth-only/logs/*.txt
+            ${{ runner.temp }}/release-auth-only/installed-replay-maintenance/summary.json
+            ${{ runner.temp }}/release-auth-only/installed-replay-maintenance/commands/*/*.txt
+            ${{ runner.temp }}/release-auth-only/installed-replay-maintenance/commands/*/command.json
+            ${{ runner.temp }}/release-auth-only/installed-execution-replay/summary.json
+            ${{ runner.temp }}/release-auth-only/installed-execution-replay/summary.md
+            ${{ runner.temp }}/release-auth-only/installed-execution-replay/catalog.json
+            ${{ runner.temp }}/release-auth-only/installed-execution-replay/cases/*/*.json
+            ${{ runner.temp }}/release-auth-only/installed-execution-replay/commands/*/*
             ${{ runner.temp }}/release-auth-only/installed-execution-maintenance/**/*.json
             ${{ runner.temp }}/release-auth-only/installed-execution-maintenance/**/*.txt
             ${{ runner.temp }}/release-auth-only/installed-execution/summary.json
