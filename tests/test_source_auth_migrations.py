@@ -49,7 +49,7 @@ class SourceAuthMigrationTests(unittest.TestCase):
         self.assertEqual(result['status'], 'MIGRATED')
         with closing(Store(path)) as store:
             self.assertTrue(validate_current(store.db))
-            self.assertEqual(store.db.execute('PRAGMA user_version').fetchone()[0], 5)
+            self.assertEqual(store.db.execute('PRAGMA user_version').fetchone()[0], 6)
             assert_preserved(store.db, before)
             for name, expected in rows.items():
                 query = f'SELECT * FROM "{name}"' + (' WHERE version<=4' if name == 'schema_migrations' else '') + ' ORDER BY rowid'
@@ -77,7 +77,7 @@ class SourceAuthMigrationTests(unittest.TestCase):
 
     def test_new_database_chain_and_no_implicit_protection(self):
         with closing(Store(self.root / 'new.db', self.config)) as store:
-            self.assertEqual([r[0] for r in store.db.execute('SELECT version FROM schema_migrations ORDER BY version')], [2, 3, 4, 5])
+            self.assertEqual([r[0] for r in store.db.execute('SELECT version FROM schema_migrations ORDER BY version')], [2, 3, 4, 5, 6])
             for table in AUTH_TABLES:
                 self.assertEqual(store.db.execute(f'SELECT COUNT(*) FROM "{table}"').fetchone()[0], 0)
             self.assertEqual(store.ingest(self.rows[0]['record'], self.rows[0]['received_at'])['status'], 'ACCEPTED')

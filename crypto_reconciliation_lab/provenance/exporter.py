@@ -8,7 +8,7 @@ import sqlite3
 import stat
 import tempfile
 
-from ..migrations import validate_current
+from ..migrations import validate_schema
 from ..review.adapter import _parity
 from ..review.publication import publish_directory
 from ..review.validation import ReviewError, validate_payload
@@ -106,7 +106,7 @@ def _closed_read(path):
             _require([tuple(row) for row in db.execute('PRAGMA quick_check(10)')] == [('ok',)], 'PROVENANCE_SCHEMA', 'database integrity check failed')
             # This existing function only reads schema metadata. No migration or
             # Store initialization function is called on either file.
-            validate_current(db)
+            validate_schema(db, 5)
             extra = {'configuration': 'id payload', 'runs': 'id balance_at knowledge_at payload',
                      'findings': 'run_id ordinal payload', 'evidence': 'run_id evidence_id payload',
                      'correction_groups': 'run_id group_id correction_record_id target_record_id payload',

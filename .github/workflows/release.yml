@@ -73,6 +73,20 @@ jobs:
             ${{ runner.temp }}/release-full/verification.json
             ${{ runner.temp }}/release-full/verification.md
             ${{ runner.temp }}/release-full/logs/*.txt
+            ${{ runner.temp }}/release-full/source-execution/summary.json
+            ${{ runner.temp }}/release-full/source-execution/summary.md
+            ${{ runner.temp }}/release-full/source-execution/commands/*/*
+            ${{ runner.temp }}/release-full/source-execution/exports/*/*
+            ${{ runner.temp }}/release-full/installed-execution/summary.json
+            ${{ runner.temp }}/release-full/installed-execution/summary.md
+            ${{ runner.temp }}/release-full/installed-execution/commands/*/*
+            ${{ runner.temp }}/release-full/installed-execution/exports/*/*
+            ${{ runner.temp }}/release-full/source_tests.json
+            ${{ runner.temp }}/release-full/process-evidence-source/**/*.json
+            ${{ runner.temp }}/release-full/process-evidence-source/**/*.txt
+            ${{ runner.temp }}/release-full/installed_tests.json
+            ${{ runner.temp }}/release-full/process-evidence-installed/**/*.json
+            ${{ runner.temp }}/release-full/process-evidence-installed/**/*.txt
             ${{ runner.temp }}/release-full/source-reproduction/index.md
             ${{ runner.temp }}/release-full/source-reproduction/reproduction.json
             ${{ runner.temp }}/release-full/source-reproduction/manifest.json
@@ -131,6 +145,10 @@ jobs:
             ${{ runner.temp }}/release-core/verification.json
             ${{ runner.temp }}/release-core/verification.md
             ${{ runner.temp }}/release-core/logs/*.txt
+            ${{ runner.temp }}/release-core/installed-execution/summary.json
+            ${{ runner.temp }}/release-core/installed-execution/summary.md
+            ${{ runner.temp }}/release-core/installed-execution/commands/*/*
+            ${{ runner.temp }}/release-core/installed-execution/exports/*/*
             ${{ runner.temp }}/release-core/source-reproduction/index.md
             ${{ runner.temp }}/release-core/source-reproduction/reproduction.json
             ${{ runner.temp }}/release-core/source-reproduction/manifest.json
@@ -170,6 +188,10 @@ jobs:
             ${{ runner.temp }}/release-auth-only/verification.json
             ${{ runner.temp }}/release-auth-only/verification.md
             ${{ runner.temp }}/release-auth-only/logs/*.txt
+            ${{ runner.temp }}/release-auth-only/installed-execution/summary.json
+            ${{ runner.temp }}/release-auth-only/installed-execution/summary.md
+            ${{ runner.temp }}/release-auth-only/installed-execution/commands/*/*
+            ${{ runner.temp }}/release-auth-only/installed-execution/exports/*/*
             ${{ runner.temp }}/release-auth-only/installed-reproduction/reproduction.json
             ${{ runner.temp }}/release-auth-only/installed-recovery/schedule.json
             ${{ runner.temp }}/release-auth-only/installed-recovery/delivery-summary.json

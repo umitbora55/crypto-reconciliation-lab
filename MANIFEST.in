@@ -71,3 +71,7 @@ recursive-include docs/stage11 *.md
 # Stage 11.1 bounded causality and lossless presentation maintenance.
 include contracts/release-test-scope-0.9.1.json scripts/release_provenance_maintenance.py
 recursive-include docs/stage11_1 *.md
+
+# Stage 12 additive recorded execution and explicit historical compatibility.
+include contracts/release-test-scope-0.10.0.json
+recursive-include docs/stage12 *.md

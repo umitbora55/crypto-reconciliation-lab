@@ -1,5 +1,22 @@
 # Project working agreement
 
+## Current Stage 12 recorded-execution authorization
+
+Start from accepted main 20ebe7753ae7d57ba6d2da2c83cc5220a75c4423 on
+stage12/recorded-execution. Package 0.10.0 adds schema 6 and a finite, explicit
+transaction-owned recorded evaluation. Preserve stage2-v2 financial payloads,
+661 old test IDs and behavior assertions, historical v1/5 provenance, all scope
+anchors, 373 financial references and the frozen experiment. The contract and
+ADRs in docs/stage12 precede production edits. Narrow persistence extraction,
+versioned validators, explicit real schema-5 initialization and documented old
+fixture/current metadata changes are authorized. Do not weaken generic nested
+transaction protection or infer past execution authority. Keep actual command,
+crash/race, distribution, CI and handoff evidence outside Git in stage12-output.
+Run focused checks before sealed source/installed full gates; no baseline rerun,
+frozen training/holdout or redundant heavy experiments. Normal task-branch push
+and a new draft PR are authorized; no main merge, force push, branch deletion,
+dispatch, tag/release/PyPI or unrelated feature. Earlier sections are historical.
+
 ## Current Stage 11.1 maintenance authorization
 
 Repair only S11-F1 selected-effect causality and S11-F2 lossless derived view

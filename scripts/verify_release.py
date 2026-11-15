@@ -84,9 +84,11 @@ print(json.dumps(dict(python=sys.version, executable=sys.executable, isolated=bo
 '''
 
 TEST_RUNNER = r'''
-import importlib.util, json, pathlib, sys, unittest
+import importlib.util, json, os, pathlib, sys, unittest
 import crypto_reconciliation_lab as package
 report = pathlib.Path(sys.argv[2])
+if len(sys.argv) > 3:
+    os.environ['CRYPTO_EXECUTION_TEST_EVIDENCE'] = sys.argv[3]
 source = pathlib.Path(sys.argv[1]).resolve().parent
 row = dict(discovered=0, executed=0, discovered_ids=[], executed_ids=[], skips=0, failures=0,
     errors=0, unexpected_successes=0, expected_failures=0, status='ERROR',
@@ -178,7 +180,7 @@ class Verification:
                     for p in (source / 'crypto_reconciliation_lab').rglob('*')
                     if p.is_file() and '__pycache__' not in p.parts and p.suffix != '.pyc'}
         require(result['package_files'] == expected, 'installed/source package module or asset bytes differ')
-        require(result['rule'] == 'stage2-v2' and result['schema'] == 5, 'financial rule/schema changed')
+        require(result['rule'] == 'stage2-v2' and result['schema'] == 6, 'financial rule/schema changed')
         require(result['review_format'] == 'review-bundle-v1' and result['experiment_format'] == 'triage-experiment-v1'
                 and result['feature_format'] == 'triage-features-v1', 'saved review/triage v1 format changed')
         require(result['contract_sha256'] == 'd532627546c49a582397fcb700ad723269fafe45ac25af7f162eded5f85d7428',
@@ -192,10 +194,13 @@ class Verification:
     def tests(self, name, python, source, installed):
         flags = ['-I'] if installed else []
         target = self.output / (name + '.json')
-        self.run(name, [python, '-B', *flags, '-c', TEST_RUNNER, source / 'tests', target], None if installed else source)
+        evidence = self.output / ('process-evidence-installed' if installed else 'process-evidence-source')
+        self.run(name, [python, '-B', *flags, '-c', TEST_RUNNER, source / 'tests', target, evidence], None if installed else source)
         result = json.loads(target.read_text(encoding='utf-8'))
         validate_tests(result, TEST_SCOPE.load_test_scope(source))
         self.record[name] = result
+        self.record[name + '_execution_processes'] = validate_execution_process_evidence(
+            evidence, package_origin=result['origin'], isolated=installed)
         self.persist()
         return result
 
@@ -473,7 +478,7 @@ MAINTENANCE_RESULTS = {
 
 def validate_provenance_maintenance(setup, results):
     require(setup.get('format') == 'release-provenance-maintenance-v1'
-            and setup.get('package_version') == '0.9.1', 'maintenance setup identity differs')
+            and setup.get('package_version') == '0.10.0', 'maintenance setup identity differs')
     require(setup.get('f1_preservation') == {'external_changed_fields': ['capture_digest'],
             'raw_run_equal': True, 'signed_materials_equal': True}, 'maintenance F1 preservation differs')
     require(setup.get('f2_authoritative_capture_unchanged') is True, 'maintenance F2 raw capture changed')
@@ -525,7 +530,338 @@ def provenance_maintenance(gate, python, source, mode):
     gate.persist()
 
 
-def wheel_manifest(wheel, version='0.9.1'):
+# Stage 12 release-owned scope: never infer required coverage from demo labels.
+EXECUTION_CASES = {
+    'legacy_unrecorded': (0, 'NOT_RECORDED', None, 'show-execution'),
+    'legacy_recorded': (0, 'RECORDED', None, 'reconcile-recorded'),
+    'legacy_retry': (0, 'RECORDED', None, 'reconcile-recorded'),
+    'legacy_conflict': (2, 'ERROR', 'EXECUTION_REQUEST_CONFLICT', 'reconcile-recorded'),
+    'legacy_new_request': (0, 'RECORDED', None, 'reconcile-recorded'),
+    'legacy_multiple': (0, 'MULTIPLE_EXECUTIONS', None, 'show-execution'),
+    'legacy_show': (0, 'RECORDED', None, 'show-execution'),
+    'legacy_export': (0, 'EXPORTED', None, 'export-execution'),
+    'legacy_export_existing': (2, 'ERROR', 'EXECUTION_OUTPUT', 'export-execution'),
+    'protected_recorded': (0, 'RECORDED', None, 'reconcile-recorded'),
+    'protected_retry_after_change': (0, 'RECORDED', None, 'reconcile-recorded'),
+    'protected_new_request': (0, 'RECORDED', None, 'reconcile-recorded'),
+    'protected_original_readback': (0, 'RECORDED', None, 'show-execution'),
+    'protected_multiple': (0, 'MULTIPLE_EXECUTIONS', None, 'show-execution'),
+    'protected_export': (0, 'EXPORTED', None, 'export-execution'),
+    'signed_mismatch': (1, 'RECORDED', None, 'reconcile-recorded'),
+    'signed_mismatch_show': (0, 'RECORDED', None, 'show-execution'),
+}
+EXECUTION_KILLS = {
+    'test_sigkill_after_financial_persistence_rolls_back_fresh_and_existing_variants': 'execution_after_financial',
+    'test_sigkill_after_context_before_commit_rolls_back_fresh_and_existing_variants': 'execution_after_context',
+    'test_sigkill_after_commit_before_cli_ack_retries_durable_original': 'execution_after_commit',
+}
+EXECUTION_RACES = {
+    'test_separate_process_admission_before_cut_is_wholly_present': ('admission', 'before'),
+    'test_separate_process_admission_after_cut_cannot_mix_with_first_context': ('admission', 'after'),
+    'test_separate_process_policy_before_cut_is_wholly_present': ('policy', 'before'),
+    'test_separate_process_policy_after_cut_cannot_mix_with_first_context': ('policy', 'after'),
+}
+EXECUTION_SAME_REQUEST = 'test_same_request_in_two_processes_has_one_durable_execution'
+
+
+def execution_json(path):
+    return json.loads(Path(path).read_text(encoding='utf-8'))
+
+
+def execution_member(root, name):
+    relative = Path(name)
+    target = root / relative
+    require(not relative.is_absolute() and '..' not in relative.parts and target.is_file()
+            and not target.is_symlink() and target.resolve().is_relative_to(root.resolve()),
+            'EXECUTION_EVIDENCE: missing or unsafe member ' + str(name))
+    return target
+
+
+def execution_financial(result, mismatch=False):
+    financial = result['financial_result']
+    literal = [('ASSET_A', 'A', 'I1', '7'), ('ASSET_A', 'A', 'I2', '4'),
+               ('ASSET_A', 'B', 'customer_liability', '11'), ('ASSET_B', 'A', 'I1', '0.3'),
+               ('ASSET_B', 'A', 'I2', '0.2'), ('ASSET_B', 'B', 'customer_liability', '0.5')]
+    fields = ('asset', 'comparison', 'scope', 'expected', 'reported', 'difference', 'data_state', 'reconciliation_state')
+    expected = [(asset, comparison, scope, amount, '10' if mismatch and asset == 'ASSET_A' and comparison == 'B' else amount,
+                 '1' if mismatch and asset == 'ASSET_A' and comparison == 'B' else '0', 'COMPLETE',
+                 'MISMATCH' if mismatch and asset == 'ASSET_A' and comparison == 'B' else 'MATCHED')
+                for asset, comparison, scope, amount in literal]
+    require([tuple(row[key] for key in fields) for row in financial['findings']] == expected,
+            'EXECUTION_FINANCIAL: six literal findings differ')
+    require(financial['rule_version'] == 'stage2-v2', 'EXECUTION_FINANCIAL: rule changed')
+    for asset, balances, liability, custody in (
+            ('ASSET_A', {'I1': '7', 'I2': '4'}, '11', {'platform': '2', 'external': '9'}),
+            ('ASSET_B', {'I1': '0.3', 'I2': '0.2'}, '0.5', {'platform': '0.05', 'external': '0.45'})):
+        ledger = financial['ledgers'][asset]
+        require((ledger['investor_balances'], ledger['liability'], ledger['custody_rollforward']) ==
+                (balances, liability, custody), 'EXECUTION_FINANCIAL: literal ledger differs')
+
+
+def execution_context(result, protected, receipts=30, epoch=None):
+    context = result['context']
+    require(result['status'] == 'RECORDED' and context['schema_version'] == 6
+            and context['scope']['complete'] is True, 'EXECUTION_CONTEXT: incomplete recorded context')
+    require(context['claims'] == {'context_state': 'RECORDED', 'admission_mode': 'PROTECTED' if protected else 'LEGACY',
+            'legacy_signature_status': 'NOT_APPLICABLE' if protected else 'UNSIGNED',
+            'source_signature_verification': 'NOT_PERFORMED', 'run_actor_authorization': 'NOT_DEFINED'},
+            'EXECUTION_CONTEXT: claims changed')
+    tables = context['tables']
+    require(context['counts'] == {table: len(rows) for table, rows in tables.items()}
+            and len(tables['receipts']) == receipts and len(tables['records']) == 30,
+            'EXECUTION_CONTEXT: physical/normalized inventory differs')
+    require((context['observed_policy_head']['epoch'] if context['observed_policy_head'] else None) == epoch
+            and context['acceptance_epochs'] == ([1] if protected else []), 'EXECUTION_CONTEXT: policy cut differs')
+    require(len(context['selected_evidence']) == 60, 'EXECUTION_CONTEXT: selected evidence coverage differs')
+    if protected:
+        require(len(tables['delivery_effects']) == len(tables['auth_decisions']) == receipts,
+                'EXECUTION_CONTEXT: admission inventory differs')
+    else:
+        require(all(not rows for table, rows in tables.items() if table.startswith('auth_')),
+                'EXECUTION_CONTEXT: legacy unexpectedly claims authentication')
+
+
+def validate_execution_demo(path, *, profile, package_origin):
+    root = Path(path)
+    summary = execution_json(root / 'summary.json')
+    require(profile in ('legacy', 'protected') and summary.get('format') == 'execution-context-demo-v1'
+            and summary.get('profile') == profile and summary.get('status') == 'PASS'
+            and summary.get('schema_version') == 6 and summary.get('rule_version') == 'stage2-v2',
+            'EXECUTION_DEMO: header or profile mismatch')
+    require(summary.get('frozen_experiment') == summary.get('process_crash_race_experiments') == 'NOT_RUN',
+            'EXECUTION_DEMO: scope boundary changed')
+    environment = summary['environment']
+    require(Path(environment['import_origin']).resolve() == Path(package_origin).resolve(),
+            'EXECUTION_DEMO: import origin differs')
+    required = list(EXECUTION_CASES)[:9] if profile == 'legacy' else list(EXECUTION_CASES)
+    require(summary['case_inventory'] == required and [case['id'] for case in summary['cases']] == required,
+            'EXECUTION_DEMO: missing, duplicate or unexpected cases')
+    results, identities = {}, {}
+    for case in summary['cases']:
+        name = case['id']
+        code, status, reason, operation = EXECUTION_CASES[name]
+        require(case['command'] == 'commands/' + name + '/command.json'
+                and case['result'] == 'commands/' + name + '/result.json', 'EXECUTION_DEMO: command binding differs')
+        command_path = execution_member(root, case['command'])
+        result_path = execution_member(root, case['result'])
+        command, result = execution_json(command_path), execution_json(result_path)
+        for channel in ('stdout', 'stderr'):
+            log = execution_member(root, 'commands/' + name + '/' + channel + '.txt')
+            require(digest(log) == command[channel], 'EXECUTION_DEMO: missing or changed CLI log')
+        actual = {'exit_code': code, 'status': status, 'reason_code': reason}
+        require(command['exit_code'] == code and result.get('status') == status and result.get('reason_code') == reason
+                and case['actual'] == actual, 'EXECUTION_DEMO: actual exit/status/reason differs')
+        require(execution_json(command_path.parent / 'stdout.txt') == result,
+                'EXECUTION_DEMO: result differs from actual CLI stdout')
+        argv = command['argv']
+        flags = ['-B', '-I'] if environment['isolated'] else ['-B']
+        require(argv[:len(flags) + 4] == [environment['executable'], *flags, '-m', 'crypto_reconciliation_lab', operation]
+                and bool(command['cwd']) and bool(command['started_at']) and bool(command['finished_at']),
+                'EXECUTION_DEMO: command/interpreter identity differs')
+        if 'financial_result' in result:
+            execution_financial(result, name.startswith('signed_mismatch'))
+        if status == 'RECORDED':
+            protected = not name.startswith('legacy_')
+            receipts = 31 if name == 'protected_new_request' else 30
+            execution_context(result, protected, receipts, (2 if receipts == 31 else 1) if protected else None)
+        results[name] = result
+        identities[name] = {'command': digest(command_path), 'result': digest(result_path),
+                            'stdout': command['stdout'], 'stderr': command['stderr'], 'exit_code': code}
+    old, first, retry, second = (results[name] for name in ('legacy_unrecorded', 'legacy_recorded', 'legacy_retry', 'legacy_new_request'))
+    require(old['execution_ids'] == [] and old.get('run_creation_authorization_cut') == 'NOT_RECORDED'
+            and first['run_id'] == old['run_id'], 'EXECUTION_DEMO: historical run was enriched')
+    for prefix, original, replay, newer, readback in [('legacy', first, retry, second, results['legacy_show'])] + (
+            [('protected', results['protected_recorded'], results['protected_retry_after_change'],
+              results['protected_new_request'], results['protected_original_readback'])] if profile == 'protected' else []):
+        require(original['replayed'] is False and replay['replayed'] is True and newer['replayed'] is False
+                and original['execution_id'] == replay['execution_id'] == readback['execution_id']
+                and original['context'] == replay['context'] == readback['context']
+                and original['run_id'] == newer['run_id'] and original['execution_id'] != newer['execution_id']
+                and original['context_hash'] != newer['context_hash'], 'EXECUTION_DEMO: retry/new-request identity differs')
+        multiple = results[prefix + '_multiple']
+        require(multiple['execution_ids'] == sorted([original['execution_id'], newer['execution_id']])
+                and 'execution_id' not in multiple, 'EXECUTION_DEMO: run-only lookup selected an arbitrary execution')
+        export = results[prefix + '_export']
+        relative = 'exports/legacy' if prefix == 'legacy' else 'exports/protected-original'
+        require(set(export['files']) == {'context.json', 'run.json', 'execution.json', 'summary.json', 'summary.md'},
+                'EXECUTION_DEMO: export inventory differs')
+        for member, identity in export['files'].items():
+            require(digest(execution_member(root, relative + '/' + member)) == identity, 'EXECUTION_DEMO: export bytes differ')
+        require(export['files']['context.json']['sha256'] == original['context_hash']
+                and export['files']['run.json']['sha256'] == original['run_payload_sha256']
+                and execution_json(root / relative / 'context.json') == original['context'], 'EXECUTION_DEMO: raw export binding differs')
+    if profile == 'protected':
+        context = results['protected_new_request']['context']
+        groups = {}
+        for row in context['tables']['receipts']:
+            groups.setdefault(row['receipt_hash'], []).append(row['id'])
+        duplicates = [(key, ids) for key, ids in groups.items() if len(ids) > 1]
+        require(len(duplicates) == 1 and len(set(duplicates[0][1])) == 2
+                and context['selected_evidence'][duplicates[0][0]]['receipt_ids'] == sorted(duplicates[0][1]),
+                'EXECUTION_DEMO: physical candidates were lost or collapsed')
+    return {'status': 'PASS', 'profile': profile, 'case_count': len(required), 'case_ids': required,
+            'summary': digest(root / 'summary.json'), 'cases': identities, 'import_origin': str(package_origin),
+            'literal_financial_findings': 6, 'process_experiments': 'NOT_RUN'}
+
+
+def validate_execution_process_evidence(root, *, package_origin, isolated):
+    root = Path(root)
+    required = [*EXECUTION_KILLS, *EXECUTION_RACES, EXECUTION_SAME_REQUEST]
+    require(root.is_dir(), 'EXECUTION_PROCESS: retained evidence missing')
+    directories = {}
+    for name in required:
+        matches = [path for path in root.glob(name + '-*') if path.is_dir()]
+        require(len(matches) == 1, 'EXECUTION_PROCESS: missing or repeated test evidence ' + name)
+        directories[name] = matches[0]
+    require(set(root.iterdir()) == set(directories.values()), 'EXECUTION_PROCESS: unexpected test evidence')
+    identities, process_count = {}, 0
+    def load(directory, relative):
+        path = execution_member(root, (directory / relative).relative_to(root).as_posix())
+        identities[path.relative_to(root).as_posix()] = digest(path)
+        return execution_json(path)
+    def process(directory, name, expected_exit=0):
+        nonlocal process_count
+        row = load(directory, name + '-process.json')
+        request = load(directory, name + '-request.json')
+        require(row['exit_code'] == expected_exit and row['joined'] is True and row['forced_timeout_cleanup'] is False
+                and type(row['pid']) is int and row['pid'] > 0 and bool(row['started_at']) and bool(row['cwd']),
+                'EXECUTION_PROCESS: child did not finish as required')
+        argv = row['argv']
+        require(('-I' in argv) is isolated and '--request' in argv and
+                Path(argv[argv.index('--request') + 1]).name == name + '-request.json', 'EXECUTION_PROCESS: invocation binding differs')
+        messages = row['messages']
+        require(messages and messages[0]['type'] == 'READY' and all(message['pid'] == row['pid'] for message in messages),
+                'EXECUTION_PROCESS: READY/PID binding differs')
+        ready = messages[0]
+        require(ready['origin'] == str(package_origin) and ready['isolated'] is isolated and ready['interpreter'] == argv[0]
+                and bool(ready['sqlite']) and set(ready['settings']) == {'journal_mode', 'synchronous', 'busy_timeout'},
+                'EXECUTION_PROCESS: interpreter/settings observation missing')
+        for channel, key in [('stdout-tail', 'stdout_tail'), ('stderr', 'stderr')]:
+            path = execution_member(root, (directory / (name + '-' + channel + '.txt')).relative_to(root).as_posix())
+            require(path.read_text(encoding='utf-8') == row[key], 'EXECUTION_PROCESS: actual child log differs')
+            identities[path.relative_to(root).as_posix()] = digest(path)
+        process_count += 1
+        return row, request
+    def message(row, kind):
+        found = [entry for entry in row['messages'] if entry['type'] == kind]
+        require(len(found) == 1, 'EXECUTION_PROCESS: missing/duplicate ' + kind)
+        return found[0]
+    def result(row):
+        msg = message(row, 'RESULT')
+        value = msg['result']
+        if value.get('status') == 'RECORDED':
+            ack = msg['ack']
+            require(ack['exit_code'] == 0 and ack['argv'][0] == 'reconcile-recorded' and json.loads(ack['stdout']) == value,
+                    'EXECUTION_PROCESS: first real CLI ACK differs')
+            execution_financial(value)
+        return value
+    before_base = {'runs': 0, 'findings': 0, 'evidence': 0, 'correction_groups': 0, 'correction_effects': 0,
+                   'execution_contexts': 0, 'recorded_executions': 0}
+    durable = dict(before_base, runs=1, findings=6, evidence=60, execution_contexts=1, recorded_executions=1)
+    kills = []
+    for name, point in EXECUTION_KILLS.items():
+        for variant in ('fresh', 'existing'):
+            directory = directories[name] / variant
+            interrupted, request = process(directory, 'interrupted', -9)
+            retry, retry_request = process(directory, 'retry')
+            barrier = message(interrupted, 'BARRIER')
+            committed = point == 'execution_after_commit'
+            require(barrier['point'] == point and barrier['in_transaction'] is (not committed)
+                    and interrupted['signal'] == 'SIGKILL' and interrupted['sender_result'] == 'UNKNOWN'
+                    and not any(row['type'] in ('RESULT', 'ERROR') for row in interrupted['messages']),
+                    'EXECUTION_PROCESS: actual SIGKILL barrier/unknown ACK differs')
+            observed = load(directory, 'durability.json')
+            before = dict(before_base, **({'runs': 1, 'findings': 6, 'evidence': 60} if variant == 'existing' else {}))
+            barrier_counts = dict(durable, **({'execution_contexts': 0, 'recorded_executions': 0}
+                                            if point == 'execution_after_financial' else {}))
+            require(message(interrupted, 'READY')['counts'] == before and barrier['counts'] == barrier_counts
+                    and observed['point'] == point and observed['existing_run'] is (variant == 'existing')
+                    and observed['before_counts'] == before and observed['after_kill_counts'] == (durable if committed else before)
+                    and observed['after_retry_counts'] == durable, 'EXECUTION_PROCESS: durable rollback/commit counts differ')
+            retried = result(retry)
+            require(retried['replayed'] is committed and observed['retry_replayed'] is committed
+                    and observed['retry_execution_id'] == retried['execution_id']
+                    and request['request_id'] == retry_request['request_id'] == retried['request_id'],
+                    'EXECUTION_PROCESS: retry did not return the durable request')
+            kills.append({'test': name, 'variant': variant, 'point': point, 'exit_code': -9,
+                          'sender_result': 'UNKNOWN', 'retry_replayed': committed})
+    races = []
+    for name, (action, timing) in EXECUTION_RACES.items():
+        directory = directories[name]
+        if timing == 'before':
+            writer, _ = process(directory, 'writer-before-cut')
+            reader, _ = process(directory, 'execution')
+            written, execution = result(writer), result(reader)
+            require((written.get('status') == 'COMPLETE') if action == 'admission' else written.get('epoch') == 2,
+                    'EXECUTION_PROCESS: before-cut writer did not commit')
+            execution_context(execution, True, 31 if action == 'admission' else 30, 1 if action == 'admission' else 2)
+        else:
+            holder, _ = process(directory, 'execution-holder')
+            contender, _ = process(directory, 'writer-contender', 0 if action == 'admission' else 2)
+            after, _ = process(directory, 'writer-after-cut')
+            later, _ = process(directory, 'later-execution')
+            barrier = message(holder, 'BARRIER')
+            require(holder['pid'] != contender['pid'] and barrier['point'] == 'execution_after_begin' and barrier['in_transaction'] is True
+                    and message(contender, 'SQL_BEGIN_ATTEMPT')['statement'] == 'BEGIN IMMEDIATE',
+                    'EXECUTION_PROCESS: after-cut competing writer was not observed at the locked boundary')
+            if action == 'admission':
+                busy = result(contender)
+                require(busy['status'] == 'RETRYABLE_BUSY' and busy['rejection']['durable'] is False
+                        and busy['responses'] == [], 'EXECUTION_PROCESS: busy admission claimed a commit')
+            else:
+                require(message(contender, 'ERROR')['reason_code'] == 'SQLITE_BUSY',
+                        'EXECUTION_PROCESS: busy policy writer did not report contention')
+            first, second, written = result(holder), result(later), result(after)
+            execution_context(first, True, 30, 1)
+            execution_context(second, True, 31 if action == 'admission' else 30, 1 if action == 'admission' else 2)
+            require((written.get('status') == 'COMPLETE') if action == 'admission' else written.get('epoch') == 2,
+                    'EXECUTION_PROCESS: writer after release did not commit')
+            observed = load(directory, 'cut-observation.json')
+            require(observed['action'] == action and observed['busy_is_not_commit'] is True
+                    and observed['first_execution_id'] == first['execution_id']
+                    and observed['second_execution_id'] == second['execution_id']
+                    and first['execution_id'] != second['execution_id'] and first['run_id'] == second['run_id']
+                    and observed['first_counts'] == first['context']['counts']
+                    and observed['second_counts'] == second['context']['counts'], 'EXECUTION_PROCESS: cut observation differs')
+        races.append({'test': name, 'action': action, 'timing': timing, 'status': 'PASS'})
+    directory = directories[EXECUTION_SAME_REQUEST]
+    first, first_request = process(directory, 'first-process')
+    second, second_request = process(directory, 'second-process', 2)
+    retry, retry_request = process(directory, 'second-process-retry')
+    first_result, retry_result = result(first), result(retry)
+    require(first['pid'] != second['pid'] and message(first, 'BARRIER')['in_transaction'] is True
+            and message(second, 'ERROR')['reason_code'] == 'EXECUTION_BUSY'
+            and first_request['request_id'] == second_request['request_id'] == retry_request['request_id']
+            and first_result['execution_id'] == retry_result['execution_id']
+            and first_result['context'] == retry_result['context'] and retry_result['replayed'] is True
+            and message(retry, 'RESULT')['counts'] == durable, 'EXECUTION_PROCESS: same request created a second execution')
+    return {'status': 'PASS', 'test_names': required, 'test_count': 8, 'process_count': process_count,
+            'kill_variants': kills, 'race_cases': races, 'same_request': {'status': 'PASS', 'durable_executions': 1},
+            'files': identities, 'import_origin': str(package_origin), 'isolated': isolated}
+
+
+def execution_demo(gate, python, source, mode, profile):
+    target = gate.output / (mode + '-execution')
+    flags = ['-I'] if mode == 'installed' else []
+    gate.run(mode + '-execution', [python, '-B', *flags, '-m', 'crypto_reconciliation_lab',
+             'demo-execution-context', '--profile', profile, '--output', target], None if mode == 'installed' else source)
+    check = validate_execution_demo(target, profile=profile, package_origin=gate.record[mode + '_import']['origin'])
+    gate.record[mode + '_execution'] = {'status': 'PASS', 'path': str(target), 'validation': check,
+                                      'summary': execution_json(target / 'summary.json')}
+    gate.persist()
+
+
+def core_execution_denied(gate, python):
+    target = gate.output / 'core-protected-execution-must-not-exist'
+    result = json.loads(gate.run('core-protected-execution-unavailable', [python, '-B', '-I', '-m',
+                        'crypto_reconciliation_lab', 'demo-execution-context', '--profile', 'protected', '--output', target], expected=2))
+    require(result.get('status') == 'ERROR' and result.get('reason_code') == 'AUTH_DEPENDENCY' and not target.exists(),
+            'EXECUTION_DEMO: core protected invocation did not refuse before side effects')
+    gate.record['core_execution_refusal'] = {'status': 'PASS', 'exit_code': 2, 'reason_code': 'AUTH_DEPENDENCY', 'output_absent': True}
+    gate.persist()
+
+
+def wheel_manifest(wheel, version='0.10.0'):
     with zipfile.ZipFile(wheel) as archive:
         members = archive.infolist()
         require(len(members) <= 1000 and sum(item.file_size for item in members) <= 32 * 1024**2, 'wheel member/size limit exceeded')
@@ -706,6 +1042,7 @@ def main(argv=None):
             validate_auth_absent(installed)
             core_auth_denied(gate, python)
             core_provenance_denied(gate, python)
+            core_execution_denied(gate, python)
         elif args.profile == 'auth-only':
             validate_core_probe(installed)
             validate_auth_pins(installed, source)
@@ -726,8 +1063,10 @@ def main(argv=None):
             source_auth(gate, python, source, 'source')
             provenance(gate, python, source, 'source')
             provenance_maintenance(gate, python, source, 'source')
+            execution_demo(gate, python, source, 'source', 'protected')
         reproduce(gate, python, source, 'installed', reference, args.profile != 'full')
         recovery(gate, python, source, 'installed')
+        execution_demo(gate, python, source, 'installed', 'legacy' if args.profile == 'core' else 'protected')
         if args.profile != 'core':
             source_auth(gate, python, source, 'installed')
             provenance(gate, python, source, 'installed')
@@ -737,6 +1076,9 @@ def main(argv=None):
             gate.record['installed_provenance'] = {'status': 'NOT_RUN', 'reason': 'core has no auth dependency; all new command refusals checked separately'}
             gate.record['installed_provenance_maintenance'] = {'status': 'NOT_RUN', 'reason': 'core has no auth dependency; provenance refusals checked before output'}
         if args.profile != 'full':
+            gate.record['source_execution'] = {'status': 'NOT_RUN', 'reason': 'source demonstration belongs to full profile'}
+            gate.record['source_tests_execution_processes'] = gate.record['installed_tests_execution_processes'] = {
+                'status': 'NOT_RUN', 'reason': 'process experiments run within the full suite only'}
             gate.record['source_tests'] = gate.record['installed_tests'] = {'status': 'NOT_RUN', 'reason': 'full suite requires both optional extras'}
             gate.record['source_provenance'] = {'status': 'NOT_RUN', 'reason': 'source feature check belongs to the full profile; installed auth-only check remains separate'}
             gate.record['source_provenance_maintenance'] = {'status': 'NOT_RUN', 'reason': 'source maintenance checks belong to the full profile'}
@@ -764,6 +1106,7 @@ def main(argv=None):
             f"Admission recovery: {gate.record['installed_recovery']['scope']['executed_count']} fixed scenarios, observed crash barriers and negative controls PASS.\n\n"
             f"Source authentication: {gate.record['installed_source_auth']['status']}. Profile-specific dependency absence/pins are in the import probe.\n\n"
             f"Saved-run provenance: {gate.record['installed_provenance']['status']}. Run-creation authorization remains NOT_RECORDED; financial recomputation NOT_PERFORMED.\n\n"
+            f"Recorded execution: {gate.record['installed_execution']['validation']['case_count']} fixed CLI cases PASS. Process evidence: {gate.record['installed_tests_execution_processes']['status']}.\n\n"
             "All commands, actual exits, import origins, dependency versions, byte proofs and logs are in verification.json. "
             "No main triage generation, training, or final holdout evaluation was invoked by this gate.\n", encoding='utf-8')
         print(json.dumps({'status': 'PASS', 'profile': args.profile, 'report': str(gate.output / 'verification.json')}))

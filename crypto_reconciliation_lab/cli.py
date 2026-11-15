@@ -62,7 +62,7 @@ def main(argv=None):
     demo.add_argument("--later-knowledge-at", default=LATER_KNOWLEDGE_AT)
     correction_demo = commands.add_parser("demo-corrections", help="verify five Stage 2 correction demos")
     correction_demo.add_argument("--output", default="stage2-output/demos")
-    migration = commands.add_parser("migrate", help="back up, test on a copy, then migrate physical schema to v5")
+    migration = commands.add_parser("migrate", help="back up, test on a copy, then migrate physical schema to v6")
     migration.add_argument("--db", required=True)
     migration.add_argument("--backup-dir", required=True)
     init = commands.add_parser("init", help="create an immutable-config SQLite store")
@@ -98,7 +98,7 @@ def main(argv=None):
     provenance_verify.add_argument("--expectations", required=True, help="regular provenance-expectations-v1 file outside the bundle")
     provenance_demo = commands.add_parser("demo-provenance", help="generate the bounded TEST-ONLY run provenance demonstration")
     provenance_demo.add_argument("--output", required=True, help="new directory; no main experiment or training")
-    protect = commands.add_parser("auth-enable", help="atomically protect an empty schema-5 database using local operator policy")
+    protect = commands.add_parser("auth-enable", help="atomically protect an empty supported database using local operator policy")
     protect.add_argument("--db", required=True)
     protect.add_argument("--receiver", required=True)
     protect.add_argument("--policy", required=True)
@@ -122,6 +122,24 @@ def main(argv=None):
     show.add_argument("--db", required=True)
     show.add_argument("--run-id", required=True)
     show.add_argument("--output", required=True)
+    recorded = commands.add_parser("reconcile-recorded", help="atomically save a calculation and its observed input/admission context")
+    recorded.add_argument("--db", required=True)
+    recorded.add_argument("--balance-at", required=True)
+    recorded.add_argument("--knowledge-at", required=True)
+    recorded.add_argument("--request-id", required=True)
+    recorded.add_argument("--busy-timeout-ms", type=int, default=250)
+    execution_show = commands.add_parser("show-execution", help="read stored execution context; never recalculate or migrate")
+    execution_show.add_argument("--db", required=True)
+    selection = execution_show.add_mutually_exclusive_group(required=True)
+    selection.add_argument("--execution-id")
+    selection.add_argument("--run-id")
+    execution_export = commands.add_parser("export-execution", help="export exact saved context/run bytes to a new directory")
+    execution_export.add_argument("--db", required=True)
+    execution_export.add_argument("--execution-id", required=True)
+    execution_export.add_argument("--output", required=True)
+    execution_demo = commands.add_parser("demo-execution-context", help="run the small synthetic recorded-execution CLI demonstration")
+    execution_demo.add_argument("--output", required=True)
+    execution_demo.add_argument("--profile", choices=("legacy", "protected"), default="protected")
     lab_generate = commands.add_parser("lab-generate", help="create independent Stage 3 truth, inputs and expectations")
     lab_generate.add_argument("--output", required=True)
     lab_generate.add_argument("--seed", type=int, action="append", dest="seeds")
@@ -147,6 +165,23 @@ def main(argv=None):
     args = parser.parse_args(argv)
     store = None
     try:
+        # These readers own a read-only connection. Do not route through Store,
+        # admission or the legacy mutable command dispatch below.
+        if args.command == "show-execution":
+            from .execution import read_execution
+            result = read_execution(args.db, args.execution_id, run_id=args.run_id)
+            print(json.dumps(result, sort_keys=True))
+            return 0
+        if args.command == "export-execution":
+            from .execution import export_execution
+            result = export_execution(args.db, args.execution_id, args.output)
+            print(json.dumps(result, sort_keys=True))
+            return 0
+        if args.command == "demo-execution-context":
+            from .execution.demo import run_demo
+            result = run_demo(args.output, profile=args.profile)
+            print(json.dumps(result, sort_keys=True))
+            return 0 if result["status"] == "PASS" else 2
         if args.command in ("demo-source-auth", "verify-source-auth", "auth-enable", "auth-activate-policy", "ingest-signed", "export-provenance", "demo-provenance"):
             from .source_auth.crypto import require_auth
             require_auth()  # Before creating any output or opening a mutable database.
@@ -263,7 +298,14 @@ def main(argv=None):
             return 0
         if not Path(args.db).is_file():
             raise ValueError("database does not exist; run init first")
-        store = Store(args.db, busy_timeout_ms=args.busy_timeout_ms if args.command == "ingest-feed" else None)
+        store = Store(args.db, busy_timeout_ms=args.busy_timeout_ms if args.command in ("ingest-feed", "reconcile-recorded") else None)
+        if args.command == "reconcile-recorded":
+            from .execution import reconcile_recorded
+            result = reconcile_recorded(store, args.balance_at, args.knowledge_at, args.request_id,
+                                        busy_timeout_ms=args.busy_timeout_ms)
+            print(json.dumps(result, sort_keys=True))
+            return 0 if all(row["data_state"] == "COMPLETE" and row["reconciliation_state"] == "MATCHED"
+                            for row in result["financial_result"]["findings"]) else 1
         if args.command == "auth-enable":
             from .source_auth.runtime import enable_protection
             from .source_auth.crypto import strict_json
@@ -319,6 +361,14 @@ def main(argv=None):
         print(result["run_id"])
         return 0 if all(r["data_state"] == "COMPLETE" and r["reconciliation_state"] == "MATCHED" for r in result["findings"]) else 1
     except (ValueError, OSError, sqlite3.Error, DecimalException) as exc:
+        if args.command in ("reconcile-recorded", "show-execution", "export-execution", "demo-execution-context"):
+            reason = getattr(exc, "reason_code", None) or getattr(exc, "code", None)
+            if reason is None:
+                reason = ("EXECUTION_BUSY" if isinstance(exc, sqlite3.OperationalError)
+                          and getattr(exc, "sqlite_errorcode", 0) & 255 in (sqlite3.SQLITE_BUSY, sqlite3.SQLITE_LOCKED)
+                          else "EXECUTION_IO" if isinstance(exc, OSError) else "EXECUTION_INPUT")
+            print(json.dumps({"status": "ERROR", "reason_code": reason, "message": str(exc)}, sort_keys=True))
+            return 2
         if (args.command == "ingest-feed" and isinstance(exc, sqlite3.OperationalError)
                 and getattr(exc, "sqlite_errorcode", 0) & 255 in (sqlite3.SQLITE_BUSY, sqlite3.SQLITE_LOCKED)):
             from .admission.feed import unknown_status

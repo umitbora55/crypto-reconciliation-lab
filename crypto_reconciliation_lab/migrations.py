@@ -9,7 +9,7 @@ from pathlib import Path
 from .model import digest
 
 LEGACY_TABLES = ("configuration", "records", "receipts", "runs", "findings", "evidence")
-SCHEMA_VERSION = 5
+SCHEMA_VERSION = 6
 INDEX_NAME = "receipts_hash_lookup"
 INDEX_SQL = "CREATE INDEX receipts_hash_lookup ON receipts(receipt_hash)"
 MIGRATIONS = {
@@ -17,7 +17,69 @@ MIGRATIONS = {
     3: "Add nonunique receipts_hash_lookup(receipt_hash); preserve all financial data",
     4: "Add immutable admission streams, delivery effects and attempts; preserve financial history",
     5: "Add immutable source authority, policy epochs and atomic admission links; preserve financial history",
+    6: "Add immutable recorded execution contexts and local request bindings; preserve financial history",
 }
+
+# Required historical definitions are independent of the current Store initializer.
+# Validation is read-only and permits unrelated extension objects.
+FINANCIAL_TABLES = {
+    'configuration': 'CREATE TABLE configuration (id INTEGER PRIMARY KEY CHECK(id=1), payload TEXT NOT NULL)',
+    'records': '''CREATE TABLE records (
+ id TEXT PRIMARY KEY, logical_key TEXT NOT NULL, kind TEXT NOT NULL, payload TEXT NOT NULL
+)''',
+    'receipts': '''CREATE TABLE receipts (
+ id INTEGER PRIMARY KEY, receipt_hash TEXT NOT NULL, record_id TEXT REFERENCES records(id),
+ received_at TEXT, raw TEXT NOT NULL, error TEXT, status TEXT NOT NULL
+)''',
+    'runs': 'CREATE TABLE runs (id TEXT PRIMARY KEY, balance_at TEXT NOT NULL, knowledge_at TEXT NOT NULL, payload TEXT NOT NULL)',
+    'findings': 'CREATE TABLE findings (run_id TEXT NOT NULL REFERENCES runs(id), ordinal INTEGER NOT NULL, payload TEXT NOT NULL, PRIMARY KEY(run_id, ordinal))',
+    'evidence': 'CREATE TABLE evidence (run_id TEXT NOT NULL REFERENCES runs(id), evidence_id TEXT NOT NULL, payload TEXT NOT NULL, PRIMARY KEY(run_id, evidence_id))',
+}
+FINANCIAL_INDEXES = {
+    'receipts_time': 'CREATE INDEX receipts_time ON receipts(received_at)',
+    'records_key': 'CREATE INDEX records_key ON records(logical_key)',
+}
+CORRECTION_TABLES = {
+    'schema_migrations': 'CREATE TABLE schema_migrations (version INTEGER PRIMARY KEY, description TEXT NOT NULL)',
+    'correction_groups': '''CREATE TABLE correction_groups (
+            run_id TEXT NOT NULL REFERENCES runs(id), group_id TEXT NOT NULL,
+            correction_record_id TEXT NOT NULL REFERENCES records(id),
+            target_record_id TEXT NOT NULL REFERENCES records(id), payload TEXT NOT NULL,
+            PRIMARY KEY(run_id,group_id))''',
+    'correction_effects': '''CREATE TABLE correction_effects (
+            run_id TEXT NOT NULL, group_id TEXT NOT NULL, ordinal INTEGER NOT NULL, payload TEXT NOT NULL,
+            PRIMARY KEY(run_id,group_id,ordinal),
+            FOREIGN KEY(run_id,group_id) REFERENCES correction_groups(run_id,group_id))''',
+}
+
+
+def _immutable_triggers(tables):
+    return {f'immutable_{table}_{action}':
+            f"CREATE TRIGGER immutable_{table}_{action} BEFORE {action} ON {table} BEGIN SELECT RAISE(ABORT, 'append-only table'); END"
+            for table in tables for action in ('UPDATE', 'DELETE')}
+
+
+FINANCIAL_TRIGGERS = _immutable_triggers(FINANCIAL_TABLES)
+CORRECTION_TRIGGERS = _immutable_triggers(CORRECTION_TABLES)
+EXECUTION_TABLES = {
+    'execution_contexts': '''CREATE TABLE execution_contexts (
+        context_hash TEXT PRIMARY KEY NOT NULL CHECK(typeof(context_hash)='text' AND length(context_hash)=64 AND context_hash NOT GLOB '*[^0-9a-f]*'),
+        format TEXT NOT NULL CHECK(typeof(format)='text' AND format='recorded-execution-v1'),
+        payload BLOB NOT NULL CHECK(typeof(payload)='blob' AND length(payload) BETWEEN 1 AND 16777216))''',
+    'recorded_executions': '''CREATE TABLE recorded_executions (
+        execution_id TEXT PRIMARY KEY NOT NULL CHECK(typeof(execution_id)='text' AND length(execution_id)=64 AND execution_id NOT GLOB '*[^0-9a-f]*'),
+        request_id TEXT NOT NULL UNIQUE CHECK(typeof(request_id)='text' AND length(request_id) BETWEEN 1 AND 128
+            AND request_id NOT GLOB '*[^A-Za-z0-9_.:-]*' AND substr(request_id,1,1) GLOB '[A-Za-z0-9]'),
+        request_fingerprint TEXT NOT NULL CHECK(typeof(request_fingerprint)='text' AND length(request_fingerprint)=64 AND request_fingerprint NOT GLOB '*[^0-9a-f]*'),
+        request_payload BLOB NOT NULL CHECK(typeof(request_payload)='blob' AND length(request_payload) BETWEEN 1 AND 16384),
+        run_id TEXT NOT NULL REFERENCES runs(id) CHECK(typeof(run_id)='text' AND length(run_id)=64 AND run_id NOT GLOB '*[^0-9a-f]*'),
+        run_payload_sha256 TEXT NOT NULL CHECK(typeof(run_payload_sha256)='text' AND length(run_payload_sha256)=64 AND run_payload_sha256 NOT GLOB '*[^0-9a-f]*'),
+        context_hash TEXT NOT NULL UNIQUE REFERENCES execution_contexts(context_hash))''',
+}
+EXECUTION_INDEXES = {
+    'recorded_executions_run': 'CREATE INDEX recorded_executions_run ON recorded_executions(run_id,execution_id)',
+}
+EXECUTION_TRIGGERS = _immutable_triggers(EXECUTION_TABLES)
 
 # These additive definitions deliberately leave every financial table/index alone.
 # Exact byte hashes are checked by the admission API; SQLite stores the original BLOB.
@@ -227,7 +289,7 @@ def _validate_metadata(db, version):
     require(set(LEGACY_TABLES) | {'schema_migrations', 'correction_groups', 'correction_effects'} <= tables,
             'SCHEMA_INVALID: required application tables are missing')
     rows = [tuple(r) for r in db.execute('SELECT version,description FROM schema_migrations ORDER BY version')]
-    wanted = [(n, MIGRATIONS[n]) for n in (2, 3, 4, 5) if n <= version]
+    wanted = [(n, MIGRATIONS[n]) for n in (2, 3, 4, 5, 6) if n <= version]
     require(rows == wanted, 'SCHEMA_INVALID: migration metadata differs from physical version')
 
 
@@ -242,31 +304,63 @@ def validate_admission_schema(db):
     return True
 
 
+def _validate_definitions(db, kind, definitions):
+    for name, expected in definitions.items():
+        row = db.execute('SELECT type,sql FROM sqlite_master WHERE name=?', (name,)).fetchone()
+        require(row is not None and row[0] == kind and row[1] is not None
+                and ' '.join(row[1].split()) == ' '.join(expected.split()),
+                'SCHEMA_INVALID: required schema object differs: ' + name)
+
+
+def validate_schema(db, version):
+    """Validate one explicit physical version, including its full required guards."""
+    require(type(version) is int and version in (0, 2, 3, 4, 5, 6),
+            'unsupported schema version: ' + str(version))
+    require(db.execute('PRAGMA user_version').fetchone()[0] == version,
+            'SCHEMA_INVALID: physical schema version differs from requested historical version')
+    for kind, definitions in (('table', FINANCIAL_TABLES), ('index', FINANCIAL_INDEXES),
+                              ('trigger', FINANCIAL_TRIGGERS)):
+        _validate_definitions(db, kind, definitions)
+    if version >= 2:
+        _validate_metadata(db, version)
+        _validate_definitions(db, 'table', CORRECTION_TABLES)
+        _validate_definitions(db, 'trigger', CORRECTION_TRIGGERS)
+    if version >= 3:
+        validate_index(db)
+    if version >= 4:
+        validate_admission_schema(db)
+    if version >= 5:
+        from .source_auth.schema import validate_auth_schema
+        validate_auth_schema(db)
+    if version >= 6:
+        for kind, definitions in (('table', EXECUTION_TABLES), ('index', EXECUTION_INDEXES),
+                                  ('trigger', EXECUTION_TRIGGERS)):
+            _validate_definitions(db, kind, definitions)
+    else:
+        # A schema-6 database must never masquerade as historical provenance-v1.
+        reserved = set(EXECUTION_TABLES) | set(EXECUTION_INDEXES) | set(EXECUTION_TRIGGERS)
+        actual = {row[0] for row in db.execute('SELECT name FROM sqlite_master')}
+        require(not reserved & actual, 'SCHEMA_INVALID: future execution objects in historical schema')
+    return True
+
+
+def validate_runtime(db):
+    """Ordinary financial/admission/auth operations support exactly 5 and 6."""
+    version = db.execute('PRAGMA user_version').fetchone()[0]
+    require(version in (5, 6),
+            'MIGRATION_REQUIRED: use migrate with a backup directory before creating new evaluations')
+    return validate_schema(db, version)
+
+
 def validate_current(db):
     require(db.execute('PRAGMA user_version').fetchone()[0] == SCHEMA_VERSION,
             'MIGRATION_REQUIRED: use migrate with a backup directory before creating new evaluations')
-    _validate_metadata(db, SCHEMA_VERSION)
-    validate_index(db)
-    validate_admission_schema(db)
-    from .source_auth.schema import validate_auth_schema
-    validate_auth_schema(db)
-    return True
+    return validate_schema(db, SCHEMA_VERSION)
 
 
 def validate_open(db):
     version = db.execute('PRAGMA user_version').fetchone()[0]
-    require(version in (0, 2, 3, 4, 5), 'unsupported schema version: ' + str(version))
-    if version == 5:
-        validate_current(db)
-    elif version == 4:
-        _validate_metadata(db, 4)
-        validate_index(db)
-        validate_admission_schema(db)
-    elif version == 3:
-        _validate_metadata(db, 3)
-        validate_index(db)
-    elif version == 2:
-        _validate_metadata(db, 2)
+    validate_schema(db, version)
     return version
 
 
@@ -316,12 +410,26 @@ def _stage5(db, fault):
     inject(fault, 'migration_after_schema5')
 
 
-def migrate_connection(db, fault=None, *, timings=None, expected_snapshot=None):
+def _stage6(db, fault):
+    inject(fault, 'migration_before_execution')
+    for sql in EXECUTION_TABLES.values():
+        db.execute(sql)
+    inject(fault, 'migration_after_execution_tables')
+    for sql in (*EXECUTION_INDEXES.values(), *EXECUTION_TRIGGERS.values()):
+        db.execute(sql)
+    db.execute('INSERT INTO schema_migrations VALUES (?,?)', (6, MIGRATIONS[6]))
+    db.execute('PRAGMA user_version=6')
+    inject(fault, 'migration_after_schema6')
+
+
+def migrate_connection(db, fault=None, *, timings=None, expected_snapshot=None, target_version=SCHEMA_VERSION):
+    require(type(target_version) is int and target_version in (5, 6), 'migration target must be 5 or 6')
     current = db.execute('PRAGMA user_version').fetchone()[0]
-    if current == SCHEMA_VERSION:
-        validate_current(db)
+    if current == target_version:
+        validate_schema(db, target_version)
         return False
-    require(current in (0, 2, 3, 4), 'unsupported schema version: ' + str(current))
+    require(current in (0, 2, 3, 4, 5) and current < target_version,
+            'unsupported schema version or downgrade: ' + str(current))
     require(not db.in_transaction, 'nested transaction not supported')
     timings = {} if timings is None else timings
     started = time.perf_counter()
@@ -331,12 +439,7 @@ def migrate_connection(db, fault=None, *, timings=None, expected_snapshot=None):
         before = application_snapshot(db)
         if expected_snapshot is not None:
             require(before == expected_snapshot, 'source changed after verified backup')
-        if current in (2, 3, 4):
-            _validate_metadata(db, current)
-        if current >= 3:
-            validate_index(db)
-        if current == 4:
-            validate_admission_schema(db)
+        validate_schema(db, current)
         timings['preservation_before_seconds'] = time.perf_counter() - phase
         if current == 0:
             _stage2(db, fault)
@@ -354,11 +457,16 @@ def migrate_connection(db, fault=None, *, timings=None, expected_snapshot=None):
             _stage4(db, fault)
         timings['admission_create_seconds'] = time.perf_counter() - phase
         phase = time.perf_counter()
-        _stage5(db, fault)
+        if current < 5:
+            _stage5(db, fault)
         timings['auth_create_seconds'] = time.perf_counter() - phase
         phase = time.perf_counter()
+        if target_version == 6:
+            _stage6(db, fault)
+        timings['execution_create_seconds'] = time.perf_counter() - phase
+        phase = time.perf_counter()
         assert_preserved(db, before)
-        validate_current(db)
+        validate_schema(db, target_version)
         require(not db.execute('PRAGMA foreign_key_check').fetchall(), 'foreign key check failed')
         timings['preservation_after_seconds'] = time.perf_counter() - phase
         inject(fault, 'migration_before_commit')

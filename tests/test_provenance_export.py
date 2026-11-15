@@ -20,7 +20,7 @@ class ProvenanceExportTests(unittest.TestCase):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name)
-        self.db, self.run_id = create_source(self.root / 'fixture')
+        self.db, self.run_id = create_source(self.root / 'fixture', target_schema=5)
         self.materials = self.root / 'materials'
         self.materials.mkdir()
         self.output = self.root / 'bundle'

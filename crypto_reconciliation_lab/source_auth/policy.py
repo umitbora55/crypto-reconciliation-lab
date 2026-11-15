@@ -2,7 +2,7 @@
 from datetime import datetime, timezone
 import json
 import re
-from ..migrations import transaction, validate_current
+from ..migrations import transaction, validate_runtime
 from ..model import digest, timestamp
 from .crypto import AuthError, canonical, fingerprint, hex_digest, identifier, require_auth, sha256, strict_json
 from .scope import capability_inventory
@@ -99,7 +99,7 @@ def enable_protection(store, receiver, policy, *, observed_at=None):
     value = validate_policy(policy, store.config, receiver)
     when = observed(observed_at)
     with transaction(store.db):
-        validate_current(store.db)
+        validate_runtime(store.db)
         if protection(store.db) is not None:
             raise AuthError("AUTH_SETUP", "protection is already permanently configured")
         # Only configuration and migration metadata may predate protection.
@@ -121,7 +121,7 @@ def activate_policy(store, policy, expected_epoch, expected_hash, *, observed_at
         raise AuthError("AUTH_POLICY", "exact expected epoch/hash required")
     when = observed(observed_at)
     with transaction(store.db):
-        validate_current(store.db)
+        validate_runtime(store.db)
         protected = protection(store.db)
         if protected is None:
             raise AuthError("AUTH_POLICY", "database is not protected")

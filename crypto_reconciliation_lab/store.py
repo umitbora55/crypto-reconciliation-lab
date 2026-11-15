@@ -1,7 +1,7 @@
 """Append-only local evidence store; no SQL quantity arithmetic."""
 import json
 import sqlite3
-from .migrations import SCHEMA_VERSION, inject, migrate_connection, transaction, validate_current, validate_open
+from .migrations import SCHEMA_VERSION, inject, migrate_connection, transaction, validate_runtime, validate_open
 from .model import config_validate, digest, dumps, normalize, timestamp
 
 SCHEMA = """
@@ -22,7 +22,9 @@ CREATE TABLE IF NOT EXISTS evidence (run_id TEXT NOT NULL REFERENCES runs(id), e
 
 
 class Store:
-    def __init__(self, path, config=None, *, busy_timeout_ms=None):
+    def __init__(self, path, config=None, *, busy_timeout_ms=None, target_schema=None):
+        if target_schema is not None and (type(target_schema) is not int or target_schema not in (5, 6)):
+            raise ValueError("SCHEMA_INVALID: initializer target must be 5 or 6")
         config = config_validate(config) if config is not None else None
         if busy_timeout_ms is not None and (type(busy_timeout_ms) is not int or not 0 <= busy_timeout_ms <= 5000):
             raise ValueError("DELIVERY_INPUT: busy timeout must be an integer between 0 and 5000 ms")
@@ -49,6 +51,8 @@ class Store:
         try:
             if existing:
                 validate_open(self.db)
+                if target_schema is not None and self.db.execute("PRAGMA user_version").fetchone()[0] != target_schema:
+                    raise ValueError("SCHEMA_INVALID: explicit initializer target differs from existing database")
         except (ValueError, sqlite3.Error):
             self.close()
             raise
@@ -72,13 +76,12 @@ class Store:
             self.config = config
             with transaction(self.db):
                 self.db.execute("INSERT INTO configuration VALUES (1, ?)", (dumps(self.config),))
-        if saved is None:
-            migrate_connection(self.db)
         # Only a new database receives initialization DDL; opening history is read-only.
         if saved is None:
             for table in ("configuration", "records", "receipts", "runs", "findings", "evidence"):
                 for action in ("UPDATE", "DELETE"):
                     self.db.execute(f"CREATE TRIGGER IF NOT EXISTS immutable_{table}_{action} BEFORE {action} ON {table} BEGIN SELECT RAISE(ABORT, 'append-only table'); END")
+            migrate_connection(self.db, target_version=SCHEMA_VERSION if target_schema is None else target_schema)
 
     def close(self):
         self.db.close()
@@ -141,23 +144,29 @@ class Store:
         return list(records.values()), receipts, list({r["id"]: r for r in invalid}.values())
 
     def save_run(self, result, *, fault=None):
-        validate_current(self.db)
-        rid = digest(result)
+        validate_runtime(self.db)
         with transaction(self.db):
-            self.db.execute("INSERT OR IGNORE INTO runs VALUES (?,?,?,?)", (rid, result["balance_at"], result["knowledge_at"], dumps(result)))
-            inject(fault, "save_after_run")
-            for ledger in result["ledgers"].values():
-                for group in ledger.get("correction_groups", []):
-                    self.db.execute("INSERT OR IGNORE INTO correction_groups VALUES (?,?,?,?,?)", (rid, group["id"], group["correction_record_id"], group["target_record_id"], dumps(group)))
-                    for ordinal, effect in enumerate(group["effects"]):
-                        self.db.execute("INSERT OR IGNORE INTO correction_effects VALUES (?,?,?,?)", (rid, group["id"], ordinal, dumps(effect)))
-                        if ordinal == 0:
-                            inject(fault, "save_after_reversal")
-            for i, finding in enumerate(result["findings"]):
-                self.db.execute("INSERT OR IGNORE INTO findings VALUES (?,?,?)", (rid, i, dumps(finding)))
-            for key, value in result["evidence"].items():
-                self.db.execute("INSERT OR IGNORE INTO evidence VALUES (?,?,?)", (rid, key, dumps(value)))
-            inject(fault, "save_before_commit")
+            return self._save_run_in_transaction(result, fault=fault)
+
+    def _save_run_in_transaction(self, result, *, fault=None):
+        """Persist a result inside the caller's explicitly owned transaction."""
+        if not self.db.in_transaction:
+            raise ValueError("run persistence requires an owned transaction")
+        rid = digest(result)
+        self.db.execute("INSERT OR IGNORE INTO runs VALUES (?,?,?,?)", (rid, result["balance_at"], result["knowledge_at"], dumps(result)))
+        inject(fault, "save_after_run")
+        for ledger in result["ledgers"].values():
+            for group in ledger.get("correction_groups", []):
+                self.db.execute("INSERT OR IGNORE INTO correction_groups VALUES (?,?,?,?,?)", (rid, group["id"], group["correction_record_id"], group["target_record_id"], dumps(group)))
+                for ordinal, effect in enumerate(group["effects"]):
+                    self.db.execute("INSERT OR IGNORE INTO correction_effects VALUES (?,?,?,?)", (rid, group["id"], ordinal, dumps(effect)))
+                    if ordinal == 0:
+                        inject(fault, "save_after_reversal")
+        for i, finding in enumerate(result["findings"]):
+            self.db.execute("INSERT OR IGNORE INTO findings VALUES (?,?,?)", (rid, i, dumps(finding)))
+        for key, value in result["evidence"].items():
+            self.db.execute("INSERT OR IGNORE INTO evidence VALUES (?,?,?)", (rid, key, dumps(value)))
+        inject(fault, "save_before_commit")
         return {"run_id": rid, **result}
 
     def read_run(self, run_id):
