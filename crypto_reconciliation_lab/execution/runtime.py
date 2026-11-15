@@ -38,7 +38,7 @@ def reconcile_recorded(store, balance_at, knowledge_at, request_id, *, busy_time
     require(isinstance(request_id, str) and re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}', request_id), 'invalid request identity', 'EXECUTION_INPUT')
     try:
         balance_at, knowledge_at = timestamp(balance_at), timestamp(knowledge_at)
-    except (ValueError, TypeError) as exc:
+    except (ValueError, TypeError, OverflowError) as exc:
         raise ExecutionError('EXECUTION_INPUT', str(exc)) from exc
     require(configuration_digest is None or is_digest(configuration_digest), 'invalid configuration digest', 'EXECUTION_INPUT')
     require(type(rule_version) is str and type(profile) is str and len(rule_version) <= 128 and len(profile) <= 128, 'invalid rule/profile', 'EXECUTION_INPUT')
@@ -79,7 +79,7 @@ def reconcile_recorded(store, balance_at, knowledge_at, request_id, *, busy_time
                            'tables': tables, 'selected_evidence': capture.evidence_mapping(tables, run),
                            'counts': {name: len(rows) for name, rows in tables.items()},
                            'observed_policy_head': tables['auth_policy_activations'][-1] if tables['auth_policy_activations'] else None,
-                           'acceptance_epochs': sorted({r['epoch'] for r in tables['auth_decisions']}), 'claims': capture.claims(tables)}
+                           'acceptance_epochs': capture.original_acceptance_epochs(tables), 'claims': capture.claims(tables)}
                 raw_context = canonical(context)
                 require(len(raw_context) <= capture.MAX_CONTEXT_BYTES, 'context byte limit exceeded', 'EXECUTION_LIMIT')
                 row = {'request_id': request_id, 'request_fingerprint': fingerprint, 'run_id': result_run['run_id'],

@@ -138,6 +138,41 @@ def claims(tables):
             'source_signature_verification': 'NOT_PERFORMED', 'run_actor_authorization': 'NOT_DEFINED'}
 
 
+def original_acceptance_epochs(tables):
+    """Summarize original admissions from a validated, stored inventory only.
+
+    CURRENT describes authority at an attempt, and can authorize a replay.
+    The original delivery link must instead agree with the effect's unique
+    COMMITTED attempt and that attempt's authorization link. Replay decisions
+    remain in the inventory but do not create original acceptance epochs.
+    """
+    if not tables['auth_configuration']:
+        return []
+    effects = {(row['stream_id'], row['sequence']): row for row in tables['delivery_effects']}
+    decisions = {row['id']: row for row in tables['auth_decisions']}
+    attempt_links = {row['attempt_id']: row['decision_id'] for row in tables['auth_attempt_links']}
+    committed = {}
+    for attempt in tables['delivery_attempts']:
+        if attempt['outcome'] == 'COMMITTED':
+            key = attempt['stream_id'], attempt['sequence']
+            require(key not in committed, 'ambiguous original COMMITTED attempt')
+            committed[key] = attempt
+    epochs = set()
+    for link in tables['auth_delivery_links']:
+        key = link['stream_id'], link['sequence']
+        effect, attempt = effects.get(key), committed.get(key)
+        decision = decisions.get(link['decision_id'])
+        require(effect is not None and attempt is not None and decision is not None,
+                'original acceptance relationship is incomplete')
+        require(effect['core_receipt_id'] == link['core_receipt_id']
+                and (attempt['effect_stream_id'], attempt['effect_sequence']) == key
+                and attempt_links.get(attempt['id']) == link['decision_id']
+                and (decision['stream_id'], decision['sequence']) == key,
+                'original acceptance decision differs from COMMITTED effect')
+        epochs.add(decision['epoch'])
+    return sorted(epochs)
+
+
 def validate_inventory(tables, configuration, knowledge_at):
     """Internal references only; never enrich old context from current SQL."""
     require(type(tables) is dict and set(tables) == set(COLUMNS), 'incomplete table inventory')

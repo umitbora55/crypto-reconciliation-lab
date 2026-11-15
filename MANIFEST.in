@@ -75,3 +75,6 @@ recursive-include docs/stage11_1 *.md
 # Stage 12 additive recorded execution and explicit historical compatibility.
 include contracts/release-test-scope-0.10.0.json
 recursive-include docs/stage12 *.md
+include contracts/release-test-scope-0.10.1.json
+recursive-include docs/stage12_1 *.md
+include scripts/release_execution_maintenance.py

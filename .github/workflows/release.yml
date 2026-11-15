@@ -73,6 +73,10 @@ jobs:
             ${{ runner.temp }}/release-full/verification.json
             ${{ runner.temp }}/release-full/verification.md
             ${{ runner.temp }}/release-full/logs/*.txt
+            ${{ runner.temp }}/release-full/source-execution-maintenance/**/*.json
+            ${{ runner.temp }}/release-full/source-execution-maintenance/**/*.txt
+            ${{ runner.temp }}/release-full/installed-execution-maintenance/**/*.json
+            ${{ runner.temp }}/release-full/installed-execution-maintenance/**/*.txt
             ${{ runner.temp }}/release-full/source-execution/summary.json
             ${{ runner.temp }}/release-full/source-execution/summary.md
             ${{ runner.temp }}/release-full/source-execution/commands/*/*
@@ -145,6 +149,8 @@ jobs:
             ${{ runner.temp }}/release-core/verification.json
             ${{ runner.temp }}/release-core/verification.md
             ${{ runner.temp }}/release-core/logs/*.txt
+            ${{ runner.temp }}/release-core/installed-execution-maintenance/**/*.json
+            ${{ runner.temp }}/release-core/installed-execution-maintenance/**/*.txt
             ${{ runner.temp }}/release-core/installed-execution/summary.json
             ${{ runner.temp }}/release-core/installed-execution/summary.md
             ${{ runner.temp }}/release-core/installed-execution/commands/*/*
@@ -188,6 +194,8 @@ jobs:
             ${{ runner.temp }}/release-auth-only/verification.json
             ${{ runner.temp }}/release-auth-only/verification.md
             ${{ runner.temp }}/release-auth-only/logs/*.txt
+            ${{ runner.temp }}/release-auth-only/installed-execution-maintenance/**/*.json
+            ${{ runner.temp }}/release-auth-only/installed-execution-maintenance/**/*.txt
             ${{ runner.temp }}/release-auth-only/installed-execution/summary.json
             ${{ runner.temp }}/release-auth-only/installed-execution/summary.md
             ${{ runner.temp }}/release-auth-only/installed-execution/commands/*/*

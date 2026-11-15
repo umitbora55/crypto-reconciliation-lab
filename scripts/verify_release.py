@@ -89,6 +89,8 @@ import crypto_reconciliation_lab as package
 report = pathlib.Path(sys.argv[2])
 if len(sys.argv) > 3:
     os.environ['CRYPTO_EXECUTION_TEST_EVIDENCE'] = sys.argv[3]
+if len(sys.argv) > 4:
+    os.environ['CRYPTO_STAGE12_1_TEST_EVIDENCE'] = sys.argv[4]
 source = pathlib.Path(sys.argv[1]).resolve().parent
 row = dict(discovered=0, executed=0, discovered_ids=[], executed_ids=[], skips=0, failures=0,
     errors=0, unexpected_successes=0, expected_failures=0, status='ERROR',
@@ -195,10 +197,17 @@ class Verification:
         flags = ['-I'] if installed else []
         target = self.output / (name + '.json')
         evidence = self.output / ('process-evidence-installed' if installed else 'process-evidence-source')
-        self.run(name, [python, '-B', *flags, '-c', TEST_RUNNER, source / 'tests', target, evidence], None if installed else source)
+        maintenance = self.output / (('installed' if installed else 'source') + '-execution-maintenance')
+        self.run(name, [python, '-B', *flags, '-c', TEST_RUNNER, source / 'tests', target, evidence, maintenance], None if installed else source)
         result = json.loads(target.read_text(encoding='utf-8'))
         validate_tests(result, TEST_SCOPE.load_test_scope(source))
         self.record[name] = result
+        covered = sorted(item for item in result['executed_ids'] if item.startswith('test_stage12_1_'))
+        require(covered, 'execution maintenance regression identities are missing')
+        self.record[('installed' if installed else 'source') + '_execution_maintenance'] = {
+            'status': 'PASS', 'coverage': 'WITHIN_FULL_SUITE', 'executed_ids': covered,
+            'evidence': {p.relative_to(maintenance).as_posix(): digest(p)
+                         for p in sorted(maintenance.rglob('*')) if p.is_file()}}
         self.record[name + '_execution_processes'] = validate_execution_process_evidence(
             evidence, package_origin=result['origin'], isolated=installed)
         self.persist()
@@ -478,7 +487,7 @@ MAINTENANCE_RESULTS = {
 
 def validate_provenance_maintenance(setup, results):
     require(setup.get('format') == 'release-provenance-maintenance-v1'
-            and setup.get('package_version') == '0.10.0', 'maintenance setup identity differs')
+            and setup.get('package_version') == '0.10.1', 'maintenance setup identity differs')
     require(setup.get('f1_preservation') == {'external_changed_fields': ['capture_digest'],
             'raw_run_equal': True, 'signed_materials_equal': True}, 'maintenance F1 preservation differs')
     require(setup.get('f2_authoritative_capture_unchanged') is True, 'maintenance F2 raw capture changed')
@@ -704,6 +713,58 @@ def validate_execution_demo(path, *, profile, package_origin):
             'literal_financial_findings': 6, 'process_experiments': 'NOT_RUN'}
 
 
+def execution_recorded_path(value, cwd):
+    """Compare recorded POSIX paths lexically; never inspect the remote host."""
+    import posixpath
+    require(isinstance(value, str) and bool(value) and '\x00' not in value
+            and isinstance(cwd, str) and cwd.startswith('/') and '\x00' not in cwd,
+            'EXECUTION_PROCESS: request binding requires a path and absolute recorded cwd')
+    # POSIX double-leading-slash semantics are implementation-defined.
+    require(not value.startswith('//') and not cwd.startswith('//'),
+            'EXECUTION_PROCESS: request binding has an ambiguous recorded path')
+    return posixpath.normpath(value if value.startswith('/') else posixpath.join(cwd, value))
+
+
+def execution_recorded_cut(value):
+    from datetime import datetime, timezone
+    require(isinstance(value, str), 'EXECUTION_PROCESS: request binding requires a timestamp')
+    try:
+        parsed = datetime.fromisoformat(value.replace('Z', '+00:00'))
+        require(parsed.utcoffset() is not None, 'EXECUTION_PROCESS: request binding timestamp lacks a timezone')
+        return parsed.astimezone(timezone.utc).isoformat(timespec='microseconds')
+    except (ValueError, OverflowError) as exc:
+        raise ValueError('EXECUTION_PROCESS: request binding timestamp is invalid') from exc
+
+
+def execution_process_request(row, request, action):
+    """Extract only recorded source/operation semantics, not a runtime identity."""
+    require(isinstance(request, dict) and request.get('action') == action,
+            'EXECUTION_PROCESS: request binding action differs from the experiment role')
+    cwd = row.get('cwd')
+    bound = {'action': action, 'db': execution_recorded_path(request.get('db'), cwd)}
+    if action == 'recorded':
+        identifier = request.get('request_id')
+        timeout = request.get('busy_timeout_ms', 250)
+        require(isinstance(identifier, str) and re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}', identifier)
+                and type(timeout) is int and 0 <= timeout <= 5000,
+                'EXECUTION_PROCESS: request binding identifier or timeout is invalid')
+        bound.update(request_id=identifier, busy_timeout_ms=timeout,
+                     balance_at=execution_recorded_cut(request.get('balance_at')),
+                     knowledge_at=execution_recorded_cut(request.get('knowledge_at')))
+    elif action == 'admission':
+        bound.update(snapshot=execution_recorded_path(request.get('snapshot'), cwd),
+                     envelope=execution_recorded_path(request.get('envelope'), cwd))
+    else:
+        require(action == 'policy' and isinstance(request.get('policy'), dict)
+                and type(request.get('expected_epoch')) is int and request['expected_epoch'] >= 0
+                and isinstance(request.get('expected_hash'), str)
+                and re.fullmatch(r'[0-9a-f]{64}', request['expected_hash']),
+                'EXECUTION_PROCESS: request binding policy parameters are invalid')
+        bound.update(policy=request['policy'], expected_epoch=request['expected_epoch'],
+                     expected_hash=request['expected_hash'])
+    return bound
+
+
 def validate_execution_process_evidence(root, *, package_origin, isolated):
     root = Path(root)
     required = [*EXECUTION_KILLS, *EXECUTION_RACES, EXECUTION_SAME_REQUEST]
@@ -719,10 +780,11 @@ def validate_execution_process_evidence(root, *, package_origin, isolated):
         path = execution_member(root, (directory / relative).relative_to(root).as_posix())
         identities[path.relative_to(root).as_posix()] = digest(path)
         return execution_json(path)
-    def process(directory, name, expected_exit=0):
+    def process(directory, name, expected_exit=0, action='recorded'):
         nonlocal process_count
         row = load(directory, name + '-process.json')
         request = load(directory, name + '-request.json')
+        bound = execution_process_request(row, request, action)
         require(row['exit_code'] == expected_exit and row['joined'] is True and row['forced_timeout_cleanup'] is False
                 and type(row['pid']) is int and row['pid'] > 0 and bool(row['started_at']) and bool(row['cwd']),
                 'EXECUTION_PROCESS: child did not finish as required')
@@ -733,6 +795,13 @@ def validate_execution_process_evidence(root, *, package_origin, isolated):
         require(messages and messages[0]['type'] == 'READY' and all(message['pid'] == row['pid'] for message in messages),
                 'EXECUTION_PROCESS: READY/PID binding differs')
         ready = messages[0]
+        for observed in messages:
+            if observed['type'] == 'BARRIER':
+                require(request.get('barrier') == observed['point'],
+                        'EXECUTION_PROCESS: request binding barrier differs')
+            if observed['type'] == 'SQL_BEGIN_ATTEMPT':
+                require(request.get('observe_begin') is True,
+                        'EXECUTION_PROCESS: request binding did not request BEGIN observation')
         require(ready['origin'] == str(package_origin) and ready['isolated'] is isolated and ready['interpreter'] == argv[0]
                 and bool(ready['sqlite']) and set(ready['settings']) == {'journal_mode', 'synchronous', 'busy_timeout'},
                 'EXECUTION_PROCESS: interpreter/settings observation missing')
@@ -741,18 +810,37 @@ def validate_execution_process_evidence(root, *, package_origin, isolated):
             require(path.read_text(encoding='utf-8') == row[key], 'EXECUTION_PROCESS: actual child log differs')
             identities[path.relative_to(root).as_posix()] = digest(path)
         process_count += 1
-        return row, request
+        return row, bound
     def message(row, kind):
         found = [entry for entry in row['messages'] if entry['type'] == kind]
         require(len(found) == 1, 'EXECUTION_PROCESS: missing/duplicate ' + kind)
         return found[0]
-    def result(row):
+    def result(row, request):
         msg = message(row, 'RESULT')
         value = msg['result']
+        if request['action'] == 'policy':
+            require(value.get('epoch') == request['expected_epoch'] + 1 and value.get('payload') == request['policy'],
+                    'EXECUTION_PROCESS: request binding differs from the committed policy result')
         if value.get('status') == 'RECORDED':
             ack = msg['ack']
             require(ack['exit_code'] == 0 and ack['argv'][0] == 'reconcile-recorded' and json.loads(ack['stdout']) == value,
                     'EXECUTION_PROCESS: first real CLI ACK differs')
+            argv = ack['argv']
+            flags = {'--db', '--balance-at', '--knowledge-at', '--request-id', '--busy-timeout-ms'}
+            require(len(argv) == 11 and set(argv[1::2]) == flags and all(isinstance(v, str) for v in argv),
+                    'EXECUTION_PROCESS: ACK binding options are missing, repeated or unexpected')
+            options = dict(zip(argv[1::2], argv[2::2]))
+            require(options['--busy-timeout-ms'].isdigit(), 'EXECUTION_PROCESS: ACK binding timeout is invalid')
+            acknowledged = execution_process_request(row, {'action': 'recorded',
+                'db': options['--db'], 'balance_at': options['--balance-at'], 'knowledge_at': options['--knowledge-at'],
+                'request_id': options['--request-id'], 'busy_timeout_ms': int(options['--busy-timeout-ms'])}, 'recorded')
+            require(acknowledged == request, 'EXECUTION_PROCESS: ACK binding differs from the recorded request')
+            require(value.get('request_id') == request['request_id'] == value['context'].get('request_id')
+                    and value.get('request') == value['context'].get('request')
+                    and all(execution_recorded_cut(value['request'].get(key)) == request[key]
+                            and execution_recorded_cut(value['financial_result'].get(key)) == request[key]
+                            for key in ('balance_at', 'knowledge_at')),
+                    'EXECUTION_PROCESS: request binding differs from the recorded result')
             execution_financial(value)
         return value
     before_base = {'runs': 0, 'findings': 0, 'evidence': 0, 'correction_groups': 0, 'correction_effects': 0,
@@ -778,7 +866,8 @@ def validate_execution_process_evidence(root, *, package_origin, isolated):
                     and observed['point'] == point and observed['existing_run'] is (variant == 'existing')
                     and observed['before_counts'] == before and observed['after_kill_counts'] == (durable if committed else before)
                     and observed['after_retry_counts'] == durable, 'EXECUTION_PROCESS: durable rollback/commit counts differ')
-            retried = result(retry)
+            require(request == retry_request, 'EXECUTION_PROCESS: request binding differs across interrupted/retry children')
+            retried = result(retry, retry_request)
             require(retried['replayed'] is committed and observed['retry_replayed'] is committed
                     and observed['retry_execution_id'] == retried['execution_id']
                     and request['request_id'] == retry_request['request_id'] == retried['request_id'],
@@ -789,29 +878,35 @@ def validate_execution_process_evidence(root, *, package_origin, isolated):
     for name, (action, timing) in EXECUTION_RACES.items():
         directory = directories[name]
         if timing == 'before':
-            writer, _ = process(directory, 'writer-before-cut')
-            reader, _ = process(directory, 'execution')
-            written, execution = result(writer), result(reader)
+            writer, writer_request = process(directory, 'writer-before-cut', action=action)
+            reader, reader_request = process(directory, 'execution')
+            require(writer_request['db'] == reader_request['db'], 'EXECUTION_PROCESS: request binding differs across before-cut children')
+            written, execution = result(writer, writer_request), result(reader, reader_request)
             require((written.get('status') == 'COMPLETE') if action == 'admission' else written.get('epoch') == 2,
                     'EXECUTION_PROCESS: before-cut writer did not commit')
             execution_context(execution, True, 31 if action == 'admission' else 30, 1 if action == 'admission' else 2)
         else:
-            holder, _ = process(directory, 'execution-holder')
-            contender, _ = process(directory, 'writer-contender', 0 if action == 'admission' else 2)
-            after, _ = process(directory, 'writer-after-cut')
-            later, _ = process(directory, 'later-execution')
+            holder, holder_request = process(directory, 'execution-holder')
+            contender, contender_request = process(directory, 'writer-contender', 0 if action == 'admission' else 2, action=action)
+            after, after_request = process(directory, 'writer-after-cut', action=action)
+            later, later_request = process(directory, 'later-execution')
+            require(len({r['db'] for r in (holder_request, contender_request, after_request, later_request)}) == 1
+                    and contender_request == after_request
+                    and holder_request['request_id'] != later_request['request_id']
+                    and all(holder_request[key] == later_request[key] for key in ('balance_at', 'knowledge_at')),
+                    'EXECUTION_PROCESS: request binding differs across after-cut children')
             barrier = message(holder, 'BARRIER')
             require(holder['pid'] != contender['pid'] and barrier['point'] == 'execution_after_begin' and barrier['in_transaction'] is True
                     and message(contender, 'SQL_BEGIN_ATTEMPT')['statement'] == 'BEGIN IMMEDIATE',
                     'EXECUTION_PROCESS: after-cut competing writer was not observed at the locked boundary')
             if action == 'admission':
-                busy = result(contender)
+                busy = result(contender, contender_request)
                 require(busy['status'] == 'RETRYABLE_BUSY' and busy['rejection']['durable'] is False
                         and busy['responses'] == [], 'EXECUTION_PROCESS: busy admission claimed a commit')
             else:
                 require(message(contender, 'ERROR')['reason_code'] == 'SQLITE_BUSY',
                         'EXECUTION_PROCESS: busy policy writer did not report contention')
-            first, second, written = result(holder), result(later), result(after)
+            first, second, written = result(holder, holder_request), result(later, later_request), result(after, after_request)
             execution_context(first, True, 30, 1)
             execution_context(second, True, 31 if action == 'admission' else 30, 1 if action == 'admission' else 2)
             require((written.get('status') == 'COMPLETE') if action == 'admission' else written.get('epoch') == 2,
@@ -828,7 +923,9 @@ def validate_execution_process_evidence(root, *, package_origin, isolated):
     first, first_request = process(directory, 'first-process')
     second, second_request = process(directory, 'second-process', 2)
     retry, retry_request = process(directory, 'second-process-retry')
-    first_result, retry_result = result(first), result(retry)
+    require(first_request == second_request == retry_request,
+            'EXECUTION_PROCESS: request binding differs across same-request children')
+    first_result, retry_result = result(first, first_request), result(retry, retry_request)
     require(first['pid'] != second['pid'] and message(first, 'BARRIER')['in_transaction'] is True
             and message(second, 'ERROR')['reason_code'] == 'EXECUTION_BUSY'
             and first_request['request_id'] == second_request['request_id'] == retry_request['request_id']
@@ -861,7 +958,7 @@ def core_execution_denied(gate, python):
     gate.persist()
 
 
-def wheel_manifest(wheel, version='0.10.0'):
+def wheel_manifest(wheel, version='0.10.1'):
     with zipfile.ZipFile(wheel) as archive:
         members = archive.infolist()
         require(len(members) <= 1000 and sum(item.file_size for item in members) <= 32 * 1024**2, 'wheel member/size limit exceeded')
@@ -959,6 +1056,24 @@ def recovery(gate, python, source, mode):
     package_root = Path(gate.record[mode + '_import']['origin']).resolve().parent
     require(origin.is_relative_to(package_root), 'recovery imported a different source/package')
     gate.record[mode + '_recovery'] = evidence
+    gate.persist()
+
+
+def execution_maintenance(gate, python, source, profile):
+    """Small profiles run only the fixed repair controls; full suites already do."""
+    target = gate.output / 'installed-execution-maintenance'
+    gate.run('installed-execution-maintenance', [python, '-B', '-I',
+             source / 'scripts/release_execution_maintenance.py', '--tests', source / 'tests',
+             '--profile', profile, '--output', target])
+    result = json.loads((target / 'summary.json').read_bytes())
+    checked = release_helper('release_execution_maintenance').validate_result(
+        result, profile, gate.record['installed_import']['origin'])
+    require(result['version'] == gate.record['expected_version'], 'maintenance package version differs')
+    actual = {p.relative_to(target).as_posix(): digest(p) for p in sorted(target.rglob('*'))
+              if p.is_file() and p.name != 'summary.json'}
+    require(actual and actual == result['evidence_files'], 'maintenance command evidence differs')
+    gate.record['installed_execution_maintenance'] = {**checked, 'coverage': 'FIXED_SUBSET',
+        'summary': digest(target / 'summary.json'), 'result': result}
     gate.persist()
 
 
@@ -1076,6 +1191,8 @@ def main(argv=None):
             gate.record['installed_provenance'] = {'status': 'NOT_RUN', 'reason': 'core has no auth dependency; all new command refusals checked separately'}
             gate.record['installed_provenance_maintenance'] = {'status': 'NOT_RUN', 'reason': 'core has no auth dependency; provenance refusals checked before output'}
         if args.profile != 'full':
+            execution_maintenance(gate, python, source, args.profile)
+            gate.record['source_execution_maintenance'] = {'status': 'NOT_RUN', 'reason': 'source repair tests belong to full profile'}
             gate.record['source_execution'] = {'status': 'NOT_RUN', 'reason': 'source demonstration belongs to full profile'}
             gate.record['source_tests_execution_processes'] = gate.record['installed_tests_execution_processes'] = {
                 'status': 'NOT_RUN', 'reason': 'process experiments run within the full suite only'}

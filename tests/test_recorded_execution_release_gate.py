@@ -64,10 +64,15 @@ DURABLE = dict(EMPTY, runs=1, findings=6, evidence=60, execution_contexts=1, rec
 
 
 def literal_result(request='request', *, replayed=False, protected=False, receipts=30, epoch=None, second=False):
+    cuts = {'balance_at': '2026-11-12T23:59:59.000000Z', 'knowledge_at': '2026-11-13T01:00:00.000000Z'}
+    stable = {'format': 'recorded-execution-v1', 'db_scope': 'local-request-registry',
+              'configuration_digest': 'd'*64, 'rule_version': 'stage2-v2',
+              'profile': 'all-known-receipts-v1', **cuts}
     tables = {'records': [{'id': i} for i in range(30)], 'receipts': [{'id': i} for i in range(receipts)],
               'delivery_effects': [{} for _ in range(receipts)] if protected else [],
               'auth_decisions': [{} for _ in range(receipts)] if protected else []}
     context = {'schema_version': 6, 'scope': {'complete': True}, 'tables': tables,
+               'request_id': request, 'request': stable,
                'counts': {k: len(v) for k, v in tables.items()},
                'selected_evidence': {str(i): {} for i in range(60)},
                'observed_policy_head': {'epoch': epoch} if epoch else None,
@@ -77,18 +82,31 @@ def literal_result(request='request', *, replayed=False, protected=False, receip
                           'source_signature_verification': 'NOT_PERFORMED', 'run_actor_authorization': 'NOT_DEFINED'}}
     return {'status': 'RECORDED', 'request_id': request, 'replayed': replayed,
             'run_id': 'a'*64, 'execution_id': ('c' if second else 'b')*64,
-            'context': context, 'financial_result': literal_financial()}
+            'request': stable, 'context': context, 'financial_result': {**literal_financial(), **cuts}}
 
 
 def synthetic_process_evidence(root):
     """Hand-authored UNIT TEST ONLY evidence; no subprocess execution implied."""
     next_pid = 1000
     def child(directory, name, *, result=None, barrier=None, counts=None, exit_code=0,
-              error=None, begin=False, killed=False, request_id='request'):
+              error=None, begin=False, killed=False, request_id='request', action='recorded'):
         nonlocal next_pid
         next_pid += 1
         pid = next_pid
-        request = {'action': 'recorded', 'request_id': request_id, 'fixture_role': 'SYNTHETIC_UNIT_TEST_TRANSCRIPT'}
+        database = '/test-only/databases/' + directory.relative_to(root).as_posix() + '/source.sqlite3'
+        request = {'action': action, 'db': database, 'fixture_role': 'SYNTHETIC_UNIT_TEST_TRANSCRIPT'}
+        if action == 'recorded':
+            request.update(request_id=result['request_id'] if result is not None else request_id,
+                           balance_at='2026-11-12T23:59:59.000000Z', knowledge_at='2026-11-13T01:00:00.000000Z')
+        elif action == 'admission':
+            request.update(snapshot=database + '.jsonl', envelope=database + '.envelope.json', busy_timeout_ms=100)
+        else:
+            request.update(policy={'epoch': 2, 'fixture_role': 'SYNTHETIC_UNIT_TEST_POLICY'},
+                           expected_epoch=1, expected_hash='e'*64, busy_timeout_ms=100)
+        if barrier:
+            request['barrier'] = barrier['point']
+        if begin:
+            request['observe_begin'] = True
         save(directory/(name+'-request.json'), request)
         settings = {'journal_mode': 'delete', 'synchronous': 2, 'busy_timeout': 250}
         messages = [{'type': 'READY', 'pid': pid, 'origin': ORIGIN, 'interpreter': '/test-only/python',
@@ -102,7 +120,9 @@ def synthetic_process_evidence(root):
         if result is not None:
             event = {'type': 'RESULT', 'pid': pid, 'result': result, 'counts': DURABLE}
             if result.get('status') == 'RECORDED':
-                event['ack'] = {'exit_code': 0, 'argv': ['reconcile-recorded'], 'stdout': json.dumps(result)}
+                event['ack'] = {'exit_code': 0, 'argv': ['reconcile-recorded', '--db', database,
+                               '--balance-at', request['balance_at'], '--knowledge-at', request['knowledge_at'],
+                               '--request-id', request['request_id'], '--busy-timeout-ms', '250'], 'stdout': json.dumps(result)}
             messages.append(event)
         row = {'pid': pid, 'exit_code': exit_code, 'joined': True, 'forced_timeout_cleanup': False,
                'started_at': 'TEST_ONLY_NOT_AN_EXECUTION', 'cwd': '/test-only',
@@ -127,19 +147,20 @@ def synthetic_process_evidence(root):
                  'after_retry_counts': DURABLE, 'retry_replayed': committed, 'retry_execution_id': retry['execution_id']})
     for name, (action, timing) in RACES.items():
         directory = root/(name+'-fixture')
-        written = {'status': 'COMPLETE'} if action == 'admission' else {'epoch': 2}
-        second = literal_result(protected=True, receipts=31 if action == 'admission' else 30, epoch=1 if action == 'admission' else 2, second=True)
+        written = {'status': 'COMPLETE'} if action == 'admission' else {
+            'epoch': 2, 'payload': {'epoch': 2, 'fixture_role': 'SYNTHETIC_UNIT_TEST_POLICY'}}
+        second = literal_result('second-cut', protected=True, receipts=31 if action == 'admission' else 30, epoch=1 if action == 'admission' else 2, second=True)
         if timing == 'before':
-            child(directory, 'writer-before-cut', result=written)
+            child(directory, 'writer-before-cut', result=written, action=action)
             child(directory, 'execution', result=second)
         else:
-            first = literal_result(protected=True, epoch=1)
+            first = literal_result('first-cut', protected=True, epoch=1)
             child(directory, 'execution-holder', result=first, barrier={'point': 'execution_after_begin', 'in_transaction': True})
             if action == 'admission':
-                child(directory, 'writer-contender', result={'status': 'RETRYABLE_BUSY', 'responses': [], 'rejection': {'durable': False}}, begin=True)
+                child(directory, 'writer-contender', result={'status': 'RETRYABLE_BUSY', 'responses': [], 'rejection': {'durable': False}}, begin=True, action=action)
             else:
-                child(directory, 'writer-contender', error='SQLITE_BUSY', exit_code=2, begin=True)
-            child(directory, 'writer-after-cut', result=written)
+                child(directory, 'writer-contender', error='SQLITE_BUSY', exit_code=2, begin=True, action=action)
+            child(directory, 'writer-after-cut', result=written, action=action)
             child(directory, 'later-execution', result=second)
             save(directory/'cut-observation.json', {'action': action, 'busy_is_not_commit': True,
                  'first_execution_id': first['execution_id'], 'second_execution_id': second['execution_id'],

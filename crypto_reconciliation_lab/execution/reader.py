@@ -95,7 +95,7 @@ def load_execution(db, execution_id, *, replayed=False):
     require(context['counts'] == {name: len(values) for name, values in tables.items()}, 'inventory counts differ')
     require(context['selected_evidence'] == capture.evidence_mapping(tables, run), 'selected evidence mapping differs')
     require(context['observed_policy_head'] == (tables['auth_policy_activations'][-1] if tables['auth_policy_activations'] else None), 'observed policy head differs')
-    require(context['acceptance_epochs'] == sorted({d['epoch'] for d in tables['auth_decisions']}), 'acceptance epoch coverage differs')
+    require(context['acceptance_epochs'] == capture.original_acceptance_epochs(tables), 'original acceptance epoch coverage differs')
     require(context['claims'] == capture.claims(tables), 'unsupported observation claims')
     result = {'status': 'RECORDED', 'replayed': replayed, **{key: row[key] for key in (
         'request_id', 'execution_id', 'run_id', 'context_hash', 'run_payload_sha256')},
@@ -152,10 +152,16 @@ def read_execution(db_path, execution_id=None, *, run_id=None):
 
 def export_execution(db_path, execution_id, output):
     try:
-        destination, database = Path(output).absolute(), Path(db_path).absolute()
+        requested, database = Path(output).absolute(), Path(db_path).absolute()
+        require(not os.path.lexists(requested), 'output exists', 'EXECUTION_OUTPUT')
+        # Resolve parents before publication can mkdir a skipped '..' component;
+        # inspect the final name before resolving a dangling destination link.
+        destination = requested.parent.resolve() / requested.name
+        require(not os.path.lexists(destination), 'output exists', 'EXECUTION_OUTPUT')
+        destination = destination.resolve()
         require(not os.path.lexists(destination), 'output exists', 'EXECUTION_OUTPUT')
         protected = [database, *(Path(str(database) + suffix) for suffix in ('-wal', '-shm', '-journal'))]
-        require(not any(destination.resolve().is_relative_to(p.resolve()) for p in protected), 'output overlaps database namespace', 'EXECUTION_OUTPUT')
+        require(not any(destination.is_relative_to(p.resolve()) for p in protected), 'output overlaps database namespace', 'EXECUTION_OUTPUT')
         with readonly(database) as (db, version):
             require(version == 6, 'recorded execution requires schema 6', 'EXECUTION_SCHEMA')
             result, raw_context, raw_run = load_execution(db, execution_id)

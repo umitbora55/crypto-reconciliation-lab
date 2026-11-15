@@ -4,7 +4,7 @@ Personal project by Ümit Bora Günaydın
 
 I built this project to study reconciliation when records arrive late or are corrected after an evaluation. It uses synthetic ledger, investor and custody data, and keeps earlier findings available for inspection.
 
-Python and SQLite · Package **0.10.0** · Financial rule `stage2-v2` · SQLite schema `6`
+Python and SQLite · Package **0.10.1** · Financial rule `stage2-v2` · SQLite schema `6`
 
 [Example](#example) · [Run locally](#run-locally) · [Design notes](docs/model_contract.md) · [Türkçe](docs/showcase/README.tr.md)
 
@@ -70,6 +70,8 @@ This produces **9 synthetic scenarios / 24 saved evaluations**, an offline expor
 Expected synthetic `MISMATCH` and `INCOMPLETE` findings are not application failures. The reproduction exits 0 only when its checks pass. Its deliberately invalid rank must exit 2 and publish no queue; an unexpected subprocess exit or incomplete output fails the reproduction.
 
 ## Recorded execution context
+
+Maintenance 0.10.1 preserves export paths and original acceptance epochs, classifies UTC overflow as an input error, and checks recorded process request bindings. Incorrect older epoch summaries are rejected without rewriting their bytes; see the [maintenance notes](docs/stage12_1/decisions.md).
 
 A financial run identifies a saved calculation. A recorded execution also keeps
 which eligible physical receipts and admission policy were visible inside that

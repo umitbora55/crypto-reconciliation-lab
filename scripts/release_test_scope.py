@@ -8,7 +8,7 @@ from pathlib import Path, PurePosixPath
 import re
 import stat
 
-RELEASE = '0.10.0'
+RELEASE = '0.10.1'
 ANCHOR_PATH = 'contracts/release-tests-baseline-0.6.0.json'
 ANCHOR_BYTES = 42896
 ANCHOR_SHA256 = 'd69bb489b06f94643ef9b6def46e0723d0533c08a263c4d0c81ca6ee8bc919e1'
@@ -36,11 +36,14 @@ PROVENANCE_SHA256 = '111f1975957662efe1f73083be03a608f37b055fcf9b61da51c129da40e
 MAINTENANCE_PATH = 'contracts/release-test-scope-0.9.1.json'
 MAINTENANCE_BYTES = 123752
 MAINTENANCE_SHA256 = '6f67d9217776dfe34a8e2f975cbe58c7e2b39eb4f310b78165973b2aa5d81118'
-CONTRACT_PATH = 'contracts/release-test-scope-0.10.0.json'
+EXECUTION_PATH = 'contracts/release-test-scope-0.10.0.json'
+EXECUTION_BYTES = 186212
+EXECUTION_SHA256 = '80ab84b011000db8b710b267e850963ec2da0a15063ee516896f14119d5ef8ec'
+CONTRACT_PATH = 'contracts/release-test-scope-0.10.1.json'
 SEMANTIC_FIXTURE_PATH = 'tests/fixtures/admission-semantic-report-v2.json'
 # Frozen only after reviewed additions and explicit metadata fixture exceptions.
-CONTRACT_BYTES = 186212
-CONTRACT_SHA256 = '80ab84b011000db8b710b267e850963ec2da0a15063ee516896f14119d5ef8ec'
+CONTRACT_BYTES = 219024
+CONTRACT_SHA256 = '2ac30fd8f96a5223b174b899484b72aaad2982c64de6c168b34670c419aa8427'
 
 # Stage 12 permission is finite: current version/schema metadata and genuine
 # historical schema-5 setup only. Every changed old byte is reversibly pinned.
@@ -91,15 +94,33 @@ EXECUTION_METADATA_EDITS = {
          "            self.assertEqual([r[0] for r in store.db.execute('SELECT version FROM schema_migrations ORDER BY version')], [2, 3, 4, 5, 6])"),
     ],
     'tests/test_release_test_scope.py': [
-        ("CONTRACT_PATH = 'contracts/release-test-scope-0.9.1.json'", "CONTRACT_PATH = 'contracts/release-test-scope-0.10.0.json'"),
+        ("CONTRACT_PATH = 'contracts/release-test-scope-0.9.1.json'", "CONTRACT_PATH = 'contracts/release-test-scope-0.10.1.json'"),
         ("                 'sha256':hashlib.sha256(current.read_bytes()).hexdigest(), 'release':'0.9.1'}",
-         "                 'sha256':hashlib.sha256(current.read_bytes()).hexdigest(), 'release':'0.10.0'}"),
+         "                 'sha256':hashlib.sha256(current.read_bytes()).hexdigest(), 'release':'0.10.1'}"),
     ],
     'tests/test_provenance_maintenance_release.py': [
         ("    setup = {'format': 'release-provenance-maintenance-v1', 'package_version': '0.9.1',",
-         "    setup = {'format': 'release-provenance-maintenance-v1', 'package_version': '0.10.0',"),
+         "    setup = {'format': 'release-provenance-maintenance-v1', 'package_version': '0.10.1',"),
     ],
 }
+
+
+
+# Stage12.1 is a separate finite authorization, not a wider schema fixture grant.
+EXECUTION_REPAIR_METADATA_EDITS = {
+    'tests/test_release_test_scope.py': [
+        ("CONTRACT_PATH = 'contracts/release-test-scope-0.10.0.json'", "CONTRACT_PATH = 'contracts/release-test-scope-0.10.1.json'"),
+        ("                 'sha256':hashlib.sha256(current.read_bytes()).hexdigest(), 'release':'0.10.0'}",
+         "                 'sha256':hashlib.sha256(current.read_bytes()).hexdigest(), 'release':'0.10.1'}"),
+    ],
+    'tests/test_provenance_maintenance_release.py': [
+        ("    setup = {'format': 'release-provenance-maintenance-v1', 'package_version': '0.10.0',",
+         "    setup = {'format': 'release-provenance-maintenance-v1', 'package_version': '0.10.1',"),
+    ],
+}
+PROCESS_FIXTURE_PATH = 'tests/test_recorded_execution_release_gate.py'
+# Filled once by reviewed release authoring; ordinary validation never regenerates.
+PROCESS_FIXTURE_PINS = {'literal_result': {'original': {'bytes': 1305, 'sha256': '1d016c323f3805752553ff9d28a47ab00dccf7e654a4c83f542c5eff4870432e'}, 'current': {'bytes': 1717, 'sha256': 'b85f7b50ff2afba472c99514e842884100547c21659d8c7915414a2de78803c6'}}, 'synthetic_process_evidence': {'original': {'bytes': 4966, 'sha256': 'dcc8db604fee09570ee4a796c3d6619384b28f5bbae6003fb0a68dbbdce812ff'}, 'current': {'bytes': 6199, 'sha256': '56db027c1bc8b6b4f98cfb3aba7bcb688a38215de75c43c61ffee3d38e727067'}}}
 
 
 def require(condition, message):
@@ -183,10 +204,57 @@ def named_fixture_block(text):
     return ''.join(text.splitlines(keepends=True)[node.lineno-1:node.end_lineno])
 
 
+
+def validate_process_fixture_exception(exception):
+    """Exactly the two pinned setup helpers, never test methods or assertions."""
+    require(exception.get('path') == PROCESS_FIXTURE_PATH
+            and exception.get('kind') == 'process-transcript-fixture-v1',
+            'process fixture exceeds fixed authorization')
+    edits = exception.get('changes')
+    require(type(edits) is list and len(edits) == 2
+            and set(PROCESS_FIXTURE_PINS) == {'literal_result', 'synthetic_process_evidence'},
+            'process fixture must contain both pinned helpers')
+    seen = set()
+    for edit in edits:
+        require(set(edit) == {'old_text', 'new_text', 'count'} and edit['count'] == 1,
+                'invalid process fixture replacement')
+        nodes = []
+        for label, text in (('original', edit['old_text']), ('current', edit['new_text'])):
+            require(type(text) is str, 'invalid process fixture source')
+            tree = ast.parse(text)
+            require(len(tree.body) == 1 and isinstance(tree.body[0], ast.FunctionDef)
+                    and not tree.body[0].decorator_list, 'process fixture includes surrounding code')
+            node = tree.body[0]
+            require(node.name in PROCESS_FIXTURE_PINS
+                    and text == ''.join(text.splitlines(keepends=True)[node.lineno-1:node.end_lineno]),
+                    'process fixture exceeds named helper body')
+            require(byte_identity(text.encode('utf-8')) == PROCESS_FIXTURE_PINS[node.name][label],
+                    'process fixture block differs from fixed pin')
+            nodes.append(node)
+        require(nodes[0].name == nodes[1].name and nodes[0].name not in seen
+                and ast.dump(nodes[0].args) == ast.dump(nodes[1].args),
+                'process fixture identity/signature differs')
+        seen.add(nodes[0].name)
+
+
+def validate_execution_repair_fixture_exception(exception):
+    if exception.get('path') == PROCESS_FIXTURE_PATH:
+        validate_process_fixture_exception(exception)
+        return
+    pairs = EXECUTION_REPAIR_METADATA_EDITS.get(exception.get('path'))
+    require(pairs is not None and exception.get('kind', 'metadata-lines-v1') == 'metadata-lines-v1'
+            and exception.get('changes') == [dict(old_text=a, new_text=b, count=1) for a, b in pairs],
+            'execution repair fixture exceeds fixed metadata authorization')
+    validate_fixture_exception(exception)
+
+
 def validate_fixture_exception(exception):
     """Metadata lines, or exactly one pinned named-function fixture replacement."""
     edits = exception['changes']
     kind = exception.get('kind', 'metadata-lines-v1')
+    if kind == 'process-transcript-fixture-v1':
+        validate_process_fixture_exception(exception)
+        return
     if kind == 'schema5-history-setup-v1':
         pairs = SCHEMA5_SETUP_EDITS.get(exception['path'])
         require(pairs is not None and edits == [dict(old_text=old, new_text=new, count=1) for old, new in pairs],
@@ -295,6 +363,7 @@ def load_test_scope(root):
         accepted = checked_document(root, ACCEPTED_PATH, ACCEPTED_BYTES, ACCEPTED_SHA256)
         provenance = checked_document(root, PROVENANCE_PATH, PROVENANCE_BYTES, PROVENANCE_SHA256)
         maintenance = checked_document(root, MAINTENANCE_PATH, MAINTENANCE_BYTES, MAINTENANCE_SHA256)
+        execution = checked_document(root, EXECUTION_PATH, EXECUTION_BYTES, EXECUTION_SHA256)
         scope = checked_document(root, CONTRACT_PATH, CONTRACT_BYTES, CONTRACT_SHA256)
         require(anchor['format'] == 'independent-stage6-baseline-test-inventory-v1'
                 and anchor['package'] == '0.6.0' and anchor['test_count'] == 375
@@ -483,6 +552,32 @@ def load_test_scope(root):
         require(all(current['files'].get(name) == amendments.get(name, proof)
                     for name, proof in maintenance['current']['files'].items()),
                 'accepted 0.9.1 files differ outside authorized fixtures')
+        require(execution['format'] == 'release-test-scope-v1' and execution['release'] == '0.10.0'
+                and execution['baseline'] == scope['baseline']
+                and execution['current']['test_count'] == 729 and execution['current']['file_count'] == 70,
+                'reviewed execution release metadata differs')
+        binding = scope['execution_release']
+        require(type(binding) is dict and set(binding) == {'path', 'bytes', 'sha256', 'fixture_exceptions'}
+                and {key: binding[key] for key in ('path', 'bytes', 'sha256')}
+                == {'path': EXECUTION_PATH, 'bytes': EXECUTION_BYTES, 'sha256': EXECUTION_SHA256},
+                'reviewed execution release binding differs')
+        check_files(execution['current']['files']); check_ids(execution['current']['test_ids'], 'reviewed execution release')
+        require(set(execution['current']['test_ids']) <= set(current['test_ids']),
+                'current identities do not preserve all 729 reviewed identities')
+        amendments = {}
+        require(type(binding['fixture_exceptions']) is list, 'execution repair exceptions must be explicit')
+        for exception in binding['fixture_exceptions']:
+            name = exception['path']
+            require(name not in amendments and name in execution['current']['files']
+                    and exception['original'] == execution['current']['files'][name],
+                    'execution repair original identity differs')
+            validate_execution_repair_fixture_exception(exception)
+            amendments[name] = exception['current']
+        require(set(amendments) == set(EXECUTION_REPAIR_METADATA_EDITS) | {PROCESS_FIXTURE_PATH},
+                'execution repair fixture inventory differs')
+        require(all(current['files'].get(name) == amendments.get(name, proof)
+                    for name, proof in execution['current']['files'].items()),
+                'reviewed 0.10.0 files differ outside authorized fixtures')
         return scope
     except (OSError, UnicodeError, ValueError, KeyError, TypeError) as error:
         if str(error).startswith('TEST_SCOPE:'):
@@ -523,6 +618,8 @@ def validate_test_files(root, scope=None):
         for exception in scope['provenance_release']['fixture_exceptions']:
             restore_fixture_source(file_bytes(root / exception['path']), exception)
         for exception in scope['maintenance_release']['fixture_exceptions']:
+            restore_fixture_source(file_bytes(root / exception['path']), exception)
+        for exception in scope['execution_release']['fixture_exceptions']:
             restore_fixture_source(file_bytes(root / exception['path']), exception)
         return {'status': 'PASS', 'scope_identity': identity(), 'baseline': scope['baseline'],
                 'expected_count': scope['current']['test_count'], 'file_count': len(actual),

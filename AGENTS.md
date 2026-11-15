@@ -1,5 +1,24 @@
 # Project working agreement
 
+## Current Stage 12.1 maintenance authorization
+
+Start from reviewed candidate 43708e4e1d94bc18412ba53b1706fa45018e320a.
+Repair only S12-F1 export namespace preservation, S12-F2 original acceptance
+epochs, S12-F3 recorded-input UTC overflow classification and S12-F4 process
+transcript resource/request binding. Package 0.10.1 preserves stage2-v2,
+schema 6, v1 formats, 729 old test identities/behavior assertions, 373 fixed
+financial reference files and the frozen experiment. Keep all earlier scope
+anchors. Only current version metadata and the two explicitly named synthetic
+process-fixture helper bodies may change in old tests, with reversible byte
+proofs and a separately pinned exception. Establish same-file meaningful RED
+on unchanged 0.10.0 before narrow fixes, then focused GREEN and final release
+source/installed/profile gates. Do not rerun the baseline full suite or frozen
+training/holdout. New docs belong in docs/stage12_1; commands, failures, CI and
+archive evidence stay outside Git in stage12_1-output. Normal task-branch
+commit/push and draft PR #4 update are authorized; no main merge, force push,
+branch deletion, workflow dispatch, release/tag/PyPI or unrelated repair.
+The stage-specific sections below remain historical.
+
 ## Current Stage 12 recorded-execution authorization
 
 Start from accepted main 20ebe7753ae7d57ba6d2da2c83cc5220a75c4423 on
