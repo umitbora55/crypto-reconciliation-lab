@@ -4,7 +4,7 @@ Personal project by Ümit Bora Günaydın
 
 I built this project to study reconciliation when records arrive late or are corrected after an evaluation. It uses synthetic ledger, investor and custody data, and keeps earlier findings available for inspection.
 
-Python and SQLite · Package **0.9.1** · Financial rule `stage2-v2` · SQLite schema `5`
+Python and SQLite · Package **0.10.1** · Financial rule `stage2-v2` · SQLite schema `6`
 
 [Example](#example) · [Run locally](#run-locally) · [Design notes](docs/model_contract.md) · [Türkçe](docs/showcase/README.tr.md)
 
@@ -68,6 +68,38 @@ Open `review-output-new/index.md`, then `review-output-new/review/bundle/index.h
 This produces **9 synthetic scenarios / 24 saved evaluations**, an offline export, a limited ranking with the existing JSON model and a negative check for contradictory future-source input. Core execution uses the Python standard library; no API key, customer data or institution connection is required. It does not regenerate, train or final-evaluate the frozen main experiment.
 
 Expected synthetic `MISMATCH` and `INCOMPLETE` findings are not application failures. The reproduction exits 0 only when its checks pass. Its deliberately invalid rank must exit 2 and publish no queue; an unexpected subprocess exit or incomplete output fails the reproduction.
+
+## Recorded execution context
+
+Maintenance 0.10.1 preserves export paths and original acceptance epochs, classifies UTC overflow as an input error, and checks recorded process request bindings. Incorrect older epoch summaries are rejected without rewriting their bytes; see the [maintenance notes](docs/stage12_1/decisions.md).
+
+A financial run identifies a saved calculation. A recorded execution also keeps
+which eligible physical receipts and admission policy were visible inside that
+calculation's transaction. Repeating the same request returns its original
+execution; a new request can observe later receipts or policy revocation while
+sharing the same financial run ID. An ordinary historical run still says
+`NOT_RECORDED` about its original execution context.
+
+```sh
+python3 -m crypto_reconciliation_lab demo-execution-context --profile legacy --output execution-legacy-new
+```
+
+This standard-library demonstration runs **9 fixed CLI cases**. With the optional
+`auth` extra installed, use `--profile protected` for **17 cases** including a
+second physical receipt, policy revocation, immutable retry and a correctly
+signed custody mismatch. Read `summary.md`, the actual calls under `commands/`
+and the exact saved bytes under `exports/`. The demonstration makes no browser
+page and does not run the frozen experiment.
+
+`RECORDED` describes a complete local input/admission observation. It does not
+mean `MATCHED`, perform new signature verification or grant an actor permission
+to reconcile. Real process interruption and competing-writer tests run separately
+inside the full release suites; their retained evidence distinguishes rollback,
+durable commit before ACK, busy responses and retries. See the
+[five-minute walkthrough](docs/stage12/five-minute-review.md),
+[execution contract](docs/stage12/execution-contract.md) and
+[decisions](docs/stage12/decisions.md). Existing v1 provenance exports remain a
+schema-5 contract; schema 6 is never relabelled as historical v1 capture.
 
 ## Verification
 

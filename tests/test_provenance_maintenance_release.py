@@ -12,7 +12,7 @@ spec.loader.exec_module(gate)
 
 
 def literal_controls():
-    setup = {'format': 'release-provenance-maintenance-v1', 'package_version': '0.9.1',
+    setup = {'format': 'release-provenance-maintenance-v1', 'package_version': '0.10.1',
              'f1_preservation': {'external_changed_fields': ['capture_digest'], 'raw_run_equal': True,
                                  'signed_materials_equal': True},
              'f2_authoritative_capture_unchanged': True,

@@ -264,7 +264,7 @@ def build_fixture(root, *, scenario="clean"):
     (materials / "snapshots").mkdir(parents=True)
     database = root / "capture.sqlite3"
     legacy = scenario == "legacy"
-    store = Store(database, CONFIG)
+    store = Store(database, CONFIG, target_schema=5)
     policy_map, operations, runs, references, preserved = [], [], {}, {}, {}
     feeds = financial_records(scenario == "custody_difference")
     initial_data = {}

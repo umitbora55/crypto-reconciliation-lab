@@ -2,7 +2,7 @@
 import sqlite3
 from ..admission.runtime import _effect, _ingest_delivery_in_transaction, validate_plan
 from ..admission.feed import MAX_BYTES
-from ..migrations import inject, transaction, validate_current
+from ..migrations import inject, transaction, validate_runtime
 from ..model import digest
 from .crypto import MAX_ENVELOPE, AuthError, canonical, parse_envelope, pae, PAYLOAD_TYPE, require_auth, sha256, strict_json, verify_signature
 from .policy import active_policy, activate_policy, enable_protection, observed, protection
@@ -67,7 +67,7 @@ def _line(store, prepared, sequence, when, fault):
     db, value = store.db, prepared["statement"]
     stream_id, payload = value["stream_id"], prepared["snapshot"].lines[sequence - 1]
     with transaction(db):
-        validate_current(db)
+        validate_runtime(db)
         protected = protection(db)
         if (protected is None or protected["receiver"] != value["receiver"]
                 or protected["configuration_digest"] != value["configuration_digest"]):

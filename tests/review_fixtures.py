@@ -13,7 +13,7 @@ EDGE_KNOWLEDGE = "2026-11-11T01:00:00.123456Z"
 INERT_TEXT = "</script><script>globalThis.REVIEW_XSS=1</script><img src='https://example.invalid/inert-review' onerror='globalThis.REVIEW_XSS=2'> & \" Ω 你好"
 
 
-def create_source(folder, edge=False):
+def create_source(folder, edge=False, *, target_schema=None):
     folder = Path(folder)
     folder.mkdir(parents=True, exist_ok=True)
     database = folder / "source.sqlite3"
@@ -39,7 +39,7 @@ def create_source(folder, edge=False):
                 "ref": f"PRESENTATION-{ordinal}", "occurred_at": time, "sequence": 1,
                 "type": "transfer", "from_investor": sender, "to_investor": recipient,
                 "custody": None, "amount": "0.01"}})
-    store = Store(database, config)
+    store = Store(database, config, target_schema=target_schema)
     try:
         for row in rows:
             store.ingest(row["record"], row["received_at"])

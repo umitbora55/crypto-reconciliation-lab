@@ -6,7 +6,7 @@ import math
 import re
 import sqlite3
 
-from ..migrations import inject, transaction, validate_current
+from ..migrations import inject, transaction, validate_runtime
 from ..model import dumps, timestamp
 from .feed import FRAMING, MAX_BYTES, MAX_LINES, MAX_LINE_BYTES
 
@@ -102,7 +102,7 @@ def _ingest_delivery_in_transaction(store, stream_id, sequence, payload, plan, *
         raise ValueError("DELIVERY_INPUT: nonempty bounded exact bytes required")
     observed = timestamp(observed_at if observed_at is not None else datetime.now(timezone.utc).isoformat())
     payload_hash = hashlib.sha256(payload).hexdigest()
-    validate_current(db)
+    validate_runtime(db)
     stream = db.execute("SELECT * FROM admission_streams WHERE stream_id=?", (stream_id,)).fetchone()
     effect = _effect(db, stream_id, sequence)
     prefix = _prefix(db, stream_id)
@@ -185,7 +185,7 @@ def ingest_delivery(store, stream_id, sequence, payload, plan, *, observed_at=No
 def feed_status(store, stream_id):
     validate_stream(stream_id)
     db = store.db
-    validate_current(db)
+    validate_runtime(db)
     # A read transaction keeps all history/counts on one SQLite snapshot.
     if db.in_transaction:
         raise ValueError("feed status requires an independent read transaction")

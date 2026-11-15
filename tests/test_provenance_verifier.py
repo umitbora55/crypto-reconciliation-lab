@@ -407,7 +407,7 @@ class ProvenanceVerifierTests(unittest.TestCase):
         from crypto_reconciliation_lab.source_auth.policy import enable_protection
         from crypto_reconciliation_lab.provenance.demo import CONFIG, RECEIVER, BALANCE, KNOWLEDGE, policy, _fixture_observation
         database = self.case/'empty.sqlite'
-        store = Store(database, CONFIG)
+        store = Store(database, CONFIG, target_schema=5)
         first = policy(1)
         enable_protection(store, RECEIVER, first, observed_at='2026-11-14T09:00:00Z')
         run = reconcile(store, BALANCE, KNOWLEDGE)
