@@ -1,0 +1,207 @@
+{
+  "benchmark_scope": {
+    "count": 45,
+    "events": [
+      100,
+      1000,
+      10000
+    ],
+    "methods": [
+      "stdlib_integer",
+      "sqlite_integer",
+      "production"
+    ],
+    "repeats": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ]
+  },
+  "created_utc": "2026-11-16T20:54:17.873132+00:00",
+  "files": {
+    "benchmark": {
+      "bytes": 1250298,
+      "path": "/workspace/validation-gate2-evidence/benchmark/common-full/results.json",
+      "sha256": "ca580d9feb59cdc1cea0dc69281b2d18c5b5d931e21fcbbe4960c40e2215f639"
+    },
+    "detail": {
+      "bytes": 785935,
+      "path": "/workspace/validation-gate2-evidence/public-data/data-02/raw/dts-deposits_withdrawals_operating_cash-2026-11.body",
+      "sha256": "3ade1f71761ff6c19e6bc6a6cc6ede7f96cff6bd9911b49c36c7a62e23613637"
+    },
+    "sec": {
+      "bytes": 1050751,
+      "path": "/workspace/validation-gate2-evidence/public-data/data-02/raw/sec-ftd-202401a.body",
+      "sha256": "79e2df1a02346979a1916bf27d5f425e7e382a14898e02be416a25c62d51c8c3"
+    },
+    "sec_landing": {
+      "bytes": 421535,
+      "path": "/workspace/validation-gate2-evidence/public-data/access-01/raw/sec-ftd-documentation.body",
+      "sha256": "d4fbbe25c07778b5b04ec4a18c9e0043cedf52ce9c58c5f105dee6d395602268"
+    },
+    "treasury": {
+      "bytes": 17129,
+      "path": "/workspace/validation-gate2-evidence/public-data/data-02/raw/dts-operating_cash_balance-2026-11.body",
+      "sha256": "1c02859a71c9ee12ff4327e3b33355a5bec45a0e470d070f923dc36a08c2616e"
+    }
+  },
+  "format": "gate3-adversarial-catalog-v1",
+  "interpretation": "Baseline accepted negative witnesses expose absent finite-corpus checks, not necessarily financial-parser defects; already rejected witnesses remain ALREADY_REJECTED. Exact witness transformations and source hashes unchanged before/after. A hash cannot prove external authority.",
+  "scope": "Finite externally selected retained corpus, not a general institutional source authenticator",
+  "sec_url": "https://www.sec.gov/files/data/fails-deliver-data/cnsfails202401a.zip",
+  "starting_head": "6876b384030a7cdab1d35445f66bf874768dcfce",
+  "treasury": {
+    "accounts": [
+      "Treasury General Account (TGA) Opening Balance",
+      "Total TGA Deposits (Table II)",
+      "Total TGA Withdrawals (Table II) (-)",
+      "Treasury General Account (TGA) Closing Balance"
+    ],
+    "amounts": [
+      "912134",
+      "316534",
+      "295541",
+      "933127"
+    ],
+    "date": "2026-11-12",
+    "expected_residual": 0,
+    "field": "open_today_bal",
+    "lines": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "pointers": [
+      "/data/28",
+      "/data/29",
+      "/data/30",
+      "/data/31"
+    ],
+    "publication_vintage": "UNKNOWN"
+  },
+  "witnesses": [
+    {
+      "expected": "REJECT",
+      "id": "treasury_deleted",
+      "mutation": "DELETE /data/28"
+    },
+    {
+      "expected": "REJECT",
+      "id": "treasury_duplicated",
+      "mutation": "APPEND copy /data/28"
+    },
+    {
+      "expected": "REJECT",
+      "id": "treasury_altered",
+      "mutation": "SET /data/31/open_today_bal=933128"
+    },
+    {
+      "expected": "REJECT",
+      "id": "treasury_source_line",
+      "mutation": "SET /data/28/src_line_nbr=99"
+    },
+    {
+      "expected": "REJECT",
+      "id": "treasury_account_label",
+      "mutation": "SET /data/28/account_type=Unknown account"
+    },
+    {
+      "expected": "ACCEPT",
+      "id": "treasury_null_control",
+      "mutation": "UNCHANGED original close_today_bal literal null"
+    },
+    {
+      "expected": "REJECT",
+      "id": "treasury_wrong_transition",
+      "mutation": "SET selected field close_today_bal instead of open_today_bal"
+    },
+    {
+      "expected": "REJECT",
+      "id": "treasury_stale_vintage",
+      "mutation": "CLAIM publication vintage 2026-11-01 for 2026-11-12 source date"
+    },
+    {
+      "expected": "REJECT",
+      "id": "treasury_missing_raw",
+      "mutation": "REMOVE raw byte input"
+    },
+    {
+      "expected": "REJECT",
+      "id": "treasury_changed_raw",
+      "mutation": "APPEND whitespace to raw corpus with candidate self-hash"
+    },
+    {
+      "expected": "REJECT",
+      "id": "sec_changed_link",
+      "mutation": "SET URL https://www.sec.gov/files/data/fails-deliver-data/unlisted.zip"
+    },
+    {
+      "expected": "REJECT",
+      "id": "sec_trailer",
+      "mutation": "INCREMENT original trailer record count by one"
+    },
+    {
+      "expected": "REJECT",
+      "id": "sec_symbol_bound",
+      "mutation": "SET first decoded SYMBOL=ABCDEFGHIJKL"
+    },
+    {
+      "expected": "REJECT",
+      "id": "sec_duplicate",
+      "mutation": "APPEND first decoded row"
+    },
+    {
+      "expected": "REJECT",
+      "id": "sec_security_identity",
+      "mutation": "SET first decoded CUSIP=000000001"
+    },
+    {
+      "expected": "REJECT",
+      "id": "identity_forged_context",
+      "mutation": "REPLACE original LAB manifest+context+signature with self-consistent LAB key2 candidate and new event ID"
+    },
+    {
+      "expected": "REJECT",
+      "id": "benchmark_omitted",
+      "mutation": "REMOVE first trial"
+    },
+    {
+      "expected": "REJECT",
+      "id": "benchmark_duplicated",
+      "mutation": "APPEND first trial"
+    },
+    {
+      "expected": "REJECT",
+      "id": "benchmark_p50",
+      "mutation": "ADD 1 to first summary wall_seconds.p50"
+    },
+    {
+      "expected": "REJECT",
+      "id": "benchmark_timing",
+      "mutation": "ADD 1 to first trial subprocess_wall_seconds only; command log unchanged"
+    },
+    {
+      "expected": "ACCEPT",
+      "id": "treasury_original",
+      "mutation": "UNCHANGED original corpus, exact lines1..4 and independent literal oracle"
+    },
+    {
+      "expected": "ACCEPT",
+      "id": "sec_original",
+      "mutation": "UNCHANGED original SEC ZIP/link; nine existing symbol warnings retained"
+    },
+    {
+      "expected": "ACCEPT",
+      "id": "identity_original",
+      "mutation": "UNCHANGED deterministic LAB-only external context"
+    },
+    {
+      "expected": "ACCEPT",
+      "id": "benchmark_original",
+      "mutation": "UNCHANGED all45 original trials and raw logs"
+    }
+  ]
+}

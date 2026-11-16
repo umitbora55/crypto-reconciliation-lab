@@ -1,0 +1,258 @@
+{
+  "format": "gate3-local-validation-summary-v1",
+  "status": "PASS",
+  "starting_head": "6876b384030a7cdab1d35445f66bf874768dcfce",
+  "tests_rerun": false,
+  "dependency_overlap": "Python stdlib and Git, original release outputs and fixed references; no project helper imported.",
+  "checks": {
+    "all_prior_tracked_files": {
+      "status": "PASS",
+      "count": 417,
+      "exact_git_blobs": "6876b384030a7cdab1d35445f66bf874768dcfce"
+    },
+    "full_profiles": {
+      "312": {
+        "status": "PASS",
+        "commands": 38,
+        "source_tests": {
+          "status": "PASS",
+          "expected": 875,
+          "discovered": 875,
+          "executed": 875,
+          "zero_failure_classes": [
+            "failures",
+            "errors",
+            "skips",
+            "expected_failures",
+            "unexpected_successes"
+          ],
+          "origin": "/workspace/validation-gate3-evidence/release-full-py312/build/sdist/crypto_reconciliation_lab-0.11.1/crypto_reconciliation_lab/__init__.py",
+          "isolated": false
+        },
+        "installed_tests": {
+          "status": "PASS",
+          "expected": 875,
+          "discovered": 875,
+          "executed": 875,
+          "zero_failure_classes": [
+            "failures",
+            "errors",
+            "skips",
+            "expected_failures",
+            "unexpected_successes"
+          ],
+          "origin": "/workspace/validation-gate3-evidence/release-full-py312/environment/lib/python3.12/site-packages/crypto_reconciliation_lab/__init__.py",
+          "isolated": true
+        },
+        "build_source_files": 331,
+        "build_commands": 2,
+        "distribution_proofs": {
+          "sdist": {
+            "bytes": 1731625,
+            "sha256": "3ac379d11a521673cf86a5ec72c56ac01cdcb7ec67bac1b7da276cb24990eedd"
+          },
+          "wheel": {
+            "bytes": 361257,
+            "sha256": "8aa596e2462c75e39d569f6e2f67456d42505783a52a34ee8adb5739da184f22"
+          }
+        },
+        "financial_cases": 69,
+        "financial_evaluations": 162,
+        "unique_reference_files": 373,
+        "matrix_actual_bytes_rehashed": 325,
+        "demo_actual_bytes_rehashed": {
+          "source": {
+            "stage1": 12,
+            "stage2": 36
+          },
+          "installed": {
+            "stage1": 12,
+            "stage2": 36
+          }
+        },
+        "verification": {
+          "bytes": 11623650,
+          "sha256": "8443c4e6275bd1af4dcf73196ef9ab6af931b48be0763e305cd5706d0784a4d1"
+        }
+      },
+      "314": {
+        "status": "PASS",
+        "commands": 38,
+        "source_tests": {
+          "status": "PASS",
+          "expected": 875,
+          "discovered": 875,
+          "executed": 875,
+          "zero_failure_classes": [
+            "failures",
+            "errors",
+            "skips",
+            "expected_failures",
+            "unexpected_successes"
+          ],
+          "origin": "/workspace/validation-gate3-evidence/release-full-py314/build/sdist/crypto_reconciliation_lab-0.11.1/crypto_reconciliation_lab/__init__.py",
+          "isolated": false
+        },
+        "installed_tests": {
+          "status": "PASS",
+          "expected": 875,
+          "discovered": 875,
+          "executed": 875,
+          "zero_failure_classes": [
+            "failures",
+            "errors",
+            "skips",
+            "expected_failures",
+            "unexpected_successes"
+          ],
+          "origin": "/workspace/validation-gate3-evidence/release-full-py314/environment/lib/python3.14/site-packages/crypto_reconciliation_lab/__init__.py",
+          "isolated": true
+        },
+        "build_source_files": 331,
+        "build_commands": 2,
+        "distribution_proofs": {
+          "sdist": {
+            "bytes": 1731643,
+            "sha256": "23aa5c01b32a90bc78ef279160f9f973a1466a66ad31397531485673014eb9c0"
+          },
+          "wheel": {
+            "bytes": 361257,
+            "sha256": "8aa596e2462c75e39d569f6e2f67456d42505783a52a34ee8adb5739da184f22"
+          }
+        },
+        "financial_cases": 69,
+        "financial_evaluations": 162,
+        "unique_reference_files": 373,
+        "matrix_actual_bytes_rehashed": 325,
+        "demo_actual_bytes_rehashed": {
+          "source": {
+            "stage1": 12,
+            "stage2": 36
+          },
+          "installed": {
+            "stage1": 12,
+            "stage2": 36
+          }
+        },
+        "verification": {
+          "bytes": 11626359,
+          "sha256": "bc12b9129588da5826070a6ffa51a359e12b8258d62747e334f513e0108a3ee6"
+        }
+      }
+    },
+    "dependency_profiles314": {
+      "core": {
+        "status": "PASS",
+        "commands": 14,
+        "full_875_suite": "NOT_RUN_BY_PROFILE",
+        "financial_matrix": "NOT_RUN_BY_PROFILE",
+        "optional_ai_available": {
+          "numpy": false,
+          "scipy": false,
+          "sklearn": false
+        },
+        "auth_available": {
+          "cffi": false,
+          "cryptography": false,
+          "pycparser": false
+        },
+        "installed_origin": "/workspace/validation-gate3-evidence/release-core-py314/environment/lib/python3.14/site-packages/crypto_reconciliation_lab/__init__.py",
+        "verification": {
+          "bytes": 1461874,
+          "sha256": "658a21cc204485a688565ab3fc2005537715dd2b148dbf805c5aba578871c525"
+        }
+      },
+      "auth-only": {
+        "status": "PASS",
+        "commands": 19,
+        "full_875_suite": "NOT_RUN_BY_PROFILE",
+        "financial_matrix": "NOT_RUN_BY_PROFILE",
+        "optional_ai_available": {
+          "numpy": false,
+          "scipy": false,
+          "sklearn": false
+        },
+        "auth_available": {
+          "cffi": true,
+          "cryptography": true,
+          "pycparser": true
+        },
+        "installed_origin": "/workspace/validation-gate3-evidence/release-auth-only-py314/environment/lib/python3.14/site-packages/crypto_reconciliation_lab/__init__.py",
+        "verification": {
+          "bytes": 5298528,
+          "sha256": "52e593248d97afeca2b677194db62fefd9c3a55c5bb6d3521f9fcd3c25a84cb0"
+        }
+      }
+    },
+    "intermediate_research_47": {
+      "status": "PASS",
+      "python_versions": [
+        "3.12",
+        "3.14"
+      ],
+      "expected_discovered_executed_each": 47,
+      "current_source_bindings": 118,
+      "static_ids_independently_enumerated": 47,
+      "overlap_with_historical875": 0,
+      "inventory": {
+        "bytes": 23713,
+        "sha256": "c398b27fabaa4b125fcee14a8672c5768f224b68a3ddbc8b98ae34587d3141e9"
+      },
+      "zero_failure_classes": [
+        "failures",
+        "errors",
+        "skips",
+        "expected_failures",
+        "unexpected_successes"
+      ]
+    },
+    "new_research": {
+      "status": "PASS",
+      "expected_discovered_executed_each": 51,
+      "current_source_bindings": 119,
+      "python_versions": [
+        "3.12",
+        "3.14"
+      ],
+      "zero_failure_classes": [
+        "failures",
+        "errors",
+        "skips",
+        "expected_failures",
+        "unexpected_successes"
+      ],
+      "inventory": {
+        "path": "/workspace/validation-gate3-evidence/research-final-002/inventory.json",
+        "bytes": 24460,
+        "sha256": "cc53d5e51c4a28df824f9e7e7748ee1f72a8a3d363ddba5a40bfe8c356cc5f72"
+      },
+      "summary_files": [
+        "/workspace/validation-gate3-evidence/research-final-002/py312/summary.json",
+        "/workspace/validation-gate3-evidence/research-final-002/py314/summary.json"
+      ],
+      "qualification": "Final strict execution after controller repair; original47 and intermediate50 runs retained. Separate875-ID release execution closure unchanged."
+    }
+  },
+  "wall_seconds": 4.041862854000101,
+  "read_input_inventory": {
+    "bytes": 53471,
+    "sha256": "3fe787148f4e4da6035986a840c88cd5af05e23966e95c55c06ff1971ac6bae8"
+  },
+  "source_seal_qualification": "Application/build closure remained byte-identical to starting commit during full release gates. Concurrent new Gate3 research/report files were outside the allowlisted331-file build closure; their separate51-test run bound119unchanged files. Entire checkout was not claimed frozen during full release.",
+  "canonical_external_audit": {
+    "path": "/workspace/validation-gate3-evidence/independent-review/local-final-001/audit-result.json",
+    "bytes": 6888,
+    "sha256": "f42bb7e8c2338af26f48f9973efbd1bfb3d95e542df72a7b3f9c68bc610f8202"
+  },
+  "command_elapsed_seconds": {
+    "full312": 838.56019845,
+    "full314": 785.36194447,
+    "core314": 24.755988268,
+    "auth_only314": 36.55666416
+  },
+  "final_research_independent_audit": {
+    "path": "/workspace/validation-gate3-evidence/independent-review/research-final-supplement-001/audit-result.json",
+    "bytes": 2849,
+    "sha256": "5af9066a327afc6eb6aef0a648e7fd9f58d47df1c0c6e650835c6731673c7e4a"
+  }
+}

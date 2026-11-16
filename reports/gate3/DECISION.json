@@ -1,0 +1,182 @@
+{
+  "format": "validation-decisions-gate3-v1",
+  "application_version": "0.11.1",
+  "rule": "stage2-v2",
+  "schema": 6,
+  "starting_head": "6876b384030a7cdab1d35445f66bf874768dcfce",
+  "main_baseline": "b48021273405128c67e2969fd4b46f8d7e876a99",
+  "branch": "validation/real-world-evidence-v1",
+  "draft_pr": "https://github.com/umitbora55/crypto-reconciliation-lab/pull/7",
+  "overall_gate": "NOT_READY",
+  "local_gate": "PASS",
+  "remaining_gate_at_source_seal": [
+    "FINAL_EXACT_HEAD_CI",
+    "FINAL_ARCHIVE_INTEGRITY"
+  ],
+  "final_decision_location": "Outside-Git delivery reports/DECISION.json and VALIDATION_GATE3_HANDOFF.md, after actual new-head CI and archive verification. This source-sealed observation is never retroactively relabelled.",
+  "evidence_root": "/workspace/validation-gate3-evidence",
+  "production_changed": false,
+  "historical_files_unchanged": 417,
+  "protected_test_ids": 875,
+  "financial_references": 373,
+  "claims": {
+    "CORRECTNESS_WITHIN_TESTED_SCOPE": {
+      "status": "SUPPORTED",
+      "source_installed_tests_each_python": [
+        875,
+        875
+      ],
+      "python": [
+        "3.12",
+        "3.14"
+      ],
+      "financial_each": {
+        "cases": 69,
+        "evaluations": 162,
+        "unique_files": 373
+      },
+      "new_research_each": 51,
+      "qualification": "Finite existing application scope. New research remains separate. The 331-file release closure stayed unchanged; final research binds 119 source files."
+    },
+    "CAPACITY": {
+      "status": "PARTIAL",
+      "original_60_second_cap": {
+        "25000": "PASS",
+        "50000": "TIMEOUT",
+        "100000": "TIMEOUT"
+      },
+      "extended_diagnostic": {
+        "50000": {
+          "status": "PASS",
+          "cap_seconds": 120,
+          "parent_wall_seconds": 65.44301357499899
+        },
+        "100000": {
+          "status": "PASS",
+          "cap_seconds": 180,
+          "parent_wall_seconds": 128.97066260700012
+        }
+      },
+      "full_persistence_instrumentation": {
+        "10000_control": "PASS",
+        "10000_instrumented": "PASS",
+        "25000_seed29_instrumented": "PASS",
+        "paired_exact_artifact_parity": "PASS"
+      },
+      "qualification": "Extended passes use the restricted common lane and exceed 60 seconds. Full history persistence at 50k/100k is NOT_RUN. The original controller ERROR and first extended orphan wait exit NOT_OBSERVED remain preserved. The bounded continuation does not erase that failed attempt. No SLA, replay capacity proof or operational RPO is established."
+    },
+    "CAPACITY_BOTTLENECK": {
+      "status": "SUPPORTED_WITHIN_MEASURED_SCOPE",
+      "observation": "SQL COMMIT calls account for 82.0%/82.8% of instrumented 10k/25k ingestion wall time. These are inclusive call times, not independent device I/O.",
+      "optimization": "NOT_RUN. Production remains unchanged; only a bounded future proposal requiring equivalent durability is provided."
+    },
+    "PUBLIC_REAL_DATA_INTEGRATION": {
+      "status": "LIMITED",
+      "data_class": "REAL_PUBLIC_DIRECT",
+      "treasury_rows": 14226,
+      "sec_rows": 89285,
+      "modern_days": 60,
+      "strict_exact": 39,
+      "nonzero_residual_days": 21,
+      "cross_table_checks": 120,
+      "legacy_four_total_checks": "NOT_RUN:32",
+      "qualification": "Original official documents and retained bytes audited. Publication vintage is unknown and natural error ground truth is unavailable. The separate \u00b12 diagnostic is research only."
+    },
+    "BASELINE_SYNTHETIC_DETECTION": {
+      "status": "LIMITED",
+      "data_class": "FULLY_SYNTHETIC",
+      "observations": 264,
+      "TP": 132,
+      "FP": 0,
+      "TN": 120,
+      "FN": 12,
+      "qualification": "Original count-only history unchanged. Twelve same-count substitutions remain false negatives."
+    },
+    "LAB_ADDITIONAL_REFERENCE": {
+      "status": "LIMITED",
+      "data_class": "FULLY_SYNTHETIC",
+      "observations": 24,
+      "TP": 12,
+      "FP": 0,
+      "TN": 12,
+      "FN": 0,
+      "reference_bytes": 896,
+      "context_bytes": 550,
+      "qualification": "Extra LAB-issued ordered identity/content facts, not independent institutional trust. Separate population."
+    },
+    "REAL_PUBLIC_ADAPTED": {
+      "status": "LIMITED",
+      "cases": 60,
+      "source_publishers": 1,
+      "independent_counterparties": 0,
+      "qualification": "Historical authored construction from one source; no real investor-versus-custodian reconciliation."
+    },
+    "REAL_PLUS_SYNTHETIC_INJECTION": {
+      "status": "LIMITED",
+      "observations": 360,
+      "distinct_source_rows": 30,
+      "TP": 120,
+      "FP": 0,
+      "TN": 180,
+      "FN": 60,
+      "qualification": "Curated labels with repeated controls. SEC outstanding balances are not daily new fails, fail age or fraud labels."
+    },
+    "NATURAL_REAL_WORLD_PRECISION_RECALL": {
+      "status": "NOT_MEASURABLE"
+    },
+    "INDEPENDENT_TWO_PARTY_ACQUISITION": {
+      "status": "NOT_AVAILABLE",
+      "qualification": "Acquisition protocol specified but unfulfilled; no fabricated institutions."
+    },
+    "COMMON_TASK_COMPARISON": {
+      "status": "SUPPORTED",
+      "comparative_status": "EQUIVALENT_COMMON_ARITHMETIC",
+      "complete_trials": 45,
+      "matched_blocks": 15,
+      "n_per_cell": 5,
+      "qualification": "Independent raw-record recalculation. Empirical p95 is the observed maximum at n=5; no general production advantage."
+    },
+    "FULL_EVIDENCE_HISTORY_SUPERIORITY": {
+      "status": "INCONCLUSIVE",
+      "comparator": "COMPARATOR_NOT_AVAILABLE"
+    },
+    "FINITE_EVIDENCE_GUARDS": {
+      "status": "SUPPORTED",
+      "same_witnesses": 24,
+      "new_negative_rejections": 9,
+      "already_rejected_negatives": 10,
+      "positive_controls": 5,
+      "qualification": "Externally selected byte, row and context pins. This does not establish external economic authenticity."
+    },
+    "INSTITUTIONAL_DEPLOYMENT": {
+      "status": "NOT_PROVEN"
+    },
+    "COST_SAVINGS": {
+      "status": "NOT_PROVEN"
+    },
+    "RISK_REDUCTION": {
+      "status": "NOT_PROVEN"
+    },
+    "REGULATORY_COMPLIANCE": {
+      "status": "NOT_PROVEN"
+    },
+    "FINAL_EXACT_HEAD_CI": {
+      "status": "NOT_RUN",
+      "qualification": "The final commit does not yet exist at this source-sealed observation."
+    },
+    "FINAL_ARCHIVE_INTEGRITY": {
+      "status": "NOT_RUN",
+      "qualification": "The later outside ZIP manifest proves bytes only. The archive cannot contain its own later final checksum."
+    }
+  },
+  "frozen_ml": "NOT_RUN",
+  "data_classes": [
+    "FULLY_SYNTHETIC",
+    "REAL_PUBLIC_DIRECT",
+    "REAL_PUBLIC_ADAPTED",
+    "REAL_PLUS_SYNTHETIC_INJECTION"
+  ],
+  "not_run_inventory": "NOT_RUN.json",
+  "evidence_index": "EVIDENCE_INDEX.json",
+  "local_independent_capacity_audit": "trust/capacity-independent-outcome-003/summary.json"
+}

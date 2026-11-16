@@ -1,0 +1,140 @@
+{
+  "base_head": "6876b384030a7cdab1d35445f66bf874768dcfce",
+  "budgets": {
+    "child_address_space_bytes": 1073741824,
+    "cleanup_reserve_wall_and_cpu_seconds": 20,
+    "combined_controller_worker_address_space_bytes": 2147483648,
+    "controller_address_space_bytes": 1073741824,
+    "retained_disk_bytes": 1073741824,
+    "single_file_bytes": 402653184,
+    "total_cpu_seconds": 180,
+    "total_wall_seconds": 650,
+    "workers": 1
+  },
+  "common_service": "Unchanged Gate2 run_worker production common lane. Full rich run persistence deliberately absent, exactly as historically measured; no full service superiority claim.",
+  "continuation": {
+    "accounting_limit": "Offline repair/review idle time is excluded from experimentalactivewallbudget. Applicationguards and finite source path are not an external kernel-wide resource attestation.",
+    "cumulative_active_wall_upper_bound_seconds": 850,
+    "cumulative_cpu_upper_bound_seconds": 580,
+    "disk_budget_root": "Parent capacity directory includes all preserved original and continuation files, plus recovery-copy headroom.",
+    "input_policy": "Copy exact previously sealed run001 bytes, including seed29; reject missing/substituted inputs.",
+    "input_root": "/workspace/validation-gate3-evidence/capacity/run-001/inputs",
+    "order": "Mandatory full-persistence10koff/on and25kfirst; then optionalextended50k/100k. No random-order comparison or historicaltimingorder equivalence claimed.",
+    "original_outer_command": {
+      "bytes": 1565,
+      "sha256": "3ee97b9d8152d1fc5ca94a6477c486f513bdd94deca3653a2287f8cc75e00d9b"
+    },
+    "original_protocol": {
+      "bytes": 5836,
+      "sha256": "6bd2974a943d0caab627dfe01cb1e98448a16648e3da96a624236de28c7054e6"
+    },
+    "original_protocol_path": "/workspace/validation-gate3-evidence/capacity/run-001/source/contracts/gate3-capacity-protocol.json",
+    "original_results": {
+      "bytes": 127517,
+      "sha256": "02afde58fa2a4866ff3c87811b328ee4e7074b573f1ec4925eaa21fbb3a0770b"
+    },
+    "original_source": {
+      "bytes": 30870,
+      "sha256": "c87bcd91f9b9a83d5d61b0ec5e855ade4452a7ae09ea7504a5cf10158db7098c"
+    },
+    "original_source_path": "/workspace/validation-gate3-evidence/capacity/run-001/source/validation_lab/gate3_capacity.py",
+    "orphan_stop": {
+      "bytes": 901,
+      "sha256": "22a5bdb7a5546891f2180f45d526d3f41c04325ca4bc425d00cb0c9da6b11d45"
+    },
+    "prior_active_wall_upper_bound_seconds": 200,
+    "prior_attempts": "Fourcompletedrows retained, including warmup; firstextended50k ERROR duecontrollerfailure. Orphan signal sent, processceased, waitexitNOT_OBSERVED. Remainingfour originallyNOT_RUN. Allhistoricalbytespreserved.",
+    "prior_cpu_bound_basis": "Conservative2x200s active elapsed bound for one single-thread controller and at most one single-thread worker, established from reviewed standard-library execution paths; a resource bound, not measuredCPU. Originalstart2026-11-16T21:12:52.184115Z tostop2026-11-16T21:16:11Z <200s. Source does not spawn computational threads. FinalcontrollerCPU and killed-workerCPU remainNOT_MEASURED.",
+    "prior_cpu_upper_bound_seconds": 400,
+    "reason": "run001 controller FileNotFoundError observing disappearing SQLite journal; no original60s reproduction rerun"
+  },
+  "controller_guard": "Whole-program0.25s signal checks cover snapshot/copy/generation, child and postprocessing, with20s wall/CPU cleanup reserve. Controller and sole worker each1GiB address-space cap (2GiB combined, not kernel page cache). On guard termination kill/wait worker and retain PARTIAL/NOT_RUN roster. SQLite integrity/readback progress handler aborts at work deadline; recovery-copy budget includes64MiB transient reserve. Fixed local file sizes bound remaining uninterruptible filesystem calls; this is an application guard, not a kernel quota or certified worst-case scheduler guarantee.",
+  "data_class": "FULLY_SYNTHETIC",
+  "format": "gate3-capacity-continuation-v1",
+  "full_service": "Unchanged public Store.ingest/reconcile including Store.save_run; restricted JSON export of full result and read_run. Instrumentation wraps unchanged functions only in dedicated worker; no persisted evidence suppressed.",
+  "historical_input_pins": {
+    "events100-seed11": {
+      "bytes": 51307,
+      "sha256": "266a6716b7146025dae2bf7fd479eee47ef1f07f2e54cbd535382f5c099fe67a"
+    },
+    "events10000-seed11": {
+      "bytes": 4596911,
+      "sha256": "c246c488a9845ad11e9628fd647cb1fb826ec6bc797bd3684781f247801926c2"
+    },
+    "events100000-seed11": {
+      "bytes": 46116913,
+      "sha256": "85c78c20590d2b7162b6ea076dd0abdb10ed9f9b318b985f45c5f938a0f85e88"
+    },
+    "events25000-seed11": {
+      "bytes": 11516911,
+      "sha256": "1f6b932d04268c48c11bfaba477615d6935d886fee9505e1f77183211d808569"
+    },
+    "events25000-seed29": {
+      "bytes": 11516911,
+      "sha256": "8f8902a3e4970478da5d397d2141f7d534d2e097751d727578af38bbfb556a3f"
+    },
+    "events50000-seed11": {
+      "bytes": 23050240,
+      "sha256": "36aad48c8f3776a43da1591948e2fa7675a54f5248749e469888c5b55c35a145"
+    }
+  },
+  "input": "Exact immutable Gate2 files for seed11; generated finite Gate2 workload seed29 is independently chosen before measurement for the25k instrumentation sample. Hashes sealed before first child. No natural data claim.",
+  "instrumentation": "Measure JSON decoding, store digest/normalization/serialization calls, each physical ingest, SQL execute classes including BEGIN/COMMIT/ROLLBACK and index DDL. Initial index construction uses SQLite before-statement trace intervals inside unchanged executescript, including callback dispatch overhead. Nested inclusive buckets must not be added. Index maintenance is included in INSERT and not separately attributable without invasive SQLite instrumentation. Measure full save_run separately within reconcile. Exact SQL contents are not logged. Every instrumented receipt/transaction duration retained in CSV.",
+  "missing": "All roster rows retained with PASS/TIMEOUT/ERROR/PARTIAL/NOT_RUN. No cap value substituted for missing duration. Full timings unavailable afterkill. Abort remaining roster at total budget; sampled disk is not continuous peak.",
+  "optimization": "No production edits planned. Attribute measured bottleneck and propose bounded future experiment; no batching away per-receipt commits.",
+  "overhead": "One paired10k same-input off/on comparison; report observed difference, not statistically established observer cost. Off control still includes phase/receipt clock calls and CSV header; difference measures incremental wrappers/per-receipt CSV/transaction logs, not total instrumentation overhead. Fresh interpreter/database; warmup retained; no page-cache flush. Controller process sampling0.1s and host load before/after; shared-host contention cannot be eliminated.",
+  "postkill": "Actual SIGKILL then wait returncode. Preserve original DB/journal hashes, recover a separate copy and query direct SQLite committed rows/integrity. A recovered row count describes this abrupt-stop database only, not operational RPO. Killed final CPU/RSS NOT_MEASURED; last sampled values distinct.",
+  "preregistered": true,
+  "replay": {
+    "default_worker_seconds": 30,
+    "eligible_receipt_limit": 10000,
+    "ordinary_ingestion_is_replay_proof": false
+  },
+  "roster": [
+    {
+      "classification": "FULL_PERSISTENCE_DIAGNOSTIC",
+      "events": 10000,
+      "id": "full-10000-control",
+      "instrument": false,
+      "mode": "full",
+      "seed": 11,
+      "wall_cap": 90
+    },
+    {
+      "classification": "FULL_PERSISTENCE_DIAGNOSTIC",
+      "events": 10000,
+      "id": "full-10000-instrumented",
+      "instrument": true,
+      "mode": "full",
+      "seed": 11,
+      "wall_cap": 90
+    },
+    {
+      "classification": "FULL_PERSISTENCE_DIAGNOSTIC",
+      "events": 25000,
+      "id": "full-25000-instrumented",
+      "instrument": true,
+      "mode": "full",
+      "seed": 29,
+      "wall_cap": 180
+    },
+    {
+      "classification": "EXTENDED_DIAGNOSTIC",
+      "events": 50000,
+      "id": "extended-50000-120",
+      "instrument": false,
+      "mode": "common",
+      "seed": 11,
+      "wall_cap": 120
+    },
+    {
+      "classification": "EXTENDED_DIAGNOSTIC",
+      "events": 100000,
+      "id": "extended-100000-180",
+      "instrument": false,
+      "mode": "common",
+      "seed": 11,
+      "wall_cap": 180
+    }
+  ]
+}

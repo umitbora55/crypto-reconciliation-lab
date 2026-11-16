@@ -1,0 +1,348 @@
+{
+  "assurance_limits": [
+    "LAB-selected corpus pins prevent accidental substitution; hashes do not authenticate Treasury or SEC.",
+    "Publication vintage UNKNOWN; retrieval timestamp is not an original publication timestamp.",
+    "Research +/-2 diagnostic is not operationally approved and does not change stage2-v2 strict financial equality.",
+    "No independent institutional counterparties or natural-error labels."
+  ],
+  "baseline_head": "6876b384030a7cdab1d35445f66bf874768dcfce",
+  "expected": {
+    "days": 92,
+    "flow_checks": 120,
+    "injection_cases": 360,
+    "injection_confusion": {
+      "FN": 60,
+      "FP": 0,
+      "TN": 180,
+      "TP": 120
+    },
+    "injection_distinct_source_rows": 30,
+    "legacy_not_run": 32,
+    "modern_days": 60,
+    "residual_counts": {
+      "-1": 8,
+      "0": 39,
+      "1": 13
+    },
+    "sec_duplicates": 0,
+    "sec_missing_prices": 980,
+    "sec_rows": 89285,
+    "sec_symbol_warnings": 18,
+    "strict_exact": 39,
+    "table_i_rows": 336,
+    "table_ii_rows": 13890,
+    "treasury_rows": 14226
+  },
+  "files": [
+    {
+      "bytes": 30516,
+      "identity_fields": [
+        "record_date",
+        "table_nbr",
+        "src_line_nbr",
+        "account_type",
+        "sub_table_name"
+      ],
+      "kind": "TREASURY",
+      "ordered_identity_sha256": "34def19ab845d6142a8ef072a48f160eace05eda52aa2a83d322d6a5e86cd996",
+      "path": "access-01/raw/dts-operating_cash_balance-2019-01.body",
+      "period": "2019-01",
+      "rows": 63,
+      "sha256": "d2a40cfe144847eb240808e50d5ce2747fdfcb47b1335d3cf530087a995516e0",
+      "table": "operating_cash_balance"
+    },
+    {
+      "bytes": 674849,
+      "identity_fields": [
+        "record_date",
+        "table_nbr",
+        "src_line_nbr",
+        "account_type",
+        "transaction_type",
+        "transaction_catg"
+      ],
+      "kind": "TREASURY",
+      "ordered_identity_sha256": "afe71be7c62462480d3a1c1f75e90f67ec297d0075da3718f8d0cb6530cd62fa",
+      "path": "access-01/raw/dts-deposits_withdrawals_operating_cash-2019-01.body",
+      "period": "2019-01",
+      "rows": 1247,
+      "sha256": "4cf2139a287ad4ce2e536c0fd8aae36ff98e3502f354f8829d7ea5f9aa5f83d8",
+      "table": "deposits_withdrawals_operating_cash"
+    },
+    {
+      "bytes": 36101,
+      "identity_fields": [
+        "record_date",
+        "table_nbr",
+        "src_line_nbr",
+        "account_type",
+        "sub_table_name"
+      ],
+      "kind": "TREASURY",
+      "ordered_identity_sha256": "142ecbff629791cf52e7b492d26c9fd5483efc858a8cf05ab4354564c11c3fd7",
+      "path": "data-02/raw/dts-operating_cash_balance-2022-04.body",
+      "period": "2022-04",
+      "rows": 73,
+      "sha256": "2a5eed671bc53a4c1402df6606f70bc8750e6d8bb109da01757af86577e9ab12",
+      "table": "operating_cash_balance"
+    },
+    {
+      "bytes": 1944161,
+      "identity_fields": [
+        "record_date",
+        "table_nbr",
+        "src_line_nbr",
+        "account_type",
+        "transaction_type",
+        "transaction_catg"
+      ],
+      "kind": "TREASURY",
+      "ordered_identity_sha256": "e49d35bddaa1c041f5df0820df6b4df5757aef977e41bc1d5a685c1898f18e4f",
+      "path": "data-02/raw/dts-deposits_withdrawals_operating_cash-2022-04.body",
+      "period": "2022-04",
+      "rows": 3559,
+      "sha256": "c5557422efd6603600290974742772fdcfe9a9521d830a383053f52c4b16a5ab",
+      "table": "deposits_withdrawals_operating_cash"
+    },
+    {
+      "bytes": 42055,
+      "identity_fields": [
+        "record_date",
+        "table_nbr",
+        "src_line_nbr",
+        "account_type",
+        "sub_table_name"
+      ],
+      "kind": "TREASURY",
+      "ordered_identity_sha256": "80621c2ca2cb5caf769c90505877e951584666f0b0ae1893fc365814a92ddf9c",
+      "path": "data-02/raw/dts-operating_cash_balance-2024-01.body",
+      "period": "2024-01",
+      "rows": 84,
+      "sha256": "35067a0dfed62205c0b75f689c7fb9955d2bd50b659843ccf6462d1cf5447bb1",
+      "table": "operating_cash_balance"
+    },
+    {
+      "bytes": 2074596,
+      "identity_fields": [
+        "record_date",
+        "table_nbr",
+        "src_line_nbr",
+        "account_type",
+        "transaction_type",
+        "transaction_catg"
+      ],
+      "kind": "TREASURY",
+      "ordered_identity_sha256": "810ab2ec095c2846acef20545b27c2bae83322df89f09b3b4de45a07caf12e92",
+      "path": "data-02/raw/dts-deposits_withdrawals_operating_cash-2024-01.body",
+      "period": "2024-01",
+      "rows": 3801,
+      "sha256": "9b982e6356a6b5da99fb0fafbcd08632cada7c77711152cbaf5ae7487772d18b",
+      "table": "deposits_withdrawals_operating_cash"
+    },
+    {
+      "bytes": 42063,
+      "identity_fields": [
+        "record_date",
+        "table_nbr",
+        "src_line_nbr",
+        "account_type",
+        "sub_table_name"
+      ],
+      "kind": "TREASURY",
+      "ordered_identity_sha256": "e1073558e90f822286f91a402422fc83280373adb44c2b3208db40b569ea4793",
+      "path": "data-02/raw/dts-operating_cash_balance-2025-01.body",
+      "period": "2025-01",
+      "rows": 84,
+      "sha256": "eaa872c1bbcc62d03d61152e438a238da6be7552f68287ed811847da77eceaa6",
+      "table": "operating_cash_balance"
+    },
+    {
+      "bytes": 2097176,
+      "identity_fields": [
+        "record_date",
+        "table_nbr",
+        "src_line_nbr",
+        "account_type",
+        "transaction_type",
+        "transaction_catg"
+      ],
+      "kind": "TREASURY",
+      "ordered_identity_sha256": "a452828a13db4a903e3629385ef069948c5bd8185f35e21498ef568b49ad317c",
+      "path": "data-02/raw/dts-deposits_withdrawals_operating_cash-2025-01.body",
+      "period": "2025-01",
+      "rows": 3843,
+      "sha256": "4d1bfd5973892e51ed3ed797b0b1cf4c00c406fcec34b108dfc95658b80d7003",
+      "table": "deposits_withdrawals_operating_cash"
+    },
+    {
+      "bytes": 17129,
+      "identity_fields": [
+        "record_date",
+        "table_nbr",
+        "src_line_nbr",
+        "account_type",
+        "sub_table_name"
+      ],
+      "kind": "TREASURY",
+      "ordered_identity_sha256": "fc03c91ee79a98f1c7a1c5e0985c3ee827fce35d4eb93d9c359a726d9e1bc0d4",
+      "path": "data-02/raw/dts-operating_cash_balance-2026-11.body",
+      "period": "2026-11",
+      "rows": 32,
+      "sha256": "1c02859a71c9ee12ff4327e3b33355a5bec45a0e470d070f923dc36a08c2616e",
+      "table": "operating_cash_balance"
+    },
+    {
+      "bytes": 785935,
+      "identity_fields": [
+        "record_date",
+        "table_nbr",
+        "src_line_nbr",
+        "account_type",
+        "transaction_type",
+        "transaction_catg"
+      ],
+      "kind": "TREASURY",
+      "ordered_identity_sha256": "3f983acfcd13ac4a1e096ddd226c2e8bb1f53600e2990dcd9cf3b7decc5f91a6",
+      "path": "data-02/raw/dts-deposits_withdrawals_operating_cash-2026-11.body",
+      "period": "2026-11",
+      "rows": 1440,
+      "sha256": "3ade1f71761ff6c19e6bc6a6cc6ede7f96cff6bd9911b49c36c7a62e23613637",
+      "table": "deposits_withdrawals_operating_cash"
+    },
+    {
+      "bytes": 1050751,
+      "kind": "SEC",
+      "member": "cnsfails202401a",
+      "ordered_identity_sha256": "08879b8d7f19133f7521958a5f38645b2941408e7e934d30ed9b37475278a290",
+      "path": "data-02/raw/sec-ftd-202401a.body",
+      "period": "202401a",
+      "rows": 44986,
+      "sha256": "79e2df1a02346979a1916bf27d5f425e7e382a14898e02be416a25c62d51c8c3",
+      "url": "https://www.sec.gov/files/data/fails-deliver-data/cnsfails202401a.zip"
+    },
+    {
+      "bytes": 1035030,
+      "kind": "SEC",
+      "member": "cnsfails202501a",
+      "ordered_identity_sha256": "5ffebb4fd66878d89b4e9a9f64596b5c495f447e2608d79576d7601ed255fb87",
+      "path": "data-02/raw/sec-ftd-202501a.body",
+      "period": "202501a",
+      "rows": 44299,
+      "sha256": "bacb5aecf25f75023d1227fca10b4b2813e00e25ba3418bfd74eda9a37e4ffb7",
+      "url": "https://www.sec.gov/files/data/fails-deliver-data/cnsfails202501a.zip"
+    },
+    {
+      "bytes": 701460,
+      "kind": "DOCUMENT",
+      "path": "access-01/raw/treasury-dts-documentation.body",
+      "sha256": "0f28982995bf75e98f0889bee0592ad644f9c916ebb87e62380d7b7085a65ee1"
+    },
+    {
+      "bytes": 553604,
+      "kind": "DOCUMENT",
+      "path": "access-01/raw/treasury-api-documentation.body",
+      "sha256": "2d4de71427214593b3313811684e8e00438f02d33977c2b346a622b1865894fe"
+    },
+    {
+      "bytes": 528788,
+      "kind": "DOCUMENT",
+      "path": "access-01/raw/treasury-about.body",
+      "sha256": "f60298587edcc2550932fd11a615d99e4db52eeef5ccd4a130ee23b01532d8da"
+    },
+    {
+      "bytes": 421535,
+      "kind": "DOCUMENT",
+      "path": "access-01/raw/sec-ftd-documentation.body",
+      "sha256": "d4fbbe25c07778b5b04ec4a18c9e0043cedf52ce9c58c5f105dee6d395602268"
+    },
+    {
+      "bytes": 417879,
+      "kind": "HISTORICAL_RESULT",
+      "path": "analysis-02/results/direct-days.json",
+      "sha256": "d268f2dee3f5b63015765a38db07d01f1379321ad35fbb3e2db4a95b80d7a0aa"
+    },
+    {
+      "bytes": 691753,
+      "kind": "HISTORICAL_RESULT",
+      "path": "analysis-02/results/ftd-injections.json",
+      "sha256": "ab1d15e50331a04125c10cb42e77c32842e9d6ab71efd22db8729b383efb221e"
+    }
+  ],
+  "format": "gate3-public-corpus-v1",
+  "research_residual_oracle": [
+    {
+      "closing": 933127,
+      "residual": 0,
+      "strict_equal": true,
+      "within_two": true
+    },
+    {
+      "closing": 933126,
+      "residual": 1,
+      "strict_equal": false,
+      "within_two": true
+    },
+    {
+      "closing": 933128,
+      "residual": -1,
+      "strict_equal": false,
+      "within_two": true
+    },
+    {
+      "closing": 933125,
+      "residual": 2,
+      "strict_equal": false,
+      "within_two": true
+    },
+    {
+      "closing": 933129,
+      "residual": -2,
+      "strict_equal": false,
+      "within_two": true
+    },
+    {
+      "closing": 933124,
+      "residual": 3,
+      "strict_equal": false,
+      "within_two": false
+    },
+    {
+      "closing": 933130,
+      "residual": -3,
+      "strict_equal": false,
+      "within_two": false
+    }
+  ],
+  "selected_at_utc": "2026-11-16T20:53:42.599999+00:00",
+  "selected_example": {
+    "close_today_bal": [
+      "null",
+      "null",
+      "null",
+      "null"
+    ],
+    "date": "2026-11-12",
+    "open_today_bal": [
+      "912134",
+      "316534",
+      "295541",
+      "933127"
+    ],
+    "path": "data-02/raw/dts-operating_cash_balance-2026-11.body",
+    "pointers": [
+      "/data/28",
+      "/data/29",
+      "/data/30",
+      "/data/31"
+    ],
+    "source_lines": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "sub_table_name": "Cash Balance Details",
+    "table": "I"
+  },
+  "selection_origin": "All ten retained Treasury bodies, both SEC bodies and four original documentation bodies; five named periods fixed by Gate3 request and historical capture. Row identity fields chosen here independently of any production/research parser. Historical analysis is comparison target, never arithmetic oracle."
+}

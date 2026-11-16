@@ -1,0 +1,35 @@
+{
+  "format": "gate3-capacity-protocol-v1",
+  "preregistered": true,
+  "base_head": "6876b384030a7cdab1d35445f66bf874768dcfce",
+  "data_class": "FULLY_SYNTHETIC",
+  "historical_input_pins": {
+    "events100-seed11": {"sha256": "266a6716b7146025dae2bf7fd479eee47ef1f07f2e54cbd535382f5c099fe67a", "bytes": 51307},
+    "events10000-seed11": {"sha256": "c246c488a9845ad11e9628fd647cb1fb826ec6bc797bd3684781f247801926c2", "bytes": 4596911},
+    "events25000-seed11": {"sha256": "1f6b932d04268c48c11bfaba477615d6935d886fee9505e1f77183211d808569", "bytes": 11516911},
+    "events50000-seed11": {"sha256": "36aad48c8f3776a43da1591948e2fa7675a54f5248749e469888c5b55c35a145", "bytes": 23050240},
+    "events100000-seed11": {"sha256": "85c78c20590d2b7162b6ea076dd0abdb10ed9f9b318b985f45c5f938a0f85e88", "bytes": 46116913}
+  },
+  "budgets": {"total_wall_seconds": 900, "total_cpu_seconds": 600, "controller_address_space_bytes": 1073741824, "child_address_space_bytes": 1073741824, "combined_controller_worker_address_space_bytes": 2147483648, "single_file_bytes": 402653184, "retained_disk_bytes": 1073741824, "cleanup_reserve_wall_and_cpu_seconds": 20, "workers": 1},
+  "controller_guard": "Whole-program0.25s signal checks cover snapshot/copy/generation, child and postprocessing, with20s wall/CPU cleanup reserve. Controller and sole worker each1GiB address-space cap (2GiB combined, not kernel page cache). On guard termination kill/wait worker and retain PARTIAL/NOT_RUN roster. SQLite integrity/readback progress handler aborts at work deadline; recovery-copy budget includes64MiB transient reserve. Fixed local file sizes bound remaining uninterruptible filesystem calls; this is an application guard, not a kernel quota or certified worst-case scheduler guarantee.",
+  "roster": [
+    {"id": "warmup-common-100", "events": 100, "seed": 11, "mode": "common", "instrument": false, "wall_cap": 30, "classification": "WARMUP"},
+    {"id": "reproduce-100000-60", "events": 100000, "seed": 11, "mode": "common", "instrument": false, "wall_cap": 60, "classification": "ORIGINAL_60S_CAP"},
+    {"id": "reproduce-25000-60", "events": 25000, "seed": 11, "mode": "common", "instrument": false, "wall_cap": 60, "classification": "ORIGINAL_60S_CAP"},
+    {"id": "reproduce-50000-60", "events": 50000, "seed": 11, "mode": "common", "instrument": false, "wall_cap": 60, "classification": "ORIGINAL_60S_CAP"},
+    {"id": "extended-50000-120", "events": 50000, "seed": 11, "mode": "common", "instrument": false, "wall_cap": 120, "classification": "EXTENDED_DIAGNOSTIC"},
+    {"id": "extended-100000-180", "events": 100000, "seed": 11, "mode": "common", "instrument": false, "wall_cap": 180, "classification": "EXTENDED_DIAGNOSTIC"},
+    {"id": "full-10000-control", "events": 10000, "seed": 11, "mode": "full", "instrument": false, "wall_cap": 90, "classification": "FULL_PERSISTENCE_DIAGNOSTIC"},
+    {"id": "full-10000-instrumented", "events": 10000, "seed": 11, "mode": "full", "instrument": true, "wall_cap": 90, "classification": "FULL_PERSISTENCE_DIAGNOSTIC"},
+    {"id": "full-25000-instrumented", "events": 25000, "seed": 29, "mode": "full", "instrument": true, "wall_cap": 180, "classification": "FULL_PERSISTENCE_DIAGNOSTIC"}
+  ],
+  "input": "Exact immutable Gate2 files for seed11; generated finite Gate2 workload seed29 is independently chosen before measurement for the25k instrumentation sample. Hashes sealed before first child. No natural data claim.",
+  "common_service": "Unchanged Gate2 run_worker production common lane. Full rich run persistence deliberately absent, exactly as historically measured; no full service superiority claim.",
+  "full_service": "Unchanged public Store.ingest/reconcile including Store.save_run; restricted JSON export of full result and read_run. Instrumentation wraps unchanged functions only in dedicated worker; no persisted evidence suppressed.",
+  "instrumentation": "Measure JSON decoding, store digest/normalization/serialization calls, each physical ingest, SQL execute classes including BEGIN/COMMIT/ROLLBACK and index DDL. Initial index construction uses SQLite before-statement trace intervals inside unchanged executescript, including callback dispatch overhead. Nested inclusive buckets must not be added. Index maintenance is included in INSERT and not separately attributable without invasive SQLite instrumentation. Measure full save_run separately within reconcile. Exact SQL contents are not logged. Every instrumented receipt/transaction duration retained in CSV.",
+  "overhead": "One paired10k same-input off/on comparison; report observed difference, not statistically established observer cost. Off control still includes phase/receipt clock calls and CSV header; difference measures incremental wrappers/per-receipt CSV/transaction logs, not total instrumentation overhead. Fresh interpreter/database; warmup retained; no page-cache flush. Controller process sampling0.1s and host load before/after; shared-host contention cannot be eliminated.",
+  "postkill": "Actual SIGKILL then wait returncode. Preserve original DB/journal hashes, recover a separate copy and query direct SQLite committed rows/integrity. A recovered row count describes this abrupt-stop database only, not operational RPO. Killed final CPU/RSS NOT_MEASURED; last sampled values distinct.",
+  "missing": "All roster rows retained with PASS/TIMEOUT/ERROR/PARTIAL/NOT_RUN. No cap value substituted for missing duration. Full timings unavailable afterkill. Abort remaining roster at total budget; sampled disk is not continuous peak.",
+  "replay": {"eligible_receipt_limit": 10000, "default_worker_seconds": 30, "ordinary_ingestion_is_replay_proof": false},
+  "optimization": "No production edits planned. Attribute measured bottleneck and propose bounded future experiment; no batching away per-receipt commits."
+}
