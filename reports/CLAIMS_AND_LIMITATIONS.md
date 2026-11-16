@@ -42,3 +42,7 @@ For MKK, Takasbank or Borsa İstanbul, the presently supportable comparison is w
 ## Remaining delivery boundaries
 
 Real-data source access and GitHub API access remain external blockers. Local source and installed tests do not replace exact-commit remote CI. macOS arm64, physical storage/power faults, million-event capacity, long soak, natural-error detection, institutional economics and actual policy compliance remain untested or not evaluable. The old frozen ML experiment was not reopened. Any future broadened assertion requires its own registered population, acceptance condition, executed command, raw evidence and explicit uncertainty.
+
+## Publication-time CI observation
+
+A later public-web fallback retrieved historical run [43741674664](https://github.com/umitbora55/crypto-reconciliation-lab/actions/runs/43741674664): the GitHub page shows Success for `b2df4f1`, 11m29s and four artifacts. Artifact bytes and authenticated job logs remain unverified. The initial research commit `f8fe98a` was pushed normally; its public workflow run43925469151 was In progress at this observation. API/GraphQL requests still return Forbidden, so draft PR creation failed. Final later observations belong to the external `VALIDATION_HANDOFF.md`, not a claim that the earlier API requests succeeded. Raw page bytes and hashes: `inventory/web-ci-observations.json`.

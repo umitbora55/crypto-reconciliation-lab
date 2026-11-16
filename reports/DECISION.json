@@ -80,9 +80,16 @@
   "open_P2": [
     "VAL-P2-TEST-BARRIER-RACE"
   ],
-  "remote_ci": "UNVERIFIED_REMOTE",
+  "remote_ci": "PUBLIC_STATUS_OBSERVED; AUTHENTICATED_LOGS_AND_ARTIFACTS_UNVERIFIED",
   "frozen_ml_experiment": "NOT_RUN",
   "repository_root": "/workspace/crypto-reconciliation-lab",
   "evidence_reference_rule": "String paths are relative to evidence_root; objects explicitly identify repository paths.",
-  "confirmed_open_P0_P1_production_findings": 0
+  "confirmed_open_P0_P1_production_findings": 0,
+  "publication": {
+    "branch_pushed": true,
+    "source_commit": "f8fe98abf452dbd1968a29198c53b035a699360a",
+    "draft_pr": "BLOCKED_GRAPHQL_FORBIDDEN",
+    "initial_remote_run": "43925469151",
+    "initial_remote_state": "IN_PROGRESS_AT_OBSERVATION"
+  }
 }

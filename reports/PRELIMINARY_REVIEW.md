@@ -67,3 +67,7 @@ README attributes five successful jobs to historical main run [43741674664](http
 The native read-only `gh api` request to `api.github.com` was denied (`Forbidden`, exit 1). The baseline-SHA workflow query was also denied. Exact argv, cwd, timestamps, stdout/stderr and exits are retained in the inventory directory. Thus remote CI run/job/artifact identities are **UNVERIFIED_REMOTE** until allowed access succeeds. Successful HTTPS Git read is narrower evidence than GitHub API access.
 
 The full current-run gate and any later exact-commit CI must be reported separately. Linux/Python-3.12 results cannot establish Python 3.14 or macOS arm64 behavior; absent platform execution is NOT_RUN.
+
+## Publication-time CI observation
+
+A later public-web fallback retrieved historical run [43741674664](https://github.com/umitbora55/crypto-reconciliation-lab/actions/runs/43741674664): the GitHub page shows Success for `b2df4f1`, 11m29s and four artifacts. Artifact bytes and authenticated job logs remain unverified. The initial research commit `f8fe98a` was pushed normally; its public workflow run43925469151 was In progress at this observation. API/GraphQL requests still return Forbidden, so draft PR creation failed. Final later observations belong to the external `VALIDATION_HANDOFF.md`, not a claim that the earlier API requests succeeded. Raw page bytes and hashes: `inventory/web-ci-observations.json`.

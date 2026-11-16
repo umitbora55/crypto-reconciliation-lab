@@ -61,3 +61,7 @@ An earlier properties follow-up audit file was likewise overwritten and its orig
 - No unmeasured p99 claim, banking savings percentage, annual loss model, paid API or paid infrastructure experiment.
 
 The program's final decision must preserve these independent outcomes. Passing finite local checks does not close the real-data or remote-verification gaps, and no open P0/P1 false-success defect may be hidden behind an overall readiness label.
+
+## Publication-time CI observation
+
+A later public-web fallback retrieved historical run [43741674664](https://github.com/umitbora55/crypto-reconciliation-lab/actions/runs/43741674664): the GitHub page shows Success for `b2df4f1`, 11m29s and four artifacts. Artifact bytes and authenticated job logs remain unverified. The initial research commit `f8fe98a` was pushed normally; its public workflow run43925469151 was In progress at this observation. API/GraphQL requests still return Forbidden, so draft PR creation failed. Final later observations belong to the external `VALIDATION_HANDOFF.md`, not a claim that the earlier API requests succeeded. Raw page bytes and hashes: `inventory/web-ci-observations.json`.

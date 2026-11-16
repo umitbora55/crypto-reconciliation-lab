@@ -86,6 +86,8 @@ def archive(root,index,target):
                 raise ValueError('Evidence changed after sealing: '+name)
             z.write(path,name)
             members.append({'path':name,**actual})
+        z.write(index,'evidence/manifest.json')
+        members.append({'path':'evidence/manifest.json',**proof(index)})
         metadata={'format':'review-archive-v1','repository_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
                   'members':members,'excluded_self':'archive-manifest.json is verified by the outer ZIP checksum.'}
         z.writestr('archive-manifest.json',json.dumps(metadata,indent=2)+'\n')
