@@ -54,7 +54,7 @@ class ReplayReleaseScopeTests(unittest.TestCase):
         for name, expected in previous['current']['files'].items():
             if name not in EXACT_EDITS:
                 with self.subTest(unchanged=name):
-                    self.assertEqual(scope.byte_identity((ROOT / name).read_bytes()), expected)
+                    self.assertEqual(scope.byte_identity(scope.restore_gate2_fixture_source(ROOT, name, (ROOT / name).read_bytes())), expected)
 
     def test_old_historical_originals_and_process_pins_are_not_reinterpreted(self):
         previous = json.loads((ROOT / ANCHOR).read_bytes())

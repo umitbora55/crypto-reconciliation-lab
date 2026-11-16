@@ -60,6 +60,7 @@ DOCS = ("docs/model_contract.md", "docs/correction_semantics.md", "docs/problem_
         "contracts/release-test-scope-0.10.1.json",
         "contracts/release-test-scope-0.11.0.json",
         "contracts/release-test-scope-0.11.1.json",
+        "contracts/validation-gate2-test-exception.json",
         "docs/stage10/fixture-changes.md",
         "contracts/source-auth-scope-v1.json",
         "crypto_reconciliation_lab/source_auth/experiment_scope_v1.json")

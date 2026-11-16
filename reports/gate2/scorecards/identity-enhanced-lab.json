@@ -1,0 +1,16 @@
+{
+  "format": "gate2-identity-scorecard-v1",
+  "source_evidence": "identity/run-002/scorecards.json",
+  "superseded_evidence_retained": "identity/run-001/scorecards.json",
+  "scorecard": {
+    "FN": 0,
+    "FP": 0,
+    "TN": 12,
+    "TP": 12,
+    "authority": "LAB_TEST_ONLY",
+    "cases": 24,
+    "institutional_trust": "NOT_PROVEN",
+    "natural_error_rate": "NOT_MEASURED",
+    "scope": "Only paired clean/substitution inputs with additional oracle-generated signed references; cannot be pooled with baseline."
+  }
+}

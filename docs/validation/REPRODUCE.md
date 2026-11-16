@@ -1,5 +1,9 @@
 # Reproduce the finite validation program
 
+For the dated Gate2 work, use [GATE2_REPRODUCE.md](GATE2_REPRODUCE.md).
+The workflow below remains the original Gate1 research program; its catalogs,
+baseline populations and historical limitations are not silently relabelled.
+
 Use the existing checkout, Python 3.12 or newer and a fresh output directory outside the checkout. Runtime research checks use the standard library. Read `AGENTS.md`; the 16 November 2026 validation request authorizes this separate research tree. Do not create a worktree just for a cloud task, overwrite earlier evidence, run the frozen ML experiment, or treat a synthetic case as a real institution record.
 
 ## Two-command quick smoke

@@ -1,0 +1,153 @@
+{
+  "format": "identity-reference-research-v1",
+  "status": "LAB_RESEARCH_ONLY",
+  "baseline_application": "0.11.1 / stage2-v2 / schema6",
+  "baseline_detection": {
+    "observations": 264,
+    "TP": 132,
+    "FP": 0,
+    "TN": 120,
+    "FN": 12,
+    "substitution_status": "NOT_IDENTIFIABLE_WITH_GIVEN_INPUTS",
+    "do_not_relabel": true
+  },
+  "authority": {
+    "institutional_anchor": "UNAVAILABLE",
+    "permitted_test_origin": "LAB_TEST_ONLY",
+    "not_independent_of_test_generator": true,
+    "not_a_production_admission_feature": true
+  },
+  "scope_fields": [
+    "publisher",
+    "dataset",
+    "partition",
+    "event_day",
+    "balance_cut",
+    "record_kind"
+  ],
+  "canonicalization": "UTF-8 JSON; sort_keys=true, separators=comma/colon, ensure_ascii=true, allow_nan=false; event received_at is deliberately not a publisher economic-record field",
+  "manifest_fields": [
+    "format",
+    "scope",
+    "revision",
+    "previous_sha256",
+    "key_epoch",
+    "entries"
+  ],
+  "entry_fields": [
+    "position",
+    "event_id",
+    "content_sha256"
+  ],
+  "digest": "SHA-256 of canonical full economic event record, plus ordered event identities in signed manifest",
+  "signature": "Ed25519 over domain prefix identity-reference-research-v1 followed by NUL then canonical manifest bytes; exactly one signature",
+  "trust_context": "Caller supplies independently selected scope, revision, previous digest, manifest digest, active key epoch and authorized public key; none may be learned from the candidate envelope. Here all contexts are controlled LAB facts, not real externally authenticated facts.",
+  "revisions": "Positive integer strings; revision1 has null predecessor; later revisions require trusted predecessor hash and separately selected current manifest hash. Same revision different body, rollback and stale pins reject.",
+  "key_lifecycle": "New reference verification requires current epoch and active authorized key. Retired/revoked keys cannot authorize new checks. Prior accepted decision bytes remain historical; their preservation does not newly authorize anything. Revocation source itself is LAB policy here.",
+  "numeric_identity": "Event IDs remain exact strings; no JS Number or float coercion. Position and revision are canonical positive integer strings bounded by 2^63-1.",
+  "limits": {
+    "manifest_bytes": 131072,
+    "max_entries": 128,
+    "json_depth": 16,
+    "experiment_wall_seconds": 300,
+    "output_bytes": 209715200
+  },
+  "seeds": [
+    11,
+    29,
+    47
+  ],
+  "factors": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "identity_families": {
+    "clean": "MATCH",
+    "same_count_substitution": "REFERENCE_MISMATCH",
+    "content_substitution": "REFERENCE_MISMATCH",
+    "reordered_events": "REFERENCE_MISMATCH",
+    "duplicate_candidate_id": "ERROR",
+    "scope_hijack": "ERROR",
+    "unknown_signing_key": "ERROR",
+    "tampered_signature": "ERROR",
+    "conflicting_signatures": "ERROR",
+    "same_revision_conflict": "ERROR",
+    "revision_upgrade": "MATCH",
+    "stale_revision_replay": "ERROR",
+    "key_rotation": "MATCH",
+    "retired_key_new_request": "ERROR",
+    "revoked_key_new_request": "ERROR",
+    "unverified_self_issued_pin": "ERROR",
+    "large_string_id_boundary": "MATCH",
+    "large_adjacent_id_substitution": "REFERENCE_MISMATCH",
+    "empty_reference": "ERROR",
+    "previous_decision_after_revocation": "HISTORICAL_DECISION_UNCHANGED"
+  },
+  "enhanced_confusion_matrix_families": [
+    "clean",
+    "same_count_substitution"
+  ],
+  "fuzz": {
+    "grammar_json_per_seed": 12,
+    "production_parser": "crypto_reconciliation_lab.source_auth.crypto.strict_json",
+    "separate_scorecard": true,
+    "finite_only": true,
+    "expected_names": [
+      "grammar_00",
+      "grammar_01",
+      "grammar_02",
+      "grammar_03",
+      "grammar_04",
+      "grammar_05",
+      "grammar_06",
+      "grammar_07",
+      "grammar_08",
+      "grammar_09",
+      "grammar_10",
+      "grammar_11",
+      "duplicate_key",
+      "escaped_duplicate_key",
+      "lone_surrogate",
+      "utf8_surrogate",
+      "invalid_utf8",
+      "nonfinite_nan",
+      "overflow_number",
+      "empty",
+      "truncated_object",
+      "depth_32",
+      "depth_33",
+      "nodes_20000",
+      "nodes_20001",
+      "bytes_65536",
+      "bytes_65537",
+      "exact_int64",
+      "utc_offset",
+      "missing_timezone",
+      "utc_underflow",
+      "correction_original_event",
+      "correction_self",
+      "correction_cycle_edge"
+    ]
+  },
+  "new_costs": [
+    "Complete ordered event identity and content digest list",
+    "Authenticated current snapshot digest and revision predecessor",
+    "Publisher signing infrastructure and key/epoch policy",
+    "Distribution of fresh revocation facts",
+    "Retention of accepted reference decisions"
+  ],
+  "not_claimed": [
+    "Independent institutional identity",
+    "Natural-error precision/recall",
+    "Public financial source as native event ground truth",
+    "Persistent concurrent registry",
+    "Exactly-once event admission",
+    "Deployment readiness"
+  ],
+  "baseline_evidence_pins": {
+    "summary.json": "2f6656bdb2e8b975a5030bd4bceaffe1e208016da8e291608c0e84184d9ede96",
+    "cases.jsonl": "a8515c9a855ffa3db9d9766eb78136de9ccae35fee9fc9e8b8f062bfa0dd3716"
+  }
+}

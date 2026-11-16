@@ -263,6 +263,15 @@ class PublicDataContracts(unittest.TestCase):
                 opener.assert_not_called()
             self.assertFalse(target.exists())
 
+    def test_sec_fetch_needs_official_landing_link_evidence(self):
+        with tempfile.TemporaryDirectory() as temp:
+            target = Path(temp) / "new"
+            with patch.dict(os.environ, {"NO_NETWORK": "0"}), patch("scripts.validation.fetch_public_data.urllib.request.build_opener", side_effect=AssertionError("unexpected network opener")) as opener:
+                with self.assertRaisesRegex(ValueError, "SEC_LINK"):
+                    fetch(target, selected_ids=["sec-ftd-202401a"])
+                opener.assert_not_called()
+            self.assertFalse(target.exists())
+
 
 if __name__ == "__main__":
     unittest.main()

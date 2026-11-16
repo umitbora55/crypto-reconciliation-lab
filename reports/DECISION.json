@@ -1,95 +1,156 @@
 {
-  "format": "validation-decisions-v1",
-  "application_commit": "b48021273405128c67e2969fd4b46f8d7e876a99",
-  "evidence_root": "/workspace/validation-evidence/",
-  "data_classes_observed": [
-    "FULLY_SYNTHETIC"
+  "format": "validation-decisions-gate2-v1",
+  "date": "2026-11-16",
+  "application_version": "0.11.1",
+  "rule": "stage2-v2",
+  "schema": 6,
+  "main_baseline": "b48021273405128c67e2969fd4b46f8d7e876a99",
+  "starting_head": "f3dff8dd00837ac7ce6e9bb687dd4861f790cbac",
+  "evidence_root": "/workspace/validation-gate2-evidence",
+  "overall_gate": "NOT_READY",
+  "local_gate": "PASS",
+  "remaining_gate_at_source_seal": [
+    "FINAL_EXACT_HEAD_CI"
   ],
-  "decisions": {
+  "final_decision_location": "Outside-Git delivery reports/DECISION.json and VALIDATION_GATE2_HANDOFF.md, bound to the exact delivered commit. This source snapshot is not retroactively relabelled.",
+  "claims": {
     "CORRECTNESS_WITHIN_TESTED_SCOPE": {
-      "value": "SUPPORTED_ONLY_IN_LAB",
+      "status": "SUPPORTED",
       "evidence": [
-        "release-full-py312/verification.json",
-        "properties/run-004/summary.json"
+        "local-validation-summary.json"
       ],
-      "qualification": "No unexplained financial quantity disagreement in tested cases; source314 gate has one diagnosed P2 test race."
+      "qualification": "Four875-test source/installed populations;134 research methods per Python;69/162/373 per full profile. Finite tested scope only."
     },
     "PUBLIC_REAL_DATA_INTEGRATION": {
-      "value": "REAL_DATA_UNVERIFIED",
+      "status": "LIMITED",
       "evidence": [
-        "public-data/attempt-01/source-register.json",
-        "public-data/bis-attempt-01/source-register.json"
+        "public-data/analysis-02/execution-completion.json",
+        "public-data/analysis-02/results/summary.json"
       ],
-      "qualification": "19 requests blocked; zero real rows/equalities; no REAL_PUBLIC_DIRECT success."
+      "treasury_rows": 14226,
+      "sec_rows": 89285,
+      "modern_days": 60,
+      "strict_exact_equalities": 39,
+      "strict_nonzero_residuals": 21,
+      "cross_table_equalities": 120,
+      "legacy_not_run": 32,
+      "qualification": "Original official bytes; publication vintage unknown; no natural error labels or independent counterparties."
     },
-    "DETECTION_PERFORMANCE": {
-      "value": "SUPPORTED_ONLY_IN_LAB",
+    "RACE_REPAIR": {
+      "status": "SUPPORTED",
       "evidence": [
-        "properties/run-004/summary.json"
+        "race/fixture-preservation.json",
+        "race/v2-commands.json",
+        "release-full-py312-v2/verification.json",
+        "release-full-py314-v2/verification.json"
       ],
+      "qualification": "Correctness sampler acknowledgement;31 assertion ASTs preserved. Two historical scope tests have explicitly disclosed, pinned input projections; all875 IDs unchanged."
+    },
+    "BASELINE_SYNTHETIC_DETECTION": {
+      "status": "LIMITED",
+      "observations": 264,
       "TP": 132,
       "FP": 0,
       "TN": 120,
       "FN": 12,
-      "qualification": "Synthetic constructed universe; known count-manifest substitution limit; no natural-error rate."
+      "substitution_status": "NOT_IDENTIFIABLE_WITH_GIVEN_INPUTS",
+      "qualification": "Unchanged Gate1 canonical population; no natural-error recall."
     },
-    "COMPARATIVE_RUNTIME": {
-      "value": "INCONCLUSIVE",
+    "ENHANCED_LAB_IDENTITY": {
+      "status": "LIMITED",
+      "observations": 24,
+      "TP": 12,
+      "FP": 0,
+      "TN": 12,
+      "FN": 0,
+      "identity_controls": 240,
+      "fuzz_checks": 102,
       "evidence": [
-        "benchmark/canonical-full/results.json"
+        "identity/acceptance-002.json"
       ],
-      "qualification": "45 completed trials at100/1k/10k;100k timeout. Narrower baseline semantics prevent equivalent-product advantage."
+      "qualification": "Extra LAB authority/reference facts; no independent institutional trust anchor."
     },
-    "COMPARATIVE_COST": {
-      "value": "NOT_PROVEN",
-      "evidence": [
-        "benchmark/canonical-full/results.json"
-      ],
-      "qualification": "Local wall/CPU/logical bytes measured, no monetary or institution cost comparison."
+    "REAL_PUBLIC_ADAPTED": {
+      "status": "LIMITED",
+      "cases": 60,
+      "matched_pairs": 39,
+      "expected_mismatch_pairs": 21,
+      "source_publishers": 1,
+      "independent_counterparties": 0
     },
-    "OPERATIONAL_RESILIENCE_PROXY": {
-      "value": "SUPPORTED_ONLY_IN_LAB",
-      "evidence": [
-        "resilience/run-001/summary.json",
-        "release-full-py312/verification.json"
-      ],
-      "qualification": "Finite process/SQLite controls only; formal RTO/RPO, power loss and long soak unmeasured."
+    "REAL_PLUS_SYNTHETIC_INJECTION": {
+      "status": "LIMITED",
+      "observations": 360,
+      "distinct_source_rows": 30,
+      "TP": 120,
+      "FP": 0,
+      "TN": 180,
+      "FN": 60,
+      "qualification": "Repeated controls and synthetic labels; schema-only checks cannot identify valid replacements."
     },
-    "INSTITUTIONAL_IMPACT": {
-      "value": "NOT_PROVEN",
-      "INSTITUTIONAL_COST_SAVINGS": "NOT_PROVEN",
-      "INSTITUTIONAL_RISK_REDUCTION": "NOT_PROVEN",
+    "COMMON_TASK_COMPARISON": {
+      "status": "SUPPORTED",
+      "comparative_status": "EQUIVALENT_COMMON_ARITHMETIC",
+      "completed_trials": 45,
+      "paired_blocks": 15,
+      "repeats_per_method_and_size": 5,
       "evidence": [
-        {
-          "namespace": "repository",
-          "path": "reports/CLAIMS_AND_LIMITATIONS.md"
-        }
+        "benchmark/common-full/results.json"
       ],
-      "qualification": "NO_PUBLIC_TRANSACTION_GROUND_TRUTH; no institution system/transaction/incident pilot."
+      "qualification": "Finite static common contract only; no production speed superiority."
     },
-    "READY_FOR_EXTERNAL_REVIEW": {
-      "value": "NOT_READY",
+    "FULL_EVIDENCE_HISTORY_SUPERIORITY": {
+      "status": "INCONCLUSIVE",
+      "reference_implementation": "NOT_IMPLEMENTED",
+      "comparison_scope": "NARROWER_SCOPE"
+    },
+    "CAPACITY": {
+      "status": "LIMITED",
       "evidence": [
-        "release-full-py314/source_tests.json",
-        "public-data/attempt-01/source-register.json",
-        "inventory/historical-ci.command.json"
+        "benchmark/capacity-triage/results.json"
       ],
-      "qualification": "Required real-data and remote CI evidence unavailable, original source314 full gate failed,100k profile incomplete. Reports are reviewable as partial evidence, not a validated-ready endorsement."
+      "triage_status": "PARTIAL",
+      "completed_events": 25000,
+      "completed_trial_count": 1,
+      "censored_events": [
+        50000,
+        100000
+      ],
+      "timeout_child_exit_codes": [
+        -9,
+        -9
+      ],
+      "qualification": "Original60-second caps; no completed100k comparison, final timeoutCPU/RSS unknown, no SLA."
+    },
+    "INSTITUTIONAL_COST_SAVINGS": {
+      "status": "NOT_PROVEN"
+    },
+    "INSTITUTIONAL_RISK_REDUCTION": {
+      "status": "NOT_PROVEN"
+    },
+    "REGULATORY_COMPLIANCE": {
+      "status": "NOT_PROVEN"
+    },
+    "INSTITUTIONAL_DEPLOYMENT": {
+      "status": "NOT_PROVEN"
+    },
+    "FINAL_EXACT_HEAD_CI": {
+      "status": "NOT_RUN",
+      "reason": "Final commit does not exist at this source-sealed snapshot; terminal delivery verifies actual new-head jobs/logs/artifacts."
     }
   },
-  "open_P2": [
+  "open_P2": [],
+  "closed_P2": [
     "VAL-P2-TEST-BARRIER-RACE"
   ],
-  "remote_ci": "PUBLIC_STATUS_OBSERVED; AUTHENTICATED_LOGS_AND_ARTIFACTS_UNVERIFIED",
+  "historical_decision": "reports/history/gate1-f3dff8d/DECISION.json",
   "frozen_ml_experiment": "NOT_RUN",
-  "repository_root": "/workspace/crypto-reconciliation-lab",
-  "evidence_reference_rule": "String paths are relative to evidence_root; objects explicitly identify repository paths.",
-  "confirmed_open_P0_P1_production_findings": 0,
-  "publication": {
-    "branch_pushed": true,
-    "source_commit": "f8fe98abf452dbd1968a29198c53b035a699360a",
-    "draft_pr": "BLOCKED_GRAPHQL_FORBIDDEN",
-    "initial_remote_run": "43925469151",
-    "initial_remote_state": "IN_PROGRESS_AT_OBSERVATION"
-  }
+  "institutional_deployment_ready": false,
+  "data_classes_observed": [
+    "FULLY_SYNTHETIC",
+    "REAL_PUBLIC_DIRECT",
+    "REAL_PUBLIC_ADAPTED",
+    "REAL_PLUS_SYNTHETIC_INJECTION"
+  ],
+  "draft_pr": "https://github.com/umitbora55/crypto-reconciliation-lab/pull/7"
 }

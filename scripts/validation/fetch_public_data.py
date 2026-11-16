@@ -15,6 +15,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
+from html.parser import HTMLParser
 from pathlib import Path
 
 PERIODS = (("2019-01", "2019-01-01", "2019-01-31"),
@@ -64,19 +65,46 @@ def sha256(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def fetch(output, timeout=12, selected_ids=None):
+def sec_link_evidence(path, expected_sha256, requests):
+    if not path or not expected_sha256:
+        raise ValueError("SEC_LINK: supply retained official landing bytes and their recorded SHA256 before downloading a ZIP")
+    path = Path(path)
+    if path.is_symlink() or not path.is_file() or path.stat().st_size > MAX_BODY or sha256(path) != expected_sha256:
+        raise ValueError("SEC_LINK: landing evidence integrity failed")
+    class LinkParser(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.links = set()
+        def handle_starttag(self, tag, attrs):
+            if tag == "a" and dict(attrs).get("href"):
+                self.links.add(urllib.parse.urljoin("https://www.sec.gov/data-research/sec-markets-data/fails-deliver-data", dict(attrs)["href"]))
+    parser = LinkParser()
+    parser.feed(path.read_text(encoding="utf-8"))
+    if any(row["url"] not in parser.links for row in requests if row.get("table") == "fails-to-deliver"):
+        raise ValueError("SEC_LINK: requested ZIP is absent from retained official landing hyperlinks")
+    return {"path": str(path.resolve()), "sha256": expected_sha256, "bytes": path.stat().st_size,
+            "landing_url": "https://www.sec.gov/data-research/sec-markets-data/fails-deliver-data",
+            "claim": "Links in hash-bound caller-supplied landing bytes; original capture provenance must be independently retained."}
+
+
+def fetch(output, timeout=12, selected_ids=None, sec_landing_file=None, sec_landing_sha256=None):
     if os.environ.get("NO_NETWORK", "").strip().lower() in {"1", "true", "yes"}:
         raise ValueError("NO_NETWORK: direct fetch is disabled")
     output = Path(output).resolve()
-    output.mkdir(parents=True, exist_ok=False)
-    (output / "raw").mkdir()
     requests = [r for r in plan() if selected_ids is None or r["id"] in selected_ids]
     if not requests or (selected_ids is not None and {r["id"] for r in requests} != set(selected_ids)):
         raise ValueError("select only catalogued official request IDs")
+    link_evidence = None
+    if any(row.get("table") == "fails-to-deliver" for row in requests):
+        link_evidence = sec_link_evidence(sec_landing_file, sec_landing_sha256, requests)
+    output.mkdir(parents=True, exist_ok=False)
+    (output / "raw").mkdir()
     protocol = {"format": "public-fetch-protocol-v1", "periods": PERIODS, "requests": requests,
                 "max_response_bytes": MAX_BODY, "max_total_bytes": MAX_TOTAL, "timeout_seconds": timeout,
                 "retries": 0, "pagination": "one explicit page of 10000 rows; total-pages checked before acceptance",
                 "freeze_time_utc": datetime.now(timezone.utc).isoformat()}
+    if link_evidence is not None:
+        protocol["sec_link_evidence"] = link_evidence
     (output / "protocol.json").write_text(json.dumps(protocol, indent=2) + "\n")
     opener = urllib.request.build_opener(RestrictedRedirect())
     sources, total = [], 0
@@ -185,11 +213,13 @@ def main():
     parser.add_argument("--no-network", action="store_true", help="verify existing local request evidence only")
     parser.add_argument("--only", action="append", help="fetch only named catalogued requests; may repeat")
     parser.add_argument("--scope", choices=("all", "financial", "references"), default="all", help="externally selected expected request inventory; financial is the original 17 Treasury/SEC requests")
+    parser.add_argument("--sec-landing-file", type=Path, help="retained official SEC landing page containing selected ZIP hyperlinks")
+    parser.add_argument("--sec-landing-sha256", help="SHA256 from the separately retained landing-page acquisition record")
     args = parser.parse_args()
     if args.fetch == args.no_network:
         parser.error("select exactly one of --fetch or --no-network")
     if args.fetch:
-        fetch(args.output, selected_ids=selected_scope(args.scope, args.only))
+        fetch(args.output, selected_ids=selected_scope(args.scope, args.only), sec_landing_file=args.sec_landing_file, sec_landing_sha256=args.sec_landing_sha256)
     else:
         verify_offline(args.output, selected_ids=selected_scope(args.scope, args.only))
 

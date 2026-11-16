@@ -1,0 +1,16 @@
+{
+  "format": "gate2-identity-scorecard-v1",
+  "source_evidence": "identity/run-002/scorecards.json",
+  "superseded_evidence_retained": "identity/run-001/scorecards.json",
+  "scorecard": {
+    "FN": 12,
+    "FP": 0,
+    "TN": 120,
+    "TP": 132,
+    "data_class": "FULLY_SYNTHETIC",
+    "do_not_relabel": true,
+    "observations": 264,
+    "source": "reviewed historical run; NOT_RERUN",
+    "substitution_status": "NOT_IDENTIFIABLE_WITH_GIVEN_INPUTS"
+  }
+}
