@@ -61,14 +61,14 @@ class ReplayMaintenanceScopeTests(unittest.TestCase):
             with self.subTest(path=row['path']):
                 self.assertEqual(row['changes'], [dict(old_text=a, new_text=b, count=1)
                                                  for a, b in EXACT_EDITS[row['path']]])
-                raw = (ROOT / row['path']).read_bytes()
+                raw = scope.restore_gate2_fixture_source(ROOT, row['path'], (ROOT / row['path']).read_bytes())
                 restored = scope.restore_fixture_source(raw, row)
                 self.assertEqual(scope.byte_identity(restored), previous['current']['files'][row['path']])
                 self.assertEqual(methods(restored), methods(raw))
         for name, expected in previous['current']['files'].items():
             if name not in EXACT_EDITS:
                 with self.subTest(unchanged=name):
-                    self.assertEqual(scope.byte_identity((ROOT / name).read_bytes()), expected)
+                    self.assertEqual(scope.byte_identity(scope.restore_gate2_fixture_source(ROOT, name, (ROOT / name).read_bytes())), expected)
 
     def test_composition_preserves_originals_paths_process_pins_and_old_negative(self):
         previous = json.loads((ROOT / ANCHOR).read_bytes())

@@ -1,0 +1,48 @@
+{
+  "format": "validation-gate2-scorecard-v1",
+  "canonical_evidence": {
+    "path": "/workspace/validation-gate2-evidence/public-data/analysis-02/results/summary.json",
+    "bytes": 32781,
+    "sha256": "ec96311bf524cd9152fd29d6ea38a6e97a8dbafe27502ab8b8a23861a8238cbf"
+  },
+  "execution_binding": "/workspace/validation-gate2-evidence/public-data/analysis-02/execution-completion.json",
+  "natural_error_precision_recall": "NOT_MEASURED",
+  "institutional_ground_truth": "UNAVAILABLE",
+  "data_class": "REAL_PLUS_SYNTHETIC_INJECTION",
+  "observations": 360,
+  "distinct_source_rows": 30,
+  "confusion": {
+    "TP": 120,
+    "FP": 0,
+    "TN": 180,
+    "FN": 60
+  },
+  "by_family": {
+    "duplicate_key": {
+      "TN": 30,
+      "TP": 30
+    },
+    "invalid_cusip": {
+      "TN": 30,
+      "TP": 30
+    },
+    "invalid_date": {
+      "TN": 30,
+      "TP": 30
+    },
+    "negative_quantity": {
+      "TN": 30,
+      "TP": 30
+    },
+    "valid_cusip_substitution": {
+      "FN": 30,
+      "TN": 30
+    },
+    "valid_quantity_change": {
+      "FN": 30,
+      "TN": 30
+    }
+  },
+  "control_dependence": "Thirty source rows reused as clean controls in six semantic families;360 observations are not360 independently sampled real records.",
+  "false_negative_boundary": "Schema-valid quantity andCUSIP substitutions have no independent original identity/value reference."
+}

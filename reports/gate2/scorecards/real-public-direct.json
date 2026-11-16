@@ -1,0 +1,26 @@
+{
+  "format": "validation-gate2-scorecard-v1",
+  "canonical_evidence": {
+    "path": "/workspace/validation-gate2-evidence/public-data/analysis-02/results/summary.json",
+    "bytes": 32781,
+    "sha256": "ec96311bf524cd9152fd29d6ea38a6e97a8dbafe27502ab8b8a23861a8238cbf"
+  },
+  "execution_binding": "/workspace/validation-gate2-evidence/public-data/analysis-02/execution-completion.json",
+  "natural_error_precision_recall": "NOT_MEASURED",
+  "institutional_ground_truth": "UNAVAILABLE",
+  "data_class": "REAL_PUBLIC_DIRECT",
+  "treasury_rows": 14226,
+  "sec_financial_rows": 89285,
+  "tested_modern_treasury_days": 60,
+  "strict_exact_equalities": 39,
+  "strict_nonzero_residuals": 21,
+  "outside_fixed_rounding_bound": 0,
+  "strict_tolerance_million_usd": 0,
+  "rounding_diagnostic_bound_million_usd": 2,
+  "rounding_cause": "NOT_PROVEN",
+  "legacy_days_not_run": 32,
+  "cross_table_total_equalities": 120,
+  "sec_missing_prices": 980,
+  "sec_layout_warnings": 18,
+  "confusion_matrix": "NOT_DEFINED_WITHOUT_NATURAL_LABELS"
+}

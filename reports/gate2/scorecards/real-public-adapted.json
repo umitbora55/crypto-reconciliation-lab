@@ -1,0 +1,20 @@
+{
+  "format": "validation-gate2-scorecard-v1",
+  "canonical_evidence": {
+    "path": "/workspace/validation-gate2-evidence/public-data/analysis-02/results/summary.json",
+    "bytes": 32781,
+    "sha256": "ec96311bf524cd9152fd29d6ea38a6e97a8dbafe27502ab8b8a23861a8238cbf"
+  },
+  "execution_binding": "/workspace/validation-gate2-evidence/public-data/analysis-02/execution-completion.json",
+  "natural_error_precision_recall": "NOT_MEASURED",
+  "institutional_ground_truth": "UNAVAILABLE",
+  "data_class": "REAL_PUBLIC_ADAPTED",
+  "cases": 60,
+  "observed_findings": 120,
+  "day_pairs_matched": 39,
+  "day_pairs_expected_mismatch": 21,
+  "oracle_agreement_cases": 60,
+  "qualification": "Both authored sides reuse the same public closing balance. Holder/custody/time/manifests are authored schema adaptations, not native investor records or external completeness.",
+  "source_publishers": 1,
+  "independent_counterparty_reports": 0
+}

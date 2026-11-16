@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Manually downloaded official files; operator-asserted origin",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "capture_method", "files"],
+  "properties": {
+    "format": {"const": "official-file-import-v1"},
+    "capture_method": {"const": "USER_DOWNLOADED_OFFICIAL_BYTES"},
+    "files": {
+      "type": "array", "minItems": 1, "maxItems": 20,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["source_id", "file_name", "source_url", "downloaded_at_utc", "publication_vintage", "kind", "sha256", "bytes", "usage_terms"],
+        "properties": {
+          "source_id": {"type": "string", "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}$"},
+          "file_name": {"type": "string", "minLength": 1, "description": "Unique basename inside input root; no path traversal or symlink."},
+          "source_url": {"type": "string", "format": "uri", "description": "Actual official HTTPS URL; no credentials; matching origin remains an operator assertion."},
+          "downloaded_at_utc": {"type": "string", "format": "date-time", "description": "Actual UTC download time, distinct from publication vintage."},
+          "publication_vintage": {"type": "string", "minLength": 1, "description": "Use UNKNOWN when not explicitly supplied by the publisher."},
+          "kind": {"enum": ["treasury_api_json", "sec_ftd_zip", "official_document"]},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "bytes": {"type": "integer", "minimum": 1, "maximum": 33554432},
+          "usage_terms": {"type": "string", "minLength": 1, "description": "Official terms URL and reviewed scope, or NOT_VERIFIED; never infer permission from accessibility."}
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,116 @@
+{
+  "format": "validation-gate2-test-exception-v1",
+  "base_commit": "f3dff8dd00837ac7ce6e9bb687dd4861f790cbac",
+  "historical_scope": {
+    "path": "contracts/release-test-scope-0.11.1.json",
+    "bytes": 254949,
+    "sha256": "dc0f5a41934bfee4669df79fba6cd62535e795c99cf3869bf1e79248ea9559b6",
+    "release": "0.11.1"
+  },
+  "historical_test_count": 875,
+  "historical_file_count": 94,
+  "reason": "One correctness-sampler synchronization fixture repair plus explicit historical-byte projection in two preservation tests; immutable historical expectations and all test identities remain unchanged.",
+  "files": [
+    {
+      "path": "tests/test_lab_contract_validation.py",
+      "kind": "correctness-sampler-synchronization-v1",
+      "original": {
+        "bytes": 13038,
+        "sha256": "6fae4f3eed3bd16356bf71c15630b155daf8d6b6747c62509e0be6e0e92ecd17"
+      },
+      "current": {
+        "bytes": 13062,
+        "sha256": "56d0ced238d9bc657a7d4308c14c72faac6022735906e776a1bfbdc1c11daaa1"
+      },
+      "changes": [
+        {
+          "old_text": "        def rss(pid):\n            p=trial/'result.json'\n            if p.exists():\n                try:\n                    if json.loads(p.read_text()).get('status')=='CORRECTNESS_FAILED':ready.write_text('parent sampled readable failure')\n                except json.JSONDecodeError:pass\n            return 1024\n        with patch('crypto_reconciliation_lab.lab.watchdog.current_rss',side_effect=rss):r=supervise([sys.executable,'-c',code],self.root,trial,self.root,Budgets(phase_seconds=2,total_seconds=3,poll_seconds=.01))\n",
+          "new_text": "        def observed_load(path):\n            child=load(path)\n            if path==trial/'result.json' and child.get('status')=='CORRECTNESS_FAILED':\n                ready.write_text('correctness sampler returned readable failure')\n            return child\n        with patch('crypto_reconciliation_lab.lab.watchdog.load',side_effect=observed_load),patch('crypto_reconciliation_lab.lab.watchdog.current_rss',return_value=1024):r=supervise([sys.executable,'-c',code],self.root,trial,self.root,Budgets(phase_seconds=2,total_seconds=3,poll_seconds=.01))\n",
+          "count": 1
+        }
+      ],
+      "test_ids": [
+        "GateValidationTests.test_real_full_gate_and_counter_scope_integrity",
+        "GateValidationTests.test_partial_case_succeeds_but_never_opens_full_gate",
+        "BundleValidationTests.test_config_plan_seed_and_inventory_are_not_advisory",
+        "BundleValidationTests.test_invalid_experiment_cli_retains_located_diagnostic",
+        "BundleValidationTests.test_single_scenario_valid_and_old_bundle_not_relabelled",
+        "PayloadLinkTests.test_quarantine_receipt_content_and_type_are_checked",
+        "PayloadLinkTests.test_derived_effect_rehash_does_not_make_wrong_content_valid",
+        "PayloadLinkTests.test_link_mutations_cover_receipts_manifests_groups_and_trace",
+        "PayloadLinkTests.test_unselected_old_and_future_receipts_are_not_minimum",
+        "ProtocolValidationTests.test_pure_timeout_and_resource_without_oracle_are_unknown",
+        "ProtocolValidationTests.test_generation_is_not_an_oracle_trial_and_unverified_statistics_fail",
+        "ProtocolValidationTests.test_seen_failure_survives_later_truncated_result"
+      ],
+      "assertion_count": 31,
+      "assertion_ast_original_sha256": "3a6e5a6f71820a70c1817668806bfa5ce10f6de4d29dbbf1f1d2064e225d3f64",
+      "assertion_ast_current_sha256": "3a6e5a6f71820a70c1817668806bfa5ce10f6de4d29dbbf1f1d2064e225d3f64",
+      "assertion_ast_identical": true
+    },
+    {
+      "path": "tests/test_execution_replay_scope.py",
+      "kind": "explicit-historical-input-projection-v1",
+      "original": {
+        "bytes": 7201,
+        "sha256": "28a64d50490b91140cda38f53559831c19e9b254f15bdf7ca7fc955c884fe60d"
+      },
+      "current": {
+        "bytes": 7249,
+        "sha256": "1c2e177782e50aa071fe69541e30431baaa3ba6b96805b5a51580ee5b652aea3"
+      },
+      "changes": [
+        {
+          "old_text": "                    self.assertEqual(scope.byte_identity((ROOT / name).read_bytes()), expected)",
+          "new_text": "                    self.assertEqual(scope.byte_identity(scope.restore_gate2_fixture_source(ROOT, name, (ROOT / name).read_bytes())), expected)",
+          "count": 1
+        }
+      ],
+      "test_ids": [
+        "ReplayReleaseScopeTests.test_accepted_778_identity_anchor_has_exact_independent_bytes",
+        "ReplayReleaseScopeTests.test_current_metadata_permission_is_exact_and_reverses_every_old_byte",
+        "ReplayReleaseScopeTests.test_old_historical_originals_and_process_pins_are_not_reinterpreted",
+        "ReplayReleaseScopeTests.test_metadata_permission_rejects_behavior_schema_path_and_general_version_edits"
+      ],
+      "assertion_count": 25,
+      "assertion_ast_original_sha256": "4f764b37e1d1a8e8e430b2d06d1f4480c09fa567b5c858a212a8a637f6bc0e43",
+      "assertion_ast_current_sha256": "620efd6b313686c00784c2524cbcb072acd67adbb05cd9628ee9e17ef2759a99",
+      "assertion_ast_identical": false
+    },
+    {
+      "path": "tests/test_replay_maintenance_scope.py",
+      "kind": "explicit-historical-input-projection-v1",
+      "original": {
+        "bytes": 7315,
+        "sha256": "d2d80e14ebe0136374a9f53c8f8d76258e4b6cb1c9ef9595f318c4734ee71ed1"
+      },
+      "current": {
+        "bytes": 7418,
+        "sha256": "9c314a934ab02349d51545da4a07be077c2de8aa0794d29cf8d90bbbc4195c06"
+      },
+      "changes": [
+        {
+          "old_text": "                    self.assertEqual(scope.byte_identity((ROOT / name).read_bytes()), expected)",
+          "new_text": "                    self.assertEqual(scope.byte_identity(scope.restore_gate2_fixture_source(ROOT, name, (ROOT / name).read_bytes())), expected)",
+          "count": 1
+        },
+        {
+          "old_text": "                raw = (ROOT / row['path']).read_bytes()",
+          "new_text": "                raw = scope.restore_gate2_fixture_source(ROOT, row['path'], (ROOT / row['path']).read_bytes())",
+          "count": 1
+        }
+      ],
+      "test_ids": [
+        "ReplayMaintenanceScopeTests.test_reviewed_858_identity_anchor_has_exact_independent_bytes",
+        "ReplayMaintenanceScopeTests.test_six_literal_changes_restore_all_previous_bytes_and_test_methods",
+        "ReplayMaintenanceScopeTests.test_composition_preserves_originals_paths_process_pins_and_old_negative",
+        "ReplayMaintenanceScopeTests.test_permission_rejects_new_paths_behavior_and_generic_version_changes"
+      ],
+      "assertion_count": 23,
+      "assertion_ast_original_sha256": "a6a2cf0d298fbd21657533591427a14cb8882ab6c245fa7fb62964706727b8d6",
+      "assertion_ast_current_sha256": "848bd7ddc4165507fc46d47cd90cd08374ac7a25589530cafddefe6b4c12e44a",
+      "assertion_ast_identical": false
+    }
+  ],
+  "assertion_disclosure": "The race fixture preserves all31assertion ASTs. Exactly one assertion input expression in each of two scope tests explicitly restores admitted Gate2 bytes before historical hashing; its expected value and assertion operation remain unchanged. The maintenance scope test also explicitly projects one raw setup input before its unchanged historical method-AST equality assertion. No byte_identity alias, runtime source rewrite, read_bytes monkeypatch or historical-contract refresh is permitted."
+}

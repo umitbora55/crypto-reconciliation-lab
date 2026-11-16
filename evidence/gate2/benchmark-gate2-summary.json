@@ -1,0 +1,2155 @@
+{
+  "common": {
+    "bindings": {
+      "contracts/benchmark-gate2-protocol.json": {
+        "bytes": 5957,
+        "sha256": "ef715d58b8ea0feb565cd1328c47f24f2726f339980767e7e4cbd6c0647257cb"
+      },
+      "crypto_reconciliation_lab/__init__.py": {
+        "bytes": 174,
+        "sha256": "6bab11c166c90ccead0d5b25986e4637bc05e7df87fbda7901a8678b85c67ef8"
+      },
+      "crypto_reconciliation_lab/__main__.py": {
+        "bytes": 48,
+        "sha256": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d"
+      },
+      "crypto_reconciliation_lab/admission/__init__.py": {
+        "bytes": 171,
+        "sha256": "5d92635a4cdebf6490d44d4cac1c583d3e575d90451a1c02034e26601c3c6bd6"
+      },
+      "crypto_reconciliation_lab/admission/feed.py": {
+        "bytes": 4566,
+        "sha256": "3c897bf7f467f933ecd8291ff6dcaa4b890c13702e8e1d52d731d0a4d791aee9"
+      },
+      "crypto_reconciliation_lab/admission/oracle.py": {
+        "bytes": 12760,
+        "sha256": "fd85454323ef5b2af832bf052836e3d2c886e1f7abe25684c68a95d443f260e6"
+      },
+      "crypto_reconciliation_lab/admission/recovery.py": {
+        "bytes": 39096,
+        "sha256": "710ef4a7651151d032921ca90539b8c9616b231f190f247c48dd7f65cbe35438"
+      },
+      "crypto_reconciliation_lab/admission/recovery_scope_v2.json": {
+        "bytes": 235471,
+        "sha256": "4b0f84fa393a7dceaacb4c62afa35a8a9aa2cda8a70c324b2d77a56711a18d71"
+      },
+      "crypto_reconciliation_lab/admission/runtime.py": {
+        "bytes": 12478,
+        "sha256": "b66fd378460cc263046788ba0ec070896c924dcbfe387206ced240780da3c2e0"
+      },
+      "crypto_reconciliation_lab/admission/scope.py": {
+        "bytes": 28914,
+        "sha256": "b21c004cb2db7d9cfb2b76860712a142519972f0c4b60663d481f2fb20c1c402"
+      },
+      "crypto_reconciliation_lab/admission/worker.py": {
+        "bytes": 2497,
+        "sha256": "62eeea5ca62bc3d5252a10c99cd8a523989256d04296fdc95bd736b991c0cc3b"
+      },
+      "crypto_reconciliation_lab/cli.py": {
+        "bytes": 27762,
+        "sha256": "0ab8d926d7d9efc9870973b8e69575eac8ac8aa1e27cb63abe6f2a518ed4c976"
+      },
+      "crypto_reconciliation_lab/correction_demo.py": {
+        "bytes": 9980,
+        "sha256": "719d761efec6a1a6d868ae8873124de5ee31b7abfb017a2238650896ef66d114"
+      },
+      "crypto_reconciliation_lab/correction_model.py": {
+        "bytes": 5051,
+        "sha256": "bd204fd1e7cfd76a59b661d223ba8dc3a1e30b4984a0976b7dc2a21caa441dd1"
+      },
+      "crypto_reconciliation_lab/corrections.py": {
+        "bytes": 10455,
+        "sha256": "a427779b0862995bb23754b0c1dc0a57123c670fc8056c3abbcddd826766a30c"
+      },
+      "crypto_reconciliation_lab/demo.py": {
+        "bytes": 8606,
+        "sha256": "ce9ca2b92e385f3e849fb18bac0070162da09ef1828f349b511ed04580d3ca3e"
+      },
+      "crypto_reconciliation_lab/engine.py": {
+        "bytes": 13049,
+        "sha256": "e06c9f1178444b9e9465fde3be6f666cc1bb8b54f0931fdef952864f5a39e2f6"
+      },
+      "crypto_reconciliation_lab/execution/__init__.py": {
+        "bytes": 337,
+        "sha256": "c2dccfaa6439326fe6f4ff07a5ccb32466a313ff26c7ae148bb27fba8e5ab15c"
+      },
+      "crypto_reconciliation_lab/execution/capture.py": {
+        "bytes": 17855,
+        "sha256": "d2bc0b8a3002fd36b8b958266a4e6e13f1d7f7deb515d9109ac1317a5f3e4155"
+      },
+      "crypto_reconciliation_lab/execution/common.py": {
+        "bytes": 1377,
+        "sha256": "00e4c18c44ce643a7100c485868f6f60643a9af5be59214b67bc8945d5a0a492"
+      },
+      "crypto_reconciliation_lab/execution/demo.py": {
+        "bytes": 29194,
+        "sha256": "df1c3a9a32cadfbf9a3a603c1daf1f2a9dc20d851dc0c9b5ab5f01969c6b16a4"
+      },
+      "crypto_reconciliation_lab/execution/reader.py": {
+        "bytes": 13239,
+        "sha256": "7f3a25825016dc041605e11d10fcc6660bf7c8291a483b35c06f7e2f720e0a45"
+      },
+      "crypto_reconciliation_lab/execution/runtime.py": {
+        "bytes": 7324,
+        "sha256": "e43863711a018cfd3df197818e70871acc0db1fbb017316c61cdc218e2444d2f"
+      },
+      "crypto_reconciliation_lab/lab/__init__.py": {
+        "bytes": 156,
+        "sha256": "5620bae52914c8dbc00079bc27cd99c44b3aab7644bf092862944b86dcc75c9f"
+      },
+      "crypto_reconciliation_lab/lab/benchmark.py": {
+        "bytes": 15326,
+        "sha256": "424fd03d3f6dbc621c294ec950d5073208e554079b539ae5da41643d3221e536"
+      },
+      "crypto_reconciliation_lab/lab/common.py": {
+        "bytes": 997,
+        "sha256": "1149b2957b2148968def9fd5fa693eb6286b3dfea4be8c6b043acf05eab5bb40"
+      },
+      "crypto_reconciliation_lab/lab/contracts.py": {
+        "bytes": 12972,
+        "sha256": "0cbb1f1e551d03454a9d77b220bd7e0999e9135861c66828b2ad6a5691a4a370"
+      },
+      "crypto_reconciliation_lab/lab/evidence_contract.py": {
+        "bytes": 24999,
+        "sha256": "a365390e36d3c8147214f8fc1089ab2f5b3f26ecaed6f5d3ad90f5effb61fe47"
+      },
+      "crypto_reconciliation_lab/lab/faults.py": {
+        "bytes": 11786,
+        "sha256": "3c848d9c5980c363bb14696d32dddac2911715d603a6df0034282994aee554a4"
+      },
+      "crypto_reconciliation_lab/lab/oracle.py": {
+        "bytes": 5012,
+        "sha256": "bad106111bfd25107586d3227e2cbe3f3ec91f9e457e1878b89c7455cc2de641"
+      },
+      "crypto_reconciliation_lab/lab/outcomes.py": {
+        "bytes": 1345,
+        "sha256": "c208cba0c7a655f48fd536c28f1b97e20f4627be768f4a44165b9e913da7ebea"
+      },
+      "crypto_reconciliation_lab/lab/profile_worker.py": {
+        "bytes": 9839,
+        "sha256": "57ddc41a2cca63d1e40fdeb819bcde0c5a29536109b9bf816b1f41f3db69c435"
+      },
+      "crypto_reconciliation_lab/lab/profiling.py": {
+        "bytes": 17814,
+        "sha256": "0aeecaf0a0c019ce74b5a9439c435437dd6c6d67546b26d726564596c4b582dc"
+      },
+      "crypto_reconciliation_lab/lab/runner.py": {
+        "bytes": 11036,
+        "sha256": "cfeab41a8714bd56a93ff1a292d69ea45a522626859d2166d1d49f980528d50d"
+      },
+      "crypto_reconciliation_lab/lab/scoring.py": {
+        "bytes": 6568,
+        "sha256": "91caed888108a95b497dcc6009bb6a2f0bf1f48a61699ac8e6f18ed76043a7f0"
+      },
+      "crypto_reconciliation_lab/lab/watchdog.py": {
+        "bytes": 7418,
+        "sha256": "03819c775e18d07fca3dfa00235d258174878d43712ea91a80b49f6cf9278016"
+      },
+      "crypto_reconciliation_lab/lab/worker.py": {
+        "bytes": 5981,
+        "sha256": "a9106ac970d91cbc39f377dd1fc83d90c7715c1eb96b307df5d48357ed8e68bd"
+      },
+      "crypto_reconciliation_lab/lab/world.py": {
+        "bytes": 4675,
+        "sha256": "60d83c276f63aa82edc08eb85b31b0c533423e0537a3d27e16cb509560e5e0a4"
+      },
+      "crypto_reconciliation_lab/migrations.py": {
+        "bytes": 31949,
+        "sha256": "d97f1ebcad314de89cc576ddfb270a2026168e26ed467979a072f73bcb9b44a5"
+      },
+      "crypto_reconciliation_lab/model.py": {
+        "bytes": 7390,
+        "sha256": "7fa362123a487a05106392c072e270e41f906b6d41db0a82b264d2a41c12ac45"
+      },
+      "crypto_reconciliation_lab/provenance/__init__.py": {
+        "bytes": 82,
+        "sha256": "aa2d26fdf809c9cb55afa57f76734a2868745006b8b73586cdb638a8e4991c1f"
+      },
+      "crypto_reconciliation_lab/provenance/common.py": {
+        "bytes": 4341,
+        "sha256": "4934f59818daa5d82c3c982cb5a1539c469de976cbe75a9554e914188b91e2ba"
+      },
+      "crypto_reconciliation_lab/provenance/demo.py": {
+        "bytes": 39050,
+        "sha256": "d65441cc21b07b1bbfca2970004eea7392d62d62540b38afec175382ed870f8f"
+      },
+      "crypto_reconciliation_lab/provenance/exporter.py": {
+        "bytes": 21864,
+        "sha256": "f5bab9af8db50f0b6916c472a3431cac89ce7dcb0df159a053971a5879da6fae"
+      },
+      "crypto_reconciliation_lab/provenance/ui.py": {
+        "bytes": 2406,
+        "sha256": "098f70d92661df0060b49056a1f86e577ed5184c121fedae96568fccb96940fe"
+      },
+      "crypto_reconciliation_lab/provenance/verifier.py": {
+        "bytes": 45688,
+        "sha256": "c677838e7ed288f2d54066ac323e42a155d9d5ee66f37b8effcccc8bbec2cd21"
+      },
+      "crypto_reconciliation_lab/quarantine.py": {
+        "bytes": 2623,
+        "sha256": "361ea0c6adff673b210fb304de985437326addd232910388c394398924139f9c"
+      },
+      "crypto_reconciliation_lab/replay/__init__.py": {
+        "bytes": 151,
+        "sha256": "83cdb47abcddc27a247bc3326a673744b5b85937172c6472ca39701e7c3b17de"
+      },
+      "crypto_reconciliation_lab/replay/adapter.py": {
+        "bytes": 2814,
+        "sha256": "dfc1ba1dcc22d4be6f267f2c59bea0fb3bf544285d3c34f980b2dc83ba1eb086"
+      },
+      "crypto_reconciliation_lab/replay/api.py": {
+        "bytes": 8846,
+        "sha256": "dee3a73035cd69ccbba6c7d9d80bd8b1a95c81be38299bcd99800d010f2e7c1a"
+      },
+      "crypto_reconciliation_lab/replay/common.py": {
+        "bytes": 541,
+        "sha256": "2e76ed14be4dc94e59e4d677fefaa879045fb62b1b38876352865ee6faf8a235"
+      },
+      "crypto_reconciliation_lab/replay/comparison.py": {
+        "bytes": 2766,
+        "sha256": "6e0728c3f4d0cc85326a1487c124f31af4f0d23f8d7ebff38474769e0d9fd77b"
+      },
+      "crypto_reconciliation_lab/replay/demo.py": {
+        "bytes": 15724,
+        "sha256": "4605675209026a42feade62f66e94151ed939f1e8d9a8542a2ea8a349f946acd"
+      },
+      "crypto_reconciliation_lab/replay/demo_catalog_v1.json": {
+        "bytes": 1231,
+        "sha256": "a479fae4a5c27be73d5ee8a6405e23daec16e1f04e80da34a7e2d530be7b99ca"
+      },
+      "crypto_reconciliation_lab/replay/fixtures/protected-context.json": {
+        "bytes": 138090,
+        "sha256": "db18fa42e2f81140172745a3a6f993221d9d4f2462dad44615044c8a0efe099e"
+      },
+      "crypto_reconciliation_lab/replay/fixtures/protected-run.json": {
+        "bytes": 36958,
+        "sha256": "14c675e3bdb3106451c069915db22095e9cacf26c1ab9e674b64d04754738dd0"
+      },
+      "crypto_reconciliation_lab/replay/report.py": {
+        "bytes": 4515,
+        "sha256": "6770c5cbb5d4f10fffca81597c1565620b7a927deb9acde49c38943a7a984cf3"
+      },
+      "crypto_reconciliation_lab/replay/validation.py": {
+        "bytes": 19568,
+        "sha256": "1a41bf0e94c1639781095c1780cbbea325cd26ccd22572123005c7e29c1c77b9"
+      },
+      "crypto_reconciliation_lab/replay/worker.py": {
+        "bytes": 3311,
+        "sha256": "885444aa54c37bc52959e65929b9e781cc1dfd2d0b853441860777304f937a22"
+      },
+      "crypto_reconciliation_lab/reporting.py": {
+        "bytes": 3518,
+        "sha256": "bc55c43f28d50779001f3018f747020b9620fe4b127b8f62ef349b6a645108db"
+      },
+      "crypto_reconciliation_lab/review/__init__.py": {
+        "bytes": 147,
+        "sha256": "000fe7bc8caa505731851cbe97fa2c301feea5f162a47d1c38e73b552e02f997"
+      },
+      "crypto_reconciliation_lab/review/adapter.py": {
+        "bytes": 19338,
+        "sha256": "64eefab1929aababb28f2d9f7e2c351d6b925d82433d2131be8c995fe362c7c1"
+      },
+      "crypto_reconciliation_lab/review/demo.py": {
+        "bytes": 8529,
+        "sha256": "76a4858ffc2e0741bf9e34e79eb7f450f75f2b78ab738ccaced85a3005793029"
+      },
+      "crypto_reconciliation_lab/review/export.py": {
+        "bytes": 6817,
+        "sha256": "209001053acdd93edba80add61a811f9a8e118a023691c15a87d7d0a3ce29456"
+      },
+      "crypto_reconciliation_lab/review/publication.py": {
+        "bytes": 2968,
+        "sha256": "a345917b71df61849089b73ac2806368af8c2ccb709352b53598e57adc5534a3"
+      },
+      "crypto_reconciliation_lab/review/validation.py": {
+        "bytes": 16185,
+        "sha256": "ff26d3e1824324d75e497ea489ea0b36983dc082e59a7ae7ccdd53f807d539e9"
+      },
+      "crypto_reconciliation_lab/review/viewmodel.py": {
+        "bytes": 5897,
+        "sha256": "4c9d9092e57be612e56f934a5a9de657b9ade56a17566f252be9772ff94101f6"
+      },
+      "crypto_reconciliation_lab/source_auth/__init__.py": {
+        "bytes": 87,
+        "sha256": "00f3cfa4ba183cca06b7ea6dbaec4210a10f0f9dc718b201ff43e7535614a6fc"
+      },
+      "crypto_reconciliation_lab/source_auth/crypto.py": {
+        "bytes": 6503,
+        "sha256": "af6225b2fa4c3c1a7cbdf6b52e37a316819a8b38b0724a320e13d67e67f9d87d"
+      },
+      "crypto_reconciliation_lab/source_auth/demo.py": {
+        "bytes": 16381,
+        "sha256": "ada3fa2340725836e0d0a31f722a7dc09e6f666c47c9c21c0fc68e7a48bed966"
+      },
+      "crypto_reconciliation_lab/source_auth/experiment_scope_v1.json": {
+        "bytes": 12281,
+        "sha256": "f31284225f0a3247759f6dea75cebc6065ea4c2847ace3091af3095cbdc655e1"
+      },
+      "crypto_reconciliation_lab/source_auth/fixtures.py": {
+        "bytes": 6129,
+        "sha256": "8c5cdc8912902f1d11aebae457f45dcdb263af1685e3ed448285437ad1530e65"
+      },
+      "crypto_reconciliation_lab/source_auth/policy.py": {
+        "bytes": 8446,
+        "sha256": "1d0f170e4c642ebd9c9421ff0c8989da9226b4c1427e9b767fe1ec1d9f34878e"
+      },
+      "crypto_reconciliation_lab/source_auth/runtime.py": {
+        "bytes": 12650,
+        "sha256": "6f66abc1dca48ad9d50e6611c9f355a038b4cc5eb848245f227ea036e69c96d3"
+      },
+      "crypto_reconciliation_lab/source_auth/schema.py": {
+        "bytes": 4143,
+        "sha256": "60d22d666c60aa8c2720510a58464305b4b5064a4fb83c8efc65a27926841968"
+      },
+      "crypto_reconciliation_lab/source_auth/scope.py": {
+        "bytes": 6209,
+        "sha256": "dde392ee971dafe5632eccdb86b9d95d8432accbd438390b74104717558fa6e9"
+      },
+      "crypto_reconciliation_lab/source_auth/verifier.py": {
+        "bytes": 60498,
+        "sha256": "49b5ac1f6678c2a3d45198e051157170229eeebd9b995a88f87afe87b236d5b9"
+      },
+      "crypto_reconciliation_lab/source_auth/worker.py": {
+        "bytes": 1486,
+        "sha256": "53b889223bc72f63b9cb6cec5a9b159e573f4fb236619245e67fee16f780dc36"
+      },
+      "crypto_reconciliation_lab/store.py": {
+        "bytes": 9977,
+        "sha256": "3c02b9ebc885e872843edeeeb433bfa64629735c7dfdb689d79b63797123d622"
+      },
+      "crypto_reconciliation_lab/triage/__init__.py": {
+        "bytes": 242,
+        "sha256": "d333b88737b856ac4b478f1b995b7b81825086cb36ff1350d7916f6ee3784139"
+      },
+      "crypto_reconciliation_lab/triage/budget.py": {
+        "bytes": 3330,
+        "sha256": "5dbcd63ffbcc25e2e6d605de6be8e8284629b5e4cdef8f2858b92f5e4884e9ee"
+      },
+      "crypto_reconciliation_lab/triage/contracts.py": {
+        "bytes": 13580,
+        "sha256": "cd397085fa728a28252b6588785b20b399422cda3665aaf8ce9da97efe814008"
+      },
+      "crypto_reconciliation_lab/triage/features.py": {
+        "bytes": 12862,
+        "sha256": "ed447cb016de56790d2c72c0eeb7c2bacdde4b7b3aaabc0795700f28ca0c7422"
+      },
+      "crypto_reconciliation_lab/triage/metrics.py": {
+        "bytes": 6518,
+        "sha256": "73cb2924e211db26ece6df6f19cdd78080e5820060826eb193d2874e533864ed"
+      },
+      "crypto_reconciliation_lab/triage/model.py": {
+        "bytes": 18820,
+        "sha256": "d5f86a9ce0551b7b444ff51975828cff4880ce6467835963a7c10f0975b3abb7"
+      },
+      "crypto_reconciliation_lab/triage/ranking.py": {
+        "bytes": 5694,
+        "sha256": "c509a060837fea8cb24e2b3ef8930d77722066344c668296c529eceeeaae9d73"
+      },
+      "crypto_reconciliation_lab/triage/runner.py": {
+        "bytes": 21050,
+        "sha256": "4535f9c77f6f9e78d8b39410831850101f51b3f04b06eb4505d3bee03a901a36"
+      },
+      "crypto_reconciliation_lab/triage/safeio.py": {
+        "bytes": 1851,
+        "sha256": "efa96c0164292e13fbcddc37e651fdb99b6e3f0920a3ed2e1332e5bbfb8c647f"
+      },
+      "crypto_reconciliation_lab/triage/scope.py": {
+        "bytes": 8618,
+        "sha256": "a040360ffb392be1c8a84c53ce7672fd5b64a9941233d83c454d39d3c9f2e01e"
+      },
+      "crypto_reconciliation_lab/triage/truth.py": {
+        "bytes": 20034,
+        "sha256": "f52fd49c8798a39b5a03361be081ec29fdb724d267d7e6e2d904492f7b8d4c8f"
+      },
+      "crypto_reconciliation_lab/triage/world.py": {
+        "bytes": 19009,
+        "sha256": "aacf73c9b5db631b4aa523d6cdd7ca29dd981024bf2c2e96a8880cf47a2ed908"
+      },
+      "validation_lab/benchmark.py": {
+        "bytes": 30077,
+        "sha256": "d2e340fec47ca97c8e8b41e9af88fa297afafac30081c7fddaa8df2ec47ae96c"
+      },
+      "validation_lab/benchmark_gate2.py": {
+        "bytes": 33941,
+        "sha256": "65737904a51f3a4339a6dbd7195c952c0f36e181d66411a0ba2ebf3cbc0b83aa"
+      },
+      "validation_tests/test_gate2_benchmark.py": {
+        "bytes": 11913,
+        "sha256": "46e17270abd97a511eeb201fdc37f768c64726ada71f940c4726ae50fd49c5a3"
+      }
+    },
+    "comparative_status": "EQUIVALENT_COMMON_ARITHMETIC",
+    "comparisons": [
+      {
+        "baseline": "stdlib_integer",
+        "difference_bootstrap95": [
+          -0.005422400000043126,
+          0.1478728739998587
+        ],
+        "events": 100,
+        "median_difference_seconds": 0.02624088299990035,
+        "median_ratio": 1.1127490961144293,
+        "n": 5,
+        "pairs": [
+          {
+            "production_divided_by_baseline": 1.4863745526144405,
+            "production_minus_baseline_seconds": 0.1478728739998587,
+            "repeat": 0
+          },
+          {
+            "production_divided_by_baseline": 1.1216097629457913,
+            "production_minus_baseline_seconds": 0.029784027000005153,
+            "repeat": 1
+          },
+          {
+            "production_divided_by_baseline": 1.1127490961144293,
+            "production_minus_baseline_seconds": 0.02624088299990035,
+            "repeat": 2
+          },
+          {
+            "production_divided_by_baseline": 0.9804485659437637,
+            "production_minus_baseline_seconds": -0.005422400000043126,
+            "repeat": 3
+          },
+          {
+            "production_divided_by_baseline": 1.0034400430967154,
+            "production_minus_baseline_seconds": 0.0008443379997515876,
+            "repeat": 4
+          }
+        ],
+        "ratio_bootstrap95": [
+          0.9804485659437637,
+          1.4863745526144405
+        ],
+        "semantic_parity": "EQUIVALENT_COMMON_ARITHMETIC",
+        "speed_advantage": "DESCRIPTIVE_COMMON_TASK_ONLY; FULL_PRODUCT_INCONCLUSIVE"
+      },
+      {
+        "baseline": "sqlite_integer",
+        "difference_bootstrap95": [
+          -0.010423987000194757,
+          0.19033579599977202
+        ],
+        "events": 100,
+        "median_difference_seconds": 0.002092094999852634,
+        "median_ratio": 1.0085672687668712,
+        "n": 5,
+        "pairs": [
+          {
+            "production_divided_by_baseline": 1.7276724996472452,
+            "production_minus_baseline_seconds": 0.19033579599977202,
+            "repeat": 0
+          },
+          {
+            "production_divided_by_baseline": 1.1030668367990222,
+            "production_minus_baseline_seconds": 0.02566692699997475,
+            "repeat": 1
+          },
+          {
+            "production_divided_by_baseline": 0.9613069198035369,
+            "production_minus_baseline_seconds": -0.010423987000194757,
+            "repeat": 2
+          },
+          {
+            "production_divided_by_baseline": 0.9855920943581634,
+            "production_minus_baseline_seconds": -0.003975039000124525,
+            "repeat": 3
+          },
+          {
+            "production_divided_by_baseline": 1.0085672687668712,
+            "production_minus_baseline_seconds": 0.002092094999852634,
+            "repeat": 4
+          }
+        ],
+        "ratio_bootstrap95": [
+          0.9613069198035369,
+          1.7276724996472452
+        ],
+        "semantic_parity": "EQUIVALENT_COMMON_ARITHMETIC",
+        "speed_advantage": "DESCRIPTIVE_COMMON_TASK_ONLY; FULL_PRODUCT_INCONCLUSIVE"
+      },
+      {
+        "baseline": "stdlib_integer",
+        "difference_bootstrap95": [
+          -0.248182234000069,
+          0.6919097780005359
+        ],
+        "events": 1000,
+        "median_difference_seconds": -0.010824339999771837,
+        "median_ratio": 0.9938746949247137,
+        "n": 5,
+        "pairs": [
+          {
+            "production_divided_by_baseline": 0.9938746949247137,
+            "production_minus_baseline_seconds": -0.010824339999771837,
+            "repeat": 0
+          },
+          {
+            "production_divided_by_baseline": 1.1661914953980506,
+            "production_minus_baseline_seconds": 0.23780700099996466,
+            "repeat": 1
+          },
+          {
+            "production_divided_by_baseline": 0.9925044603177084,
+            "production_minus_baseline_seconds": -0.012772237999797653,
+            "repeat": 2
+          },
+          {
+            "production_divided_by_baseline": 0.8536765654716749,
+            "production_minus_baseline_seconds": -0.248182234000069,
+            "repeat": 3
+          },
+          {
+            "production_divided_by_baseline": 1.4445459513458065,
+            "production_minus_baseline_seconds": 0.6919097780005359,
+            "repeat": 4
+          }
+        ],
+        "ratio_bootstrap95": [
+          0.8536765654716749,
+          1.4445459513458065
+        ],
+        "semantic_parity": "EQUIVALENT_COMMON_ARITHMETIC",
+        "speed_advantage": "DESCRIPTIVE_COMMON_TASK_ONLY; FULL_PRODUCT_INCONCLUSIVE"
+      },
+      {
+        "baseline": "sqlite_integer",
+        "difference_bootstrap95": [
+          -0.41534519700007877,
+          0.5052241120001781
+        ],
+        "events": 1000,
+        "median_difference_seconds": -0.06847088899985465,
+        "median_ratio": 0.9610889467005753,
+        "n": 5,
+        "pairs": [
+          {
+            "production_divided_by_baseline": 0.9540593152100096,
+            "production_minus_baseline_seconds": -0.08457216000010703,
+            "repeat": 0
+          },
+          {
+            "production_divided_by_baseline": 1.0221850851076537,
+            "production_minus_baseline_seconds": 0.036217399999941335,
+            "repeat": 1
+          },
+          {
+            "production_divided_by_baseline": 0.9610889467005753,
+            "production_minus_baseline_seconds": -0.06847088899985465,
+            "repeat": 2
+          },
+          {
+            "production_divided_by_baseline": 0.7770896815687526,
+            "production_minus_baseline_seconds": -0.41534519700007877,
+            "repeat": 3
+          },
+          {
+            "production_divided_by_baseline": 1.2898377782749058,
+            "production_minus_baseline_seconds": 0.5052241120001781,
+            "repeat": 4
+          }
+        ],
+        "ratio_bootstrap95": [
+          0.7770896815687526,
+          1.2898377782749058
+        ],
+        "semantic_parity": "EQUIVALENT_COMMON_ARITHMETIC",
+        "speed_advantage": "DESCRIPTIVE_COMMON_TASK_ONLY; FULL_PRODUCT_INCONCLUSIVE"
+      },
+      {
+        "baseline": "stdlib_integer",
+        "difference_bootstrap95": [
+          0.2649193799998102,
+          3.092513899000096
+        ],
+        "events": 10000,
+        "median_difference_seconds": 0.8979493609995188,
+        "median_ratio": 1.0630763880467775,
+        "n": 5,
+        "pairs": [
+          {
+            "production_divided_by_baseline": 1.0175825921977486,
+            "production_minus_baseline_seconds": 0.2649193799998102,
+            "repeat": 0
+          },
+          {
+            "production_divided_by_baseline": 1.0406513059639844,
+            "production_minus_baseline_seconds": 0.5940858949998074,
+            "repeat": 1
+          },
+          {
+            "production_divided_by_baseline": 1.1611171660680997,
+            "production_minus_baseline_seconds": 2.2561384139999063,
+            "repeat": 2
+          },
+          {
+            "production_divided_by_baseline": 1.0630763880467775,
+            "production_minus_baseline_seconds": 0.8979493609995188,
+            "repeat": 3
+          },
+          {
+            "production_divided_by_baseline": 1.2282447275514727,
+            "production_minus_baseline_seconds": 3.092513899000096,
+            "repeat": 4
+          }
+        ],
+        "ratio_bootstrap95": [
+          1.0175825921977486,
+          1.2282447275514727
+        ],
+        "semantic_parity": "EQUIVALENT_COMMON_ARITHMETIC",
+        "speed_advantage": "DESCRIPTIVE_COMMON_TASK_ONLY; FULL_PRODUCT_INCONCLUSIVE"
+      },
+      {
+        "baseline": "sqlite_integer",
+        "difference_bootstrap95": [
+          -4.064376604000245,
+          2.9280736620003154
+        ],
+        "events": 10000,
+        "median_difference_seconds": -0.12105225000050268,
+        "median_ratio": 0.9920646998014736,
+        "n": 5,
+        "pairs": [
+          {
+            "production_divided_by_baseline": 0.7904575569460495,
+            "production_minus_baseline_seconds": -4.064376604000245,
+            "repeat": 0
+          },
+          {
+            "production_divided_by_baseline": 0.7998130112711903,
+            "production_minus_baseline_seconds": -3.8065133260001858,
+            "repeat": 1
+          },
+          {
+            "production_divided_by_baseline": 1.1047170754760272,
+            "production_minus_baseline_seconds": 1.5412262929999088,
+            "repeat": 2
+          },
+          {
+            "production_divided_by_baseline": 0.9920646998014736,
+            "production_minus_baseline_seconds": -0.12105225000050268,
+            "repeat": 3
+          },
+          {
+            "production_divided_by_baseline": 1.2135167550379404,
+            "production_minus_baseline_seconds": 2.9280736620003154,
+            "repeat": 4
+          }
+        ],
+        "ratio_bootstrap95": [
+          0.7904575569460495,
+          1.2135167550379404
+        ],
+        "semantic_parity": "EQUIVALENT_COMMON_ARITHMETIC",
+        "speed_advantage": "DESCRIPTIVE_COMMON_TASK_ONLY; FULL_PRODUCT_INCONCLUSIVE"
+      }
+    ],
+    "completed_utc": "2026-11-16T19:48:05Z",
+    "generation": [
+      {
+        "allocation": "one shared paired input; not charged three times",
+        "bytes": 51307,
+        "cpu_seconds": 0.004903418,
+        "events": 100,
+        "path": "/workspace/validation-gate2-evidence/benchmark/common-full/inputs/events100-seed11.json",
+        "seed": 11,
+        "sha256": "266a6716b7146025dae2bf7fd479eee47ef1f07f2e54cbd535382f5c099fe67a",
+        "wall_seconds": 0.004902790999949502
+      },
+      {
+        "allocation": "one shared paired input; not charged three times",
+        "bytes": 51307,
+        "cpu_seconds": 0.0023969579999999907,
+        "events": 100,
+        "path": "/workspace/validation-gate2-evidence/benchmark/common-full/inputs/events100-seed29.json",
+        "seed": 29,
+        "sha256": "8c06cb37641a121505fb713e6370c5a0e89f55c3bd28e55e4edfd5e8a04678a4",
+        "wall_seconds": 0.0024122210002133215
+      },
+      {
+        "allocation": "one shared paired input; not charged three times",
+        "bytes": 51307,
+        "cpu_seconds": 0.001359448000000013,
+        "events": 100,
+        "path": "/workspace/validation-gate2-evidence/benchmark/common-full/inputs/events100-seed47.json",
+        "seed": 47,
+        "sha256": "74e1b53f83d1eb1d4dcded42d33d1466ba9566f9b6c5d84bb10dfbe8e1db6f56",
+        "wall_seconds": 0.0013753670000369311
+      },
+      {
+        "allocation": "one shared paired input; not charged three times",
+        "bytes": 51307,
+        "cpu_seconds": 0.0015546579999999866,
+        "events": 100,
+        "path": "/workspace/validation-gate2-evidence/benchmark/common-full/inputs/events100-seed71.json",
+        "seed": 71,
+        "sha256": "88dd87c4b4707181dbf945eb17f5efff66e4ac871e7cfd862cfaa0d9f4c21065",
+        "wall_seconds": 0.0015682880000440491
+      },
+      {
+        "allocation": "one shared paired input; not charged three times",
+        "bytes": 51307,
+        "cpu_seconds": 0.0025087040000000005,
+        "events": 100,
+        "path": "/workspace/validation-gate2-evidence/benchmark/common-full/inputs/events100-seed97.json",
+        "seed": 97,
+        "sha256": "bc5d32111bb53d409cfaf9b3329098fdf2ad2038d250a1c16e10135bd2b10858",
+        "wall_seconds": 0.002509375000045111
+      },
+      {
+        "allocation": "one shared paired input; not charged three times",
+        "bytes": 462909,
+        "cpu_seconds": 0.012699128000000004,
+        "events": 1000,
+        "path": "/workspace/validation-gate2-evidence/benchmark/common-full/inputs/events1000-seed11.json",
+        "seed": 11,
+        "sha256": "4b3a5ec36cb769d84672f6576eb589ae700e3a03cb6f0f349ceb23f44bc5c590",
+        "wall_seconds": 0.012824902999909682
+      },
+      {
+        "allocation": "one shared paired input; not charged three times",
+        "bytes": 462909,
+        "cpu_seconds": 0.012238574000000002,
+        "events": 1000,
+        "path": "/workspace/validation-gate2-evidence/benchmark/common-full/inputs/events1000-seed29.json",
+        "seed": 29,
+        "sha256": "9dd209bc78cc89d810355fba0816f913f9830e504593407ccf74897699aa6f93",
+        "wall_seconds": 0.01225186500005293
+      },
+      {
+        "allocation": "one shared paired input; not charged three times",
+        "bytes": 462909,
+        "cpu_seconds": 0.012096523999999997,
+        "events": 1000,
+        "path": "/workspace/validation-gate2-evidence/benchmark/common-full/inputs/events1000-seed47.json",
+        "seed": 47,
+        "sha256": "6d95b7c02991a86c8384c8be83f9143ead0eaffc3aa2911a32287917d6a7b7aa",
+        "wall_seconds": 0.01211857999987842
+      },
+      {
+        "allocation": "one shared paired input; not charged three times",
+        "bytes": 462909,
+        "cpu_seconds": 0.013020765999999961,
+        "events": 1000,
+        "path": "/workspace/validation-gate2-evidence/benchmark/common-full/inputs/events1000-seed71.json",
+        "seed": 71,
+        "sha256": "6e7579229816431eb6b39c3044e547f2bb4daf4685d363467e12bd0b672ec2a3",
+        "wall_seconds": 0.013037326999892684
+      },
+      {
+        "allocation": "one shared paired input; not charged three times",
+        "bytes": 462909,
+        "cpu_seconds": 0.012178323999999963,
+        "events": 1000,
+        "path": "/workspace/validation-gate2-evidence/benchmark/common-full/inputs/events1000-seed97.json",
+        "seed": 97,
+        "sha256": "163276fa53afd25f2e93d4c88b32c1ac16883d9ae921c83eec1f9c35d14fbc9d",
+        "wall_seconds": 0.012254384999778267
+      },
+      {
+        "allocation": "one shared paired input; not charged three times",
+        "bytes": 4596911,
+        "cpu_seconds": 0.12394723600000002,
+        "events": 10000,
+        "path": "/workspace/validation-gate2-evidence/benchmark/common-full/inputs/events10000-seed11.json",
+        "seed": 11,
+        "sha256": "c246c488a9845ad11e9628fd647cb1fb826ec6bc797bd3684781f247801926c2",
+        "wall_seconds": 0.12396587100010947
+      },
+      {
+        "allocation": "one shared paired input; not charged three times",
+        "bytes": 4596911,
+        "cpu_seconds": 0.12631425000000007,
+        "events": 10000,
+        "path": "/workspace/validation-gate2-evidence/benchmark/common-full/inputs/events10000-seed29.json",
+        "seed": 29,
+        "sha256": "18b98a61385f52e66fbd4eb7c793f1cca44c10490cec3ed31cf7e3d8147a78aa",
+        "wall_seconds": 0.12649294799985
+      },
+      {
+        "allocation": "one shared paired input; not charged three times",
+        "bytes": 4596911,
+        "cpu_seconds": 0.11760084700000006,
+        "events": 10000,
+        "path": "/workspace/validation-gate2-evidence/benchmark/common-full/inputs/events10000-seed47.json",
+        "seed": 47,
+        "sha256": "79bb5ef148e6fdd07eeff011dd98b0bcffb792ef13aa29b8629981d4f9a61535",
+        "wall_seconds": 0.1177706080002281
+      },
+      {
+        "allocation": "one shared paired input; not charged three times",
+        "bytes": 4596911,
+        "cpu_seconds": 0.136951013,
+        "events": 10000,
+        "path": "/workspace/validation-gate2-evidence/benchmark/common-full/inputs/events10000-seed71.json",
+        "seed": 71,
+        "sha256": "422f39c3905d9ac9134c7c3ffcbce03727f08c8f7a3985f4b73eb3b04715686a",
+        "wall_seconds": 0.13702981099959288
+      },
+      {
+        "allocation": "one shared paired input; not charged three times",
+        "bytes": 4596911,
+        "cpu_seconds": 0.12089806000000003,
+        "events": 10000,
+        "path": "/workspace/validation-gate2-evidence/benchmark/common-full/inputs/events10000-seed97.json",
+        "seed": 97,
+        "sha256": "ffb01c56ed527669e696f139ccfade7d935f74f6f5efc52d4596beed14e37dbc",
+        "wall_seconds": 0.12090965400011555
+      }
+    ],
+    "git_head_at_start": "f3dff8dd00837ac7ce6e9bb687dd4861f790cbac",
+    "host": {
+      "cgroup_limits": {
+        "cpu.max": "400000 100000",
+        "memory.max": "34359738368"
+      },
+      "cpu_affinity": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "loadavg": [
+        0.85693359375,
+        1.6650390625,
+        1.29541015625
+      ],
+      "machine": "x86_64",
+      "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+      "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+      "sqlite": "3.53.1"
+    },
+    "max_postprocess_disk_bytes": 46513481,
+    "parity": [
+      {
+        "events": 100,
+        "repeat": 0,
+        "status": "EQUIVALENT_COMMON_ARITHMETIC"
+      },
+      {
+        "events": 100,
+        "repeat": 1,
+        "status": "EQUIVALENT_COMMON_ARITHMETIC"
+      },
+      {
+        "events": 100,
+        "repeat": 2,
+        "status": "EQUIVALENT_COMMON_ARITHMETIC"
+      },
+      {
+        "events": 100,
+        "repeat": 3,
+        "status": "EQUIVALENT_COMMON_ARITHMETIC"
+      },
+      {
+        "events": 100,
+        "repeat": 4,
+        "status": "EQUIVALENT_COMMON_ARITHMETIC"
+      },
+      {
+        "events": 1000,
+        "repeat": 0,
+        "status": "EQUIVALENT_COMMON_ARITHMETIC"
+      },
+      {
+        "events": 1000,
+        "repeat": 1,
+        "status": "EQUIVALENT_COMMON_ARITHMETIC"
+      },
+      {
+        "events": 1000,
+        "repeat": 2,
+        "status": "EQUIVALENT_COMMON_ARITHMETIC"
+      },
+      {
+        "events": 1000,
+        "repeat": 3,
+        "status": "EQUIVALENT_COMMON_ARITHMETIC"
+      },
+      {
+        "events": 1000,
+        "repeat": 4,
+        "status": "EQUIVALENT_COMMON_ARITHMETIC"
+      },
+      {
+        "events": 10000,
+        "repeat": 0,
+        "status": "EQUIVALENT_COMMON_ARITHMETIC"
+      },
+      {
+        "events": 10000,
+        "repeat": 1,
+        "status": "EQUIVALENT_COMMON_ARITHMETIC"
+      },
+      {
+        "events": 10000,
+        "repeat": 2,
+        "status": "EQUIVALENT_COMMON_ARITHMETIC"
+      },
+      {
+        "events": 10000,
+        "repeat": 3,
+        "status": "EQUIVALENT_COMMON_ARITHMETIC"
+      },
+      {
+        "events": 10000,
+        "repeat": 4,
+        "status": "EQUIVALENT_COMMON_ARITHMETIC"
+      }
+    ],
+    "program_cost": {
+      "controller_cpu_seconds": 1.8695697679999999,
+      "money": "NOT_ESTIMATED",
+      "physical_device_io": "NOT_OBSERVABLE",
+      "ram_seconds": "NOT_MEASURED",
+      "wall_seconds": 268.45159201900015,
+      "worker_cpu_seconds": 84.101737
+    },
+    "started_utc": "2026-11-16T19:43:37Z",
+    "status": "COMPLETE",
+    "summary": [
+      {
+        "completed_repeats": 5,
+        "cpu_seconds": {
+          "max": 0.080833877,
+          "min": 0.06949164499999999,
+          "p50": 0.079006597,
+          "p95_nearest_rank": 0.080833877
+        },
+        "disk_bytes": {
+          "max": 381218,
+          "min": 381218,
+          "p50": 381218,
+          "p95_nearest_rank": 381218
+        },
+        "events": 100,
+        "export_bytes": 290,
+        "method": "stdlib_integer",
+        "peak_rss_kib": {
+          "max": 17016,
+          "min": 15104,
+          "p50": 15744,
+          "p95_nearest_rank": 17016
+        },
+        "phase_wall_medians": {
+          "close": 0.00038373899997168337,
+          "evidence_export": 8.26649998089124e-05,
+          "ingest": 0.18994189099998948,
+          "initialize": 0.04327604599984625,
+          "persist": 0.0032071010000436218,
+          "read_input": 0.00027038799998990726,
+          "recompute": 0.0007672770000226592,
+          "reread_verify": 0.0002985610001360328,
+          "validate_common_contract": 0.0005625799999506853
+        },
+        "status": "MEASURED",
+        "throughput_events_per_second": {
+          "max": 429.66959654085326,
+          "min": 328.91397824249043,
+          "p50": 407.42488170940175,
+          "p95_nearest_rank": 429.66959654085326
+        },
+        "wall_seconds": {
+          "max": 0.3040308610000011,
+          "min": 0.23273696999990534,
+          "p50": 0.24544401800017113,
+          "p95_nearest_rank": 0.3040308610000011
+        }
+      },
+      {
+        "completed_repeats": 5,
+        "cpu_seconds": {
+          "max": 0.105331112,
+          "min": 0.073573675,
+          "p50": 0.076128752,
+          "p95_nearest_rank": 0.105331112
+        },
+        "disk_bytes": {
+          "max": 381218,
+          "min": 381218,
+          "p50": 381218,
+          "p95_nearest_rank": 381218
+        },
+        "events": 100,
+        "export_bytes": 290,
+        "method": "sqlite_integer",
+        "peak_rss_kib": {
+          "max": 16888,
+          "min": 14976,
+          "p50": 16128,
+          "p95_nearest_rank": 16888
+        },
+        "phase_wall_medians": {
+          "close": 0.0007448640001257445,
+          "evidence_export": 0.0002107780001097126,
+          "ingest": 0.19070948600005977,
+          "initialize": 0.043491395000046396,
+          "persist": 0.0026767680001285044,
+          "read_input": 0.00026802499996847473,
+          "recompute": 0.001805396000008841,
+          "reread_verify": 0.0003600439999900118,
+          "validate_common_contract": 0.0006535259999509435
+        },
+        "status": "MEASURED",
+        "throughput_events_per_second": {
+          "max": 409.50667954728146,
+          "min": 362.4594787971957,
+          "p50": 382.30985182005213,
+          "p95_nearest_rank": 409.50667954728146
+        },
+        "wall_seconds": {
+          "max": 0.27589290900004926,
+          "min": 0.24419626100007008,
+          "p50": 0.2615679390000878,
+          "p95_nearest_rank": 0.27589290900004926
+        }
+      },
+      {
+        "completed_repeats": 5,
+        "cpu_seconds": {
+          "max": 0.19446362299999997,
+          "min": 0.07437319,
+          "p50": 0.083664512,
+          "p95_nearest_rank": 0.19446362299999997
+        },
+        "disk_bytes": {
+          "max": 381218,
+          "min": 381218,
+          "p50": 381218,
+          "p95_nearest_rank": 381218
+        },
+        "events": 100,
+        "export_bytes": 290,
+        "method": "production",
+        "peak_rss_kib": {
+          "max": 17272,
+          "min": 15744,
+          "p50": 16000,
+          "p95_nearest_rank": 17272
+        },
+        "phase_wall_medians": {
+          "close": 0.0004242210000029445,
+          "evidence_export": 9.34509998842259e-05,
+          "ingest": 0.20995091700001467,
+          "initialize": 0.04159192200017969,
+          "persist": 0.0032167059998755576,
+          "read_input": 0.0003081049999309471,
+          "recompute": 0.005507845000011002,
+          "reread_verify": 0.0003753659998437797,
+          "validate_common_contract": 0.0006481279999661638
+        },
+        "status": "MEASURED",
+        "throughput_events_per_second": {
+          "max": 406.02812745248656,
+          "min": 221.28606660007142,
+          "p50": 367.7581028419636,
+          "p95_nearest_rank": 406.02812745248656
+        },
+        "wall_seconds": {
+          "max": 0.4519037349998598,
+          "min": 0.24628835599992271,
+          "p50": 0.27191786999992473,
+          "p95_nearest_rank": 0.4519037349998598
+        }
+      },
+      {
+        "completed_repeats": 5,
+        "cpu_seconds": {
+          "max": 0.496196626,
+          "min": 0.455754257,
+          "p50": 0.473323819,
+          "p95_nearest_rank": 0.496196626
+        },
+        "disk_bytes": {
+          "max": 1417506,
+          "min": 1405218,
+          "p50": 1413410,
+          "p95_nearest_rank": 1417506
+        },
+        "events": 1000,
+        "export_bytes": 290,
+        "method": "stdlib_integer",
+        "peak_rss_kib": {
+          "max": 19724,
+          "min": 18680,
+          "p50": 19520,
+          "p95_nearest_rank": 19724
+        },
+        "phase_wall_medians": {
+          "close": 0.0005321429998730309,
+          "evidence_export": 0.0001501069998539606,
+          "ingest": 1.623282116000155,
+          "initialize": 0.0357804440000109,
+          "persist": 0.002929726000274968,
+          "read_input": 0.006498878999991575,
+          "recompute": 0.007492458999877272,
+          "reread_verify": 0.0005081070003143395,
+          "validate_common_contract": 0.007206897999822104
+        },
+        "status": "MEASURED",
+        "throughput_events_per_second": {
+          "max": 698.8503059170877,
+          "min": 565.8825457640346,
+          "p50": 589.5806165089334,
+          "p95_nearest_rank": 698.8503059170877
+        },
+        "wall_seconds": {
+          "max": 1.7671511649998592,
+          "min": 1.4309216030001153,
+          "p50": 1.696120890000202,
+          "p95_nearest_rank": 1.7671511649998592
+        }
+      },
+      {
+        "completed_repeats": 5,
+        "cpu_seconds": {
+          "max": 0.5416377419999999,
+          "min": 0.487794418,
+          "p50": 0.491775577,
+          "p95_nearest_rank": 0.5416377419999999
+        },
+        "disk_bytes": {
+          "max": 1417506,
+          "min": 1405218,
+          "p50": 1413410,
+          "p95_nearest_rank": 1417506
+        },
+        "events": 1000,
+        "export_bytes": 290,
+        "method": "sqlite_integer",
+        "peak_rss_kib": {
+          "max": 19724,
+          "min": 18680,
+          "p50": 19520,
+          "p95_nearest_rank": 19724
+        },
+        "phase_wall_medians": {
+          "close": 0.0006859949999125092,
+          "evidence_export": 5.241899998509325e-05,
+          "ingest": 1.6904852469997422,
+          "initialize": 0.03819572000020344,
+          "persist": 0.0029935630000181845,
+          "read_input": 0.0028924460002599517,
+          "recompute": 0.010076859000037075,
+          "reread_verify": 0.0005115929998282809,
+          "validate_common_contract": 0.0062856269996700576
+        },
+        "status": "MEASURED",
+        "throughput_events_per_second": {
+          "max": 612.5532232487607,
+          "min": 536.6868812767447,
+          "p50": 568.286082856428,
+          "p95_nearest_rank": 612.5532232487607
+        },
+        "wall_seconds": {
+          "max": 1.8632838530002118,
+          "min": 1.6325112040001386,
+          "p50": 1.7596770889999789,
+          "p95_nearest_rank": 1.8632838530002118
+        }
+      },
+      {
+        "completed_repeats": 5,
+        "cpu_seconds": {
+          "max": 0.624649276,
+          "min": 0.487432982,
+          "p50": 0.526567053,
+          "p95_nearest_rank": 0.624649276
+        },
+        "disk_bytes": {
+          "max": 1417506,
+          "min": 1405218,
+          "p50": 1413410,
+          "p95_nearest_rank": 1417506
+        },
+        "events": 1000,
+        "export_bytes": 290,
+        "method": "production",
+        "peak_rss_kib": {
+          "max": 23924,
+          "min": 23792,
+          "p50": 23796,
+          "p95_nearest_rank": 23924
+        },
+        "phase_wall_medians": {
+          "close": 0.0004393320000417589,
+          "evidence_export": 6.548800001837662e-05,
+          "ingest": 1.5925420809999196,
+          "initialize": 0.038504190000139715,
+          "persist": 0.003590955000163376,
+          "read_input": 0.004485117000058381,
+          "recompute": 0.04726813000002039,
+          "reread_verify": 0.0007068170000366081,
+          "validate_common_contract": 0.007442426999659801
+        },
+        "status": "MEASURED",
+        "throughput_events_per_second": {
+          "max": 690.6369933947727,
+          "min": 444.77035199542973,
+          "p50": 591.2939533925115,
+          "p95_nearest_rank": 690.6369933947727
+        },
+        "wall_seconds": {
+          "max": 2.2483513020001737,
+          "min": 1.447938656000133,
+          "p50": 1.6912062000001242,
+          "p95_nearest_rank": 2.2483513020001737
+        }
+      },
+      {
+        "completed_repeats": 5,
+        "cpu_seconds": {
+          "max": 4.502747251000001,
+          "min": 4.249510153,
+          "p50": 4.386445272,
+          "p95_nearest_rank": 4.502747251000001
+        },
+        "disk_bytes": {
+          "max": 12034338,
+          "min": 11997474,
+          "p50": 12013858,
+          "p95_nearest_rank": 12034338
+        },
+        "events": 10000,
+        "export_bytes": 290,
+        "method": "stdlib_integer",
+        "peak_rss_kib": {
+          "max": 53272,
+          "min": 53272,
+          "p50": 53272,
+          "p95_nearest_rank": 53272
+        },
+        "phase_wall_medians": {
+          "close": 0.0005397949998950935,
+          "evidence_export": 7.394199974442017e-05,
+          "ingest": 14.017546498000229,
+          "initialize": 0.02950891299997238,
+          "persist": 0.002951338000002579,
+          "read_input": 0.029684661000374035,
+          "recompute": 0.09621724099997664,
+          "reread_verify": 0.002382468999712728,
+          "validate_common_contract": 0.059016467000219563
+        },
+        "status": "MEASURED",
+        "throughput_events_per_second": {
+          "max": 738.0556240192523,
+          "min": 663.6959590408699,
+          "p50": 702.4492781705015,
+          "p95_nearest_rank": 738.0556240192523
+        },
+        "wall_seconds": {
+          "max": 15.06714010199994,
+          "min": 13.549114287000066,
+          "p50": 14.235903304000203,
+          "p95_nearest_rank": 15.06714010199994
+        }
+      },
+      {
+        "completed_repeats": 5,
+        "cpu_seconds": {
+          "max": 5.170399634000001,
+          "min": 4.333100587000001,
+          "p50": 4.73258843,
+          "p95_nearest_rank": 5.170399634000001
+        },
+        "disk_bytes": {
+          "max": 12034338,
+          "min": 11997474,
+          "p50": 12013858,
+          "p95_nearest_rank": 12034338
+        },
+        "events": 10000,
+        "export_bytes": 290,
+        "method": "sqlite_integer",
+        "peak_rss_kib": {
+          "max": 53272,
+          "min": 53272,
+          "p50": 53272,
+          "p95_nearest_rank": 53272
+        },
+        "phase_wall_medians": {
+          "close": 0.0004741669999930309,
+          "evidence_export": 6.495800016637077e-05,
+          "ingest": 14.894889046000117,
+          "initialize": 0.038407200000165176,
+          "persist": 0.0034755700003188394,
+          "read_input": 0.0337322000000313,
+          "recompute": 0.09080755700006193,
+          "reread_verify": 0.002470131999871228,
+          "validate_common_contract": 0.06215812399977949
+        },
+        "status": "MEASURED",
+        "throughput_events_per_second": {
+          "max": 729.2055449591263,
+          "min": 515.5586292070337,
+          "p50": 655.5268653406649,
+          "p95_nearest_rank": 729.2055449591263
+        },
+        "wall_seconds": {
+          "max": 19.396436085999994,
+          "min": 13.713554523999846,
+          "p50": 15.254904915000225,
+          "p95_nearest_rank": 19.396436085999994
+        }
+      },
+      {
+        "completed_repeats": 5,
+        "cpu_seconds": {
+          "max": 5.263823094,
+          "min": 4.9788831280000005,
+          "p50": 5.131465507000001,
+          "p95_nearest_rank": 5.263823094
+        },
+        "disk_bytes": {
+          "max": 12034338,
+          "min": 11997474,
+          "p50": 12013858,
+          "p95_nearest_rank": 12034338
+        },
+        "events": 10000,
+        "export_bytes": 290,
+        "method": "production",
+        "peak_rss_kib": {
+          "max": 96892,
+          "min": 96652,
+          "p50": 96840,
+          "p95_nearest_rank": 96892
+        },
+        "phase_wall_medians": {
+          "close": 0.0006310379999376892,
+          "evidence_export": 0.00018247500020152074,
+          "ingest": 14.540807720999965,
+          "initialize": 0.03263204899985794,
+          "persist": 0.0030016010000508686,
+          "read_input": 0.062125090999870736,
+          "recompute": 0.6470191640000849,
+          "reread_verify": 0.0028253309997126053,
+          "validate_common_contract": 0.06464184600008593
+        },
+        "status": "MEASURED",
+        "throughput_events_per_second": {
+          "max": 660.7702758417322,
+          "min": 600.9027415005306,
+          "p50": 652.2280983673635,
+          "p95_nearest_rank": 660.7702758417322
+        },
+        "wall_seconds": {
+          "max": 16.641628186000162,
+          "min": 15.133852664999722,
+          "p50": 15.33205948199975,
+          "p95_nearest_rank": 16.641628186000162
+        }
+      }
+    ]
+  },
+  "common_source": {
+    "bytes": 1250298,
+    "path": "/workspace/validation-gate2-evidence/benchmark/common-full/results.json",
+    "sha256": "ca580d9feb59cdc1cea0dc69281b2d18c5b5d931e21fcbbe4960c40e2215f639"
+  },
+  "data_class": "FULLY_SYNTHETIC",
+  "equal_evidence_history_lane": {
+    "parity": "NARROWER_SCOPE",
+    "speed_advantage": "INCONCLUSIVE",
+    "status": "NOT_IMPLEMENTED"
+  },
+  "format": "benchmark-gate2-report-v1",
+  "institutional_cost_savings": "NOT_PROVEN",
+  "institutional_risk_reduction": "NOT_PROVEN",
+  "inventory_validation": {
+    "expected": 45,
+    "measurement_authenticity": "NOT_ATTESTED",
+    "observed": 45,
+    "status": "PASS"
+  },
+  "triage": {
+    "comparative_status": "NOT_A_COMPARISON",
+    "completed_utc": "2026-11-16T19:51:29Z",
+    "generation": [
+      {
+        "allocation": "one shared paired input; not charged three times",
+        "bytes": 46116913,
+        "cpu_seconds": 2.461679272,
+        "events": 100000,
+        "path": "/workspace/validation-gate2-evidence/benchmark/capacity-triage/inputs/events100000-seed11.json",
+        "seed": 11,
+        "sha256": "85c78c20590d2b7162b6ea076dd0abdb10ed9f9b318b985f45c5f938a0f85e88",
+        "wall_seconds": 2.4633310809999784
+      },
+      {
+        "allocation": "one shared paired input; not charged three times",
+        "bytes": 11516911,
+        "cpu_seconds": 0.5166259899999996,
+        "events": 25000,
+        "path": "/workspace/validation-gate2-evidence/benchmark/capacity-triage/inputs/events25000-seed11.json",
+        "seed": 11,
+        "sha256": "1f6b932d04268c48c11bfaba477615d6935d886fee9505e1f77183211d808569",
+        "wall_seconds": 0.5296248200002083
+      },
+      {
+        "allocation": "one shared paired input; not charged three times",
+        "bytes": 23050240,
+        "cpu_seconds": 0.6967707340000002,
+        "events": 50000,
+        "path": "/workspace/validation-gate2-evidence/benchmark/capacity-triage/inputs/events50000-seed11.json",
+        "seed": 11,
+        "sha256": "36aad48c8f3776a43da1591948e2fa7675a54f5248749e469888c5b55c35a145",
+        "wall_seconds": 0.6972568409996711
+      }
+    ],
+    "program_cost": {
+      "controller_cpu_seconds": 3.8720061880000003,
+      "money": "NOT_ESTIMATED",
+      "physical_device_io": "NOT_OBSERVABLE",
+      "ram_seconds": "NOT_MEASURED",
+      "wall_seconds": 158.97002927899985,
+      "worker_cpu_seconds": 49.047838999999996
+    },
+    "started_utc": "2026-11-16T19:48:51Z",
+    "status": "PARTIAL",
+    "trials": [
+      {
+        "artifact_inventory": [
+          {
+            "bytes": 41537536,
+            "name": "input.sqlite3",
+            "retained": false,
+            "sha256": "b3540b5d5c08d31a54887b5922b9512705ac7f6ead56161991809fb0a37db9f4"
+          }
+        ],
+        "command": [
+          "/workspace/crypto-reconciliation-lab/.venv/bin/python",
+          "-B",
+          "-m",
+          "validation_lab.benchmark_gate2",
+          "--worker",
+          "production",
+          "--input",
+          "/workspace/validation-gate2-evidence/benchmark/capacity-triage/inputs/events100000-seed11.json",
+          "--output",
+          "/workspace/validation-gate2-evidence/benchmark/capacity-triage/trials/n100000-r0-production"
+        ],
+        "completed_utc": "2026-11-16T19:49:53Z",
+        "cwd": "/workspace/crypto-reconciliation-lab",
+        "events": 100000,
+        "exit_code": -9,
+        "input": {
+          "bytes": 46116913,
+          "path": "/workspace/validation-gate2-evidence/benchmark/capacity-triage/inputs/events100000-seed11.json",
+          "sha256": "85c78c20590d2b7162b6ea076dd0abdb10ed9f9b318b985f45c5f938a0f85e88"
+        },
+        "last_progress": {
+          "committed_receipts": 34000,
+          "completed_phases": {
+            "initialize": {
+              "cpu_seconds": 0.015725189999999944,
+              "wall_seconds": 0.04000990400027149
+            },
+            "read_input": {
+              "cpu_seconds": 0.440443337,
+              "wall_seconds": 0.4409678869997151
+            },
+            "validate_common_contract": {
+              "cpu_seconds": 0.8024887680000001,
+              "wall_seconds": 0.8056725209999058
+            }
+          },
+          "elapsed_seconds": 58.72794494300024,
+          "phase": "ingest",
+          "state": "RUNNING"
+        },
+        "loadavg_before": [
+          0.55224609375,
+          1.12158203125,
+          1.171875
+        ],
+        "method": "production",
+        "repeat": 0,
+        "seed": 11,
+        "started_utc": "2026-11-16T19:48:53Z",
+        "status": "TIMEOUT",
+        "stderr": "",
+        "stdout": "",
+        "subprocess_wall_seconds": 60.06627988800028,
+        "timed_out": true,
+        "timeout_seconds": 60.0
+      },
+      {
+        "artifact_inventory": [
+          {
+            "bytes": 29700096,
+            "name": "input.sqlite3",
+            "retained": false,
+            "sha256": "e624c52e97ea0aa08f780a567c6c9982cc352733de784255fea10a95f8961b9b"
+          },
+          {
+            "bytes": 290,
+            "name": "export.json",
+            "retained": false,
+            "sha256": "ee184505385e0b8674c94235027fcacc80797cbf4e2d0d8b7f96bfd8b195ddf3"
+          },
+          {
+            "bytes": 8192,
+            "name": "result.sqlite3",
+            "retained": false,
+            "sha256": "eb4bf96725ae790bbbe4ed3e2683c0305a191ce3b1d53cb60843fb0d4c816ac9"
+          }
+        ],
+        "command": [
+          "/workspace/crypto-reconciliation-lab/.venv/bin/python",
+          "-B",
+          "-m",
+          "validation_lab.benchmark_gate2",
+          "--worker",
+          "production",
+          "--input",
+          "/workspace/validation-gate2-evidence/benchmark/capacity-triage/inputs/events25000-seed11.json",
+          "--output",
+          "/workspace/validation-gate2-evidence/benchmark/capacity-triage/trials/n25000-r0-production"
+        ],
+        "completed_utc": "2026-11-16T19:50:29Z",
+        "cwd": "/workspace/crypto-reconciliation-lab",
+        "events": 25000,
+        "exit_code": 0,
+        "input": {
+          "bytes": 11516911,
+          "path": "/workspace/validation-gate2-evidence/benchmark/capacity-triage/inputs/events25000-seed11.json",
+          "sha256": "1f6b932d04268c48c11bfaba477615d6935d886fee9505e1f77183211d808569"
+        },
+        "last_progress": {
+          "committed_receipts": 25017,
+          "completed_phases": {
+            "close": {
+              "cpu_seconds": 0.00013992699999931801,
+              "wall_seconds": 0.0006174820000524051
+            },
+            "evidence_export": {
+              "cpu_seconds": 0.00010232199999826719,
+              "wall_seconds": 7.067599972288008e-05
+            },
+            "ingest": {
+              "cpu_seconds": 9.924763791,
+              "wall_seconds": 32.037056217999634
+            },
+            "initialize": {
+              "cpu_seconds": 0.013101509000000011,
+              "wall_seconds": 0.030575338999824453
+            },
+            "persist": {
+              "cpu_seconds": 0.0008492210000010658,
+              "wall_seconds": 0.005198426000333711
+            },
+            "read_input": {
+              "cpu_seconds": 0.179654239,
+              "wall_seconds": 0.1810782399998061
+            },
+            "recompute": {
+              "cpu_seconds": 2.372796452000001,
+              "wall_seconds": 2.3798511859999962
+            },
+            "reread_verify": {
+              "cpu_seconds": 0.006456582999998517,
+              "wall_seconds": 0.006595509999897331
+            },
+            "validate_common_contract": {
+              "cpu_seconds": 0.165019197,
+              "wall_seconds": 0.16602540800022325
+            }
+          },
+          "elapsed_seconds": 34.815465809000216,
+          "phase": "reread_verify",
+          "state": "COMPLETED"
+        },
+        "loadavg_before": [
+          0.8759765625,
+          1.111328125,
+          1.166015625
+        ],
+        "method": "production",
+        "metrics": {
+          "artifacts": {
+            "export.json": {
+              "bytes": 290,
+              "sha256": "ee184505385e0b8674c94235027fcacc80797cbf4e2d0d8b7f96bfd8b195ddf3"
+            },
+            "input.sqlite3": {
+              "bytes": 29700096,
+              "sha256": "e624c52e97ea0aa08f780a567c6c9982cc352733de784255fea10a95f8961b9b"
+            },
+            "result.sqlite3": {
+              "bytes": 8192,
+              "sha256": "eb4bf96725ae790bbbe4ed3e2683c0305a191ce3b1d53cb60843fb0d4c816ac9"
+            }
+          },
+          "bindings": {
+            "contracts/benchmark-gate2-protocol.json": {
+              "bytes": 5957,
+              "sha256": "ef715d58b8ea0feb565cd1328c47f24f2726f339980767e7e4cbd6c0647257cb"
+            },
+            "crypto_reconciliation_lab/__init__.py": {
+              "bytes": 174,
+              "sha256": "6bab11c166c90ccead0d5b25986e4637bc05e7df87fbda7901a8678b85c67ef8"
+            },
+            "crypto_reconciliation_lab/__main__.py": {
+              "bytes": 48,
+              "sha256": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d"
+            },
+            "crypto_reconciliation_lab/admission/__init__.py": {
+              "bytes": 171,
+              "sha256": "5d92635a4cdebf6490d44d4cac1c583d3e575d90451a1c02034e26601c3c6bd6"
+            },
+            "crypto_reconciliation_lab/admission/feed.py": {
+              "bytes": 4566,
+              "sha256": "3c897bf7f467f933ecd8291ff6dcaa4b890c13702e8e1d52d731d0a4d791aee9"
+            },
+            "crypto_reconciliation_lab/admission/oracle.py": {
+              "bytes": 12760,
+              "sha256": "fd85454323ef5b2af832bf052836e3d2c886e1f7abe25684c68a95d443f260e6"
+            },
+            "crypto_reconciliation_lab/admission/recovery.py": {
+              "bytes": 39096,
+              "sha256": "710ef4a7651151d032921ca90539b8c9616b231f190f247c48dd7f65cbe35438"
+            },
+            "crypto_reconciliation_lab/admission/recovery_scope_v2.json": {
+              "bytes": 235471,
+              "sha256": "4b0f84fa393a7dceaacb4c62afa35a8a9aa2cda8a70c324b2d77a56711a18d71"
+            },
+            "crypto_reconciliation_lab/admission/runtime.py": {
+              "bytes": 12478,
+              "sha256": "b66fd378460cc263046788ba0ec070896c924dcbfe387206ced240780da3c2e0"
+            },
+            "crypto_reconciliation_lab/admission/scope.py": {
+              "bytes": 28914,
+              "sha256": "b21c004cb2db7d9cfb2b76860712a142519972f0c4b60663d481f2fb20c1c402"
+            },
+            "crypto_reconciliation_lab/admission/worker.py": {
+              "bytes": 2497,
+              "sha256": "62eeea5ca62bc3d5252a10c99cd8a523989256d04296fdc95bd736b991c0cc3b"
+            },
+            "crypto_reconciliation_lab/cli.py": {
+              "bytes": 27762,
+              "sha256": "0ab8d926d7d9efc9870973b8e69575eac8ac8aa1e27cb63abe6f2a518ed4c976"
+            },
+            "crypto_reconciliation_lab/correction_demo.py": {
+              "bytes": 9980,
+              "sha256": "719d761efec6a1a6d868ae8873124de5ee31b7abfb017a2238650896ef66d114"
+            },
+            "crypto_reconciliation_lab/correction_model.py": {
+              "bytes": 5051,
+              "sha256": "bd204fd1e7cfd76a59b661d223ba8dc3a1e30b4984a0976b7dc2a21caa441dd1"
+            },
+            "crypto_reconciliation_lab/corrections.py": {
+              "bytes": 10455,
+              "sha256": "a427779b0862995bb23754b0c1dc0a57123c670fc8056c3abbcddd826766a30c"
+            },
+            "crypto_reconciliation_lab/demo.py": {
+              "bytes": 8606,
+              "sha256": "ce9ca2b92e385f3e849fb18bac0070162da09ef1828f349b511ed04580d3ca3e"
+            },
+            "crypto_reconciliation_lab/engine.py": {
+              "bytes": 13049,
+              "sha256": "e06c9f1178444b9e9465fde3be6f666cc1bb8b54f0931fdef952864f5a39e2f6"
+            },
+            "crypto_reconciliation_lab/execution/__init__.py": {
+              "bytes": 337,
+              "sha256": "c2dccfaa6439326fe6f4ff07a5ccb32466a313ff26c7ae148bb27fba8e5ab15c"
+            },
+            "crypto_reconciliation_lab/execution/capture.py": {
+              "bytes": 17855,
+              "sha256": "d2bc0b8a3002fd36b8b958266a4e6e13f1d7f7deb515d9109ac1317a5f3e4155"
+            },
+            "crypto_reconciliation_lab/execution/common.py": {
+              "bytes": 1377,
+              "sha256": "00e4c18c44ce643a7100c485868f6f60643a9af5be59214b67bc8945d5a0a492"
+            },
+            "crypto_reconciliation_lab/execution/demo.py": {
+              "bytes": 29194,
+              "sha256": "df1c3a9a32cadfbf9a3a603c1daf1f2a9dc20d851dc0c9b5ab5f01969c6b16a4"
+            },
+            "crypto_reconciliation_lab/execution/reader.py": {
+              "bytes": 13239,
+              "sha256": "7f3a25825016dc041605e11d10fcc6660bf7c8291a483b35c06f7e2f720e0a45"
+            },
+            "crypto_reconciliation_lab/execution/runtime.py": {
+              "bytes": 7324,
+              "sha256": "e43863711a018cfd3df197818e70871acc0db1fbb017316c61cdc218e2444d2f"
+            },
+            "crypto_reconciliation_lab/lab/__init__.py": {
+              "bytes": 156,
+              "sha256": "5620bae52914c8dbc00079bc27cd99c44b3aab7644bf092862944b86dcc75c9f"
+            },
+            "crypto_reconciliation_lab/lab/benchmark.py": {
+              "bytes": 15326,
+              "sha256": "424fd03d3f6dbc621c294ec950d5073208e554079b539ae5da41643d3221e536"
+            },
+            "crypto_reconciliation_lab/lab/common.py": {
+              "bytes": 997,
+              "sha256": "1149b2957b2148968def9fd5fa693eb6286b3dfea4be8c6b043acf05eab5bb40"
+            },
+            "crypto_reconciliation_lab/lab/contracts.py": {
+              "bytes": 12972,
+              "sha256": "0cbb1f1e551d03454a9d77b220bd7e0999e9135861c66828b2ad6a5691a4a370"
+            },
+            "crypto_reconciliation_lab/lab/evidence_contract.py": {
+              "bytes": 24999,
+              "sha256": "a365390e36d3c8147214f8fc1089ab2f5b3f26ecaed6f5d3ad90f5effb61fe47"
+            },
+            "crypto_reconciliation_lab/lab/faults.py": {
+              "bytes": 11786,
+              "sha256": "3c848d9c5980c363bb14696d32dddac2911715d603a6df0034282994aee554a4"
+            },
+            "crypto_reconciliation_lab/lab/oracle.py": {
+              "bytes": 5012,
+              "sha256": "bad106111bfd25107586d3227e2cbe3f3ec91f9e457e1878b89c7455cc2de641"
+            },
+            "crypto_reconciliation_lab/lab/outcomes.py": {
+              "bytes": 1345,
+              "sha256": "c208cba0c7a655f48fd536c28f1b97e20f4627be768f4a44165b9e913da7ebea"
+            },
+            "crypto_reconciliation_lab/lab/profile_worker.py": {
+              "bytes": 9839,
+              "sha256": "57ddc41a2cca63d1e40fdeb819bcde0c5a29536109b9bf816b1f41f3db69c435"
+            },
+            "crypto_reconciliation_lab/lab/profiling.py": {
+              "bytes": 17814,
+              "sha256": "0aeecaf0a0c019ce74b5a9439c435437dd6c6d67546b26d726564596c4b582dc"
+            },
+            "crypto_reconciliation_lab/lab/runner.py": {
+              "bytes": 11036,
+              "sha256": "cfeab41a8714bd56a93ff1a292d69ea45a522626859d2166d1d49f980528d50d"
+            },
+            "crypto_reconciliation_lab/lab/scoring.py": {
+              "bytes": 6568,
+              "sha256": "91caed888108a95b497dcc6009bb6a2f0bf1f48a61699ac8e6f18ed76043a7f0"
+            },
+            "crypto_reconciliation_lab/lab/watchdog.py": {
+              "bytes": 7418,
+              "sha256": "03819c775e18d07fca3dfa00235d258174878d43712ea91a80b49f6cf9278016"
+            },
+            "crypto_reconciliation_lab/lab/worker.py": {
+              "bytes": 5981,
+              "sha256": "a9106ac970d91cbc39f377dd1fc83d90c7715c1eb96b307df5d48357ed8e68bd"
+            },
+            "crypto_reconciliation_lab/lab/world.py": {
+              "bytes": 4675,
+              "sha256": "60d83c276f63aa82edc08eb85b31b0c533423e0537a3d27e16cb509560e5e0a4"
+            },
+            "crypto_reconciliation_lab/migrations.py": {
+              "bytes": 31949,
+              "sha256": "d97f1ebcad314de89cc576ddfb270a2026168e26ed467979a072f73bcb9b44a5"
+            },
+            "crypto_reconciliation_lab/model.py": {
+              "bytes": 7390,
+              "sha256": "7fa362123a487a05106392c072e270e41f906b6d41db0a82b264d2a41c12ac45"
+            },
+            "crypto_reconciliation_lab/provenance/__init__.py": {
+              "bytes": 82,
+              "sha256": "aa2d26fdf809c9cb55afa57f76734a2868745006b8b73586cdb638a8e4991c1f"
+            },
+            "crypto_reconciliation_lab/provenance/common.py": {
+              "bytes": 4341,
+              "sha256": "4934f59818daa5d82c3c982cb5a1539c469de976cbe75a9554e914188b91e2ba"
+            },
+            "crypto_reconciliation_lab/provenance/demo.py": {
+              "bytes": 39050,
+              "sha256": "d65441cc21b07b1bbfca2970004eea7392d62d62540b38afec175382ed870f8f"
+            },
+            "crypto_reconciliation_lab/provenance/exporter.py": {
+              "bytes": 21864,
+              "sha256": "f5bab9af8db50f0b6916c472a3431cac89ce7dcb0df159a053971a5879da6fae"
+            },
+            "crypto_reconciliation_lab/provenance/ui.py": {
+              "bytes": 2406,
+              "sha256": "098f70d92661df0060b49056a1f86e577ed5184c121fedae96568fccb96940fe"
+            },
+            "crypto_reconciliation_lab/provenance/verifier.py": {
+              "bytes": 45688,
+              "sha256": "c677838e7ed288f2d54066ac323e42a155d9d5ee66f37b8effcccc8bbec2cd21"
+            },
+            "crypto_reconciliation_lab/quarantine.py": {
+              "bytes": 2623,
+              "sha256": "361ea0c6adff673b210fb304de985437326addd232910388c394398924139f9c"
+            },
+            "crypto_reconciliation_lab/replay/__init__.py": {
+              "bytes": 151,
+              "sha256": "83cdb47abcddc27a247bc3326a673744b5b85937172c6472ca39701e7c3b17de"
+            },
+            "crypto_reconciliation_lab/replay/adapter.py": {
+              "bytes": 2814,
+              "sha256": "dfc1ba1dcc22d4be6f267f2c59bea0fb3bf544285d3c34f980b2dc83ba1eb086"
+            },
+            "crypto_reconciliation_lab/replay/api.py": {
+              "bytes": 8846,
+              "sha256": "dee3a73035cd69ccbba6c7d9d80bd8b1a95c81be38299bcd99800d010f2e7c1a"
+            },
+            "crypto_reconciliation_lab/replay/common.py": {
+              "bytes": 541,
+              "sha256": "2e76ed14be4dc94e59e4d677fefaa879045fb62b1b38876352865ee6faf8a235"
+            },
+            "crypto_reconciliation_lab/replay/comparison.py": {
+              "bytes": 2766,
+              "sha256": "6e0728c3f4d0cc85326a1487c124f31af4f0d23f8d7ebff38474769e0d9fd77b"
+            },
+            "crypto_reconciliation_lab/replay/demo.py": {
+              "bytes": 15724,
+              "sha256": "4605675209026a42feade62f66e94151ed939f1e8d9a8542a2ea8a349f946acd"
+            },
+            "crypto_reconciliation_lab/replay/demo_catalog_v1.json": {
+              "bytes": 1231,
+              "sha256": "a479fae4a5c27be73d5ee8a6405e23daec16e1f04e80da34a7e2d530be7b99ca"
+            },
+            "crypto_reconciliation_lab/replay/fixtures/protected-context.json": {
+              "bytes": 138090,
+              "sha256": "db18fa42e2f81140172745a3a6f993221d9d4f2462dad44615044c8a0efe099e"
+            },
+            "crypto_reconciliation_lab/replay/fixtures/protected-run.json": {
+              "bytes": 36958,
+              "sha256": "14c675e3bdb3106451c069915db22095e9cacf26c1ab9e674b64d04754738dd0"
+            },
+            "crypto_reconciliation_lab/replay/report.py": {
+              "bytes": 4515,
+              "sha256": "6770c5cbb5d4f10fffca81597c1565620b7a927deb9acde49c38943a7a984cf3"
+            },
+            "crypto_reconciliation_lab/replay/validation.py": {
+              "bytes": 19568,
+              "sha256": "1a41bf0e94c1639781095c1780cbbea325cd26ccd22572123005c7e29c1c77b9"
+            },
+            "crypto_reconciliation_lab/replay/worker.py": {
+              "bytes": 3311,
+              "sha256": "885444aa54c37bc52959e65929b9e781cc1dfd2d0b853441860777304f937a22"
+            },
+            "crypto_reconciliation_lab/reporting.py": {
+              "bytes": 3518,
+              "sha256": "bc55c43f28d50779001f3018f747020b9620fe4b127b8f62ef349b6a645108db"
+            },
+            "crypto_reconciliation_lab/review/__init__.py": {
+              "bytes": 147,
+              "sha256": "000fe7bc8caa505731851cbe97fa2c301feea5f162a47d1c38e73b552e02f997"
+            },
+            "crypto_reconciliation_lab/review/adapter.py": {
+              "bytes": 19338,
+              "sha256": "64eefab1929aababb28f2d9f7e2c351d6b925d82433d2131be8c995fe362c7c1"
+            },
+            "crypto_reconciliation_lab/review/demo.py": {
+              "bytes": 8529,
+              "sha256": "76a4858ffc2e0741bf9e34e79eb7f450f75f2b78ab738ccaced85a3005793029"
+            },
+            "crypto_reconciliation_lab/review/export.py": {
+              "bytes": 6817,
+              "sha256": "209001053acdd93edba80add61a811f9a8e118a023691c15a87d7d0a3ce29456"
+            },
+            "crypto_reconciliation_lab/review/publication.py": {
+              "bytes": 2968,
+              "sha256": "a345917b71df61849089b73ac2806368af8c2ccb709352b53598e57adc5534a3"
+            },
+            "crypto_reconciliation_lab/review/validation.py": {
+              "bytes": 16185,
+              "sha256": "ff26d3e1824324d75e497ea489ea0b36983dc082e59a7ae7ccdd53f807d539e9"
+            },
+            "crypto_reconciliation_lab/review/viewmodel.py": {
+              "bytes": 5897,
+              "sha256": "4c9d9092e57be612e56f934a5a9de657b9ade56a17566f252be9772ff94101f6"
+            },
+            "crypto_reconciliation_lab/source_auth/__init__.py": {
+              "bytes": 87,
+              "sha256": "00f3cfa4ba183cca06b7ea6dbaec4210a10f0f9dc718b201ff43e7535614a6fc"
+            },
+            "crypto_reconciliation_lab/source_auth/crypto.py": {
+              "bytes": 6503,
+              "sha256": "af6225b2fa4c3c1a7cbdf6b52e37a316819a8b38b0724a320e13d67e67f9d87d"
+            },
+            "crypto_reconciliation_lab/source_auth/demo.py": {
+              "bytes": 16381,
+              "sha256": "ada3fa2340725836e0d0a31f722a7dc09e6f666c47c9c21c0fc68e7a48bed966"
+            },
+            "crypto_reconciliation_lab/source_auth/experiment_scope_v1.json": {
+              "bytes": 12281,
+              "sha256": "f31284225f0a3247759f6dea75cebc6065ea4c2847ace3091af3095cbdc655e1"
+            },
+            "crypto_reconciliation_lab/source_auth/fixtures.py": {
+              "bytes": 6129,
+              "sha256": "8c5cdc8912902f1d11aebae457f45dcdb263af1685e3ed448285437ad1530e65"
+            },
+            "crypto_reconciliation_lab/source_auth/policy.py": {
+              "bytes": 8446,
+              "sha256": "1d0f170e4c642ebd9c9421ff0c8989da9226b4c1427e9b767fe1ec1d9f34878e"
+            },
+            "crypto_reconciliation_lab/source_auth/runtime.py": {
+              "bytes": 12650,
+              "sha256": "6f66abc1dca48ad9d50e6611c9f355a038b4cc5eb848245f227ea036e69c96d3"
+            },
+            "crypto_reconciliation_lab/source_auth/schema.py": {
+              "bytes": 4143,
+              "sha256": "60d22d666c60aa8c2720510a58464305b4b5064a4fb83c8efc65a27926841968"
+            },
+            "crypto_reconciliation_lab/source_auth/scope.py": {
+              "bytes": 6209,
+              "sha256": "dde392ee971dafe5632eccdb86b9d95d8432accbd438390b74104717558fa6e9"
+            },
+            "crypto_reconciliation_lab/source_auth/verifier.py": {
+              "bytes": 60498,
+              "sha256": "49b5ac1f6678c2a3d45198e051157170229eeebd9b995a88f87afe87b236d5b9"
+            },
+            "crypto_reconciliation_lab/source_auth/worker.py": {
+              "bytes": 1486,
+              "sha256": "53b889223bc72f63b9cb6cec5a9b159e573f4fb236619245e67fee16f780dc36"
+            },
+            "crypto_reconciliation_lab/store.py": {
+              "bytes": 9977,
+              "sha256": "3c02b9ebc885e872843edeeeb433bfa64629735c7dfdb689d79b63797123d622"
+            },
+            "crypto_reconciliation_lab/triage/__init__.py": {
+              "bytes": 242,
+              "sha256": "d333b88737b856ac4b478f1b995b7b81825086cb36ff1350d7916f6ee3784139"
+            },
+            "crypto_reconciliation_lab/triage/budget.py": {
+              "bytes": 3330,
+              "sha256": "5dbcd63ffbcc25e2e6d605de6be8e8284629b5e4cdef8f2858b92f5e4884e9ee"
+            },
+            "crypto_reconciliation_lab/triage/contracts.py": {
+              "bytes": 13580,
+              "sha256": "cd397085fa728a28252b6588785b20b399422cda3665aaf8ce9da97efe814008"
+            },
+            "crypto_reconciliation_lab/triage/features.py": {
+              "bytes": 12862,
+              "sha256": "ed447cb016de56790d2c72c0eeb7c2bacdde4b7b3aaabc0795700f28ca0c7422"
+            },
+            "crypto_reconciliation_lab/triage/metrics.py": {
+              "bytes": 6518,
+              "sha256": "73cb2924e211db26ece6df6f19cdd78080e5820060826eb193d2874e533864ed"
+            },
+            "crypto_reconciliation_lab/triage/model.py": {
+              "bytes": 18820,
+              "sha256": "d5f86a9ce0551b7b444ff51975828cff4880ce6467835963a7c10f0975b3abb7"
+            },
+            "crypto_reconciliation_lab/triage/ranking.py": {
+              "bytes": 5694,
+              "sha256": "c509a060837fea8cb24e2b3ef8930d77722066344c668296c529eceeeaae9d73"
+            },
+            "crypto_reconciliation_lab/triage/runner.py": {
+              "bytes": 21050,
+              "sha256": "4535f9c77f6f9e78d8b39410831850101f51b3f04b06eb4505d3bee03a901a36"
+            },
+            "crypto_reconciliation_lab/triage/safeio.py": {
+              "bytes": 1851,
+              "sha256": "efa96c0164292e13fbcddc37e651fdb99b6e3f0920a3ed2e1332e5bbfb8c647f"
+            },
+            "crypto_reconciliation_lab/triage/scope.py": {
+              "bytes": 8618,
+              "sha256": "a040360ffb392be1c8a84c53ce7672fd5b64a9941233d83c454d39d3c9f2e01e"
+            },
+            "crypto_reconciliation_lab/triage/truth.py": {
+              "bytes": 20034,
+              "sha256": "f52fd49c8798a39b5a03361be081ec29fdb724d267d7e6e2d904492f7b8d4c8f"
+            },
+            "crypto_reconciliation_lab/triage/world.py": {
+              "bytes": 19009,
+              "sha256": "aacf73c9b5db631b4aa523d6cdd7ca29dd981024bf2c2e96a8880cf47a2ed908"
+            },
+            "validation_lab/benchmark.py": {
+              "bytes": 30077,
+              "sha256": "d2e340fec47ca97c8e8b41e9af88fa297afafac30081c7fddaa8df2ec47ae96c"
+            },
+            "validation_lab/benchmark_gate2.py": {
+              "bytes": 33941,
+              "sha256": "65737904a51f3a4339a6dbd7195c952c0f36e181d66411a0ba2ebf3cbc0b83aa"
+            },
+            "validation_tests/test_gate2_benchmark.py": {
+              "bytes": 11913,
+              "sha256": "46e17270abd97a511eeb201fdc37f768c64726ada71f940c4726ae50fd49c5a3"
+            }
+          },
+          "common_output": {
+            "balances": {
+              "I0": 10000,
+              "I1": 10004,
+              "I2": 10000,
+              "I3": 10000
+            },
+            "custody": {
+              "external": 40004,
+              "platform": 0
+            },
+            "differences": {
+              "I0": 0,
+              "I1": 0,
+              "I2": 0,
+              "I3": 0,
+              "customer_liability": 0
+            },
+            "liability": 40004,
+            "outcomes": {
+              "I0": "MATCHED",
+              "I1": "MATCHED",
+              "I2": "MATCHED",
+              "I3": "MATCHED",
+              "customer_liability": "MATCHED"
+            }
+          },
+          "cpu_seconds": 12.674420374999999,
+          "disk_bytes": 29708578,
+          "events": 25000,
+          "evidence_history_lane": "NOT_IMPLEMENTED",
+          "input": {
+            "bytes": 11516911,
+            "path": "/workspace/validation-gate2-evidence/benchmark/capacity-triage/inputs/events25000-seed11.json",
+            "sha256": "1f6b932d04268c48c11bfaba477615d6935d886fee9505e1f77183211d808569"
+          },
+          "lane": "common_arithmetic",
+          "method": "production",
+          "peak_rss_kib": 380800,
+          "phases": {
+            "close": {
+              "cpu_seconds": 0.00013992699999931801,
+              "wall_seconds": 0.0006174820000524051
+            },
+            "evidence_export": {
+              "cpu_seconds": 0.00010232199999826719,
+              "wall_seconds": 7.067599972288008e-05
+            },
+            "ingest": {
+              "cpu_seconds": 9.924763791,
+              "wall_seconds": 32.037056217999634
+            },
+            "initialize": {
+              "cpu_seconds": 0.013101509000000011,
+              "wall_seconds": 0.030575338999824453
+            },
+            "persist": {
+              "cpu_seconds": 0.0008492210000010658,
+              "wall_seconds": 0.005198426000333711
+            },
+            "read_input": {
+              "cpu_seconds": 0.179654239,
+              "wall_seconds": 0.1810782399998061
+            },
+            "recompute": {
+              "cpu_seconds": 2.372796452000001,
+              "wall_seconds": 2.3798511859999962
+            },
+            "reread_verify": {
+              "cpu_seconds": 0.006456582999998517,
+              "wall_seconds": 0.006595509999897331
+            },
+            "validate_common_contract": {
+              "cpu_seconds": 0.165019197,
+              "wall_seconds": 0.16602540800022325
+            }
+          },
+          "physical_io_after": {
+            "cancelled_write_bytes": 4096,
+            "qualification": "Kernel process accounting on overlayfs; not independent physical-device writes or storage billing",
+            "read_bytes": 0,
+            "status": "PROCESS_COUNTERS_ONLY",
+            "write_bytes": 1985568768
+          },
+          "physical_io_before": {
+            "cancelled_write_bytes": 0,
+            "qualification": "Kernel process accounting on overlayfs; not independent physical-device writes or storage billing",
+            "read_bytes": 0,
+            "status": "PROCESS_COUNTERS_ONLY",
+            "write_bytes": 12288
+          },
+          "rows": 25017,
+          "seed": 11,
+          "sqlite_settings": {
+            "journal_mode": "delete",
+            "page_size": 4096,
+            "synchronous": 2
+          },
+          "status": "PASS",
+          "throughput_events_per_second": 718.0664628284618,
+          "wall_seconds": 34.81571873100029
+        },
+        "repeat": 0,
+        "seed": 11,
+        "started_utc": "2026-11-16T19:49:54Z",
+        "status": "PASS",
+        "stderr": "",
+        "stdout": "{\"status\": \"PASS\", \"output\": \"/workspace/validation-gate2-evidence/benchmark/capacity-triage/trials/n25000-r0-production\"}\n",
+        "subprocess_wall_seconds": 34.95596076399988,
+        "timed_out": false,
+        "timeout_seconds": 60.0
+      },
+      {
+        "artifact_inventory": [
+          {
+            "bytes": 47931392,
+            "name": "input.sqlite3",
+            "retained": false,
+            "sha256": "9a4e91edac1ffb14c4b77e02bb8a31f124cb8c574b137e3f77d49d529aa95bbc"
+          },
+          {
+            "bytes": 41552,
+            "name": "input.sqlite3-journal",
+            "retained": false,
+            "sha256": "21748d434221afc386e633ad1226f1c3ebbb23c442c64c13e8ab4b7ffdeb1e7a"
+          }
+        ],
+        "command": [
+          "/workspace/crypto-reconciliation-lab/.venv/bin/python",
+          "-B",
+          "-m",
+          "validation_lab.benchmark_gate2",
+          "--worker",
+          "production",
+          "--input",
+          "/workspace/validation-gate2-evidence/benchmark/capacity-triage/inputs/events50000-seed11.json",
+          "--output",
+          "/workspace/validation-gate2-evidence/benchmark/capacity-triage/trials/n50000-r0-production"
+        ],
+        "completed_utc": "2026-11-16T19:51:29Z",
+        "cwd": "/workspace/crypto-reconciliation-lab",
+        "events": 50000,
+        "exit_code": -9,
+        "input": {
+          "bytes": 23050240,
+          "path": "/workspace/validation-gate2-evidence/benchmark/capacity-triage/inputs/events50000-seed11.json",
+          "sha256": "36aad48c8f3776a43da1591948e2fa7675a54f5248749e469888c5b55c35a145"
+        },
+        "last_progress": {
+          "committed_receipts": 40000,
+          "completed_phases": {
+            "initialize": {
+              "cpu_seconds": 0.015625901000000053,
+              "wall_seconds": 0.044365730000208714
+            },
+            "read_input": {
+              "cpu_seconds": 0.21393197300000003,
+              "wall_seconds": 0.21736696100015251
+            },
+            "validate_common_contract": {
+              "cpu_seconds": 0.43943704499999997,
+              "wall_seconds": 0.4432690100002219
+            }
+          },
+          "elapsed_seconds": 59.40855609900018,
+          "phase": "ingest",
+          "state": "RUNNING"
+        },
+        "loadavg_before": [
+          0.9326171875,
+          1.09765625,
+          1.1591796875
+        ],
+        "method": "production",
+        "repeat": 0,
+        "seed": 11,
+        "started_utc": "2026-11-16T19:50:29Z",
+        "status": "TIMEOUT",
+        "stderr": "",
+        "stdout": "",
+        "subprocess_wall_seconds": 60.063045402999705,
+        "timed_out": true,
+        "timeout_seconds": 60.0
+      }
+    ]
+  },
+  "triage_source": {
+    "bytes": 48155,
+    "path": "/workspace/validation-gate2-evidence/benchmark/capacity-triage/results.json",
+    "sha256": "2ab0d10937cf2d4d9c32d74f407120c0acf7adae8420fc04fa5352e9b6b30d3f"
+  }
+}

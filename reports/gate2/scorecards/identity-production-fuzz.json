@@ -1,0 +1,11 @@
+{
+  "format": "gate2-identity-scorecard-v1",
+  "source_evidence": "identity/run-002/scorecards.json",
+  "superseded_evidence_retained": "identity/run-001/scorecards.json",
+  "scorecard": {
+    "cases": 102,
+    "failed": 0,
+    "passed": 102,
+    "scope": "Finite production parser/timestamp/correction-normalization cases; no reliability population inference."
+  }
+}

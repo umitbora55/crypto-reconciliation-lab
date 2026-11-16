@@ -1,5 +1,27 @@
 # Project working agreement
 
+## Validation Gate 2 maintenance and evidence scope
+
+The 16 November 2026 Gate2 request continues the existing
+validation/real-world-evidence-v1 branch and draft PR #7 from
+f3dff8dd00837ac7ce6e9bb687dd4861f790cbac. Preserve Gate1 evidence, its NOT_READY
+history, all historical scope contracts, 875 test identities, 373 financial
+references and frozen ML work. No financial engine or watchdog behavior changes.
+The one synchronization repair acknowledges the actual correctness sampler.
+Its separate exact-byte exception also composes two historical preservation
+checks through explicit restoration of their input bytes; their original
+historical expectations remain fixed. This ancillary scope-harness change must
+be disclosed, reversibly pinned and adversarially checked, never implemented by
+normalizing hashes, patching reads or rewriting tests during execution.
+
+New research and reports belong under the validation paths and reports/gate2;
+raw records, commands and failed attempts belong outside Git under
+/workspace/validation-gate2-evidence. Real, adapted, injected and synthetic
+scorecards remain separate. Normal verified task-branch push and REST update of
+the existing draft PR are authorized; no duplicate PR, merge, main push, force
+push, dispatch, release/tag/PyPI or environment publication. Earlier sections
+below describe their historical task boundaries.
+
 ## Current Stage13.1 narrow replay maintenance authorization
 
 Start from reviewed 0ecf194c80d82f363b1868585787361abab84f57 on the existing

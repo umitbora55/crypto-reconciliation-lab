@@ -1,0 +1,150 @@
+{
+  "format": "validation-gate2-local-gates-v1",
+  "status": "PASS",
+  "release_profiles": [
+    {
+      "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+      "profile": "full",
+      "status": "PASS",
+      "verification": {
+        "path": "/workspace/validation-gate2-evidence/release-full-py312-v2/verification.json",
+        "bytes": 11625813,
+        "sha256": "371215ec28046d8805c787d0abb10c9743ed40f83c0924f2ea47d780d226329a"
+      },
+      "tests": {
+        "source": {
+          "status": "PASS",
+          "expected": 875,
+          "discovered": 875,
+          "executed": 875,
+          "each_identity_once": true,
+          "evidence": {
+            "path": "/workspace/validation-gate2-evidence/release-full-py312-v2/source_tests.json",
+            "bytes": 421884,
+            "sha256": "18c2e99e678f64727f2bfafcba4aa73f8860f59a422df62e733025eb5ea8991d"
+          }
+        },
+        "installed": {
+          "status": "PASS",
+          "expected": 875,
+          "discovered": 875,
+          "executed": 875,
+          "each_identity_once": true,
+          "evidence": {
+            "path": "/workspace/validation-gate2-evidence/release-full-py312-v2/installed_tests.json",
+            "bytes": 421847,
+            "sha256": "1c0493d9494aff6fb20f673f2cf56bbada7afedc7602717e48be4f1d5d8d3c7f"
+          }
+        }
+      },
+      "financial": {
+        "cases": 69,
+        "evaluations": 162,
+        "matrix_files": 325,
+        "stage1_files": 12,
+        "stage2_files": 36,
+        "unique_reference_files": 373,
+        "source_and_installed_small_demo_files_each": 48,
+        "full_bytes_and_run_ids_equal": true
+      },
+      "release_source_manifest_files": 331
+    },
+    {
+      "python": "3.14.10 (main, Oct 26 2026, 14:09:22) [Clang 23.1.3 ]",
+      "profile": "full",
+      "status": "PASS",
+      "verification": {
+        "path": "/workspace/validation-gate2-evidence/release-full-py314-v2/verification.json",
+        "bytes": 11625563,
+        "sha256": "5d17967229f125f9e9d82dfe5899907c8204a4db4270e75de1fd05c1c1aa3e67"
+      },
+      "tests": {
+        "source": {
+          "status": "PASS",
+          "expected": 875,
+          "discovered": 875,
+          "executed": 875,
+          "each_identity_once": true,
+          "evidence": {
+            "path": "/workspace/validation-gate2-evidence/release-full-py314-v2/source_tests.json",
+            "bytes": 421884,
+            "sha256": "d8eadeca05474c9da5d34be5c2bbcbf1cd22d29a7cf74cdef22ca62510076910"
+          }
+        },
+        "installed": {
+          "status": "PASS",
+          "expected": 875,
+          "discovered": 875,
+          "executed": 875,
+          "each_identity_once": true,
+          "evidence": {
+            "path": "/workspace/validation-gate2-evidence/release-full-py314-v2/installed_tests.json",
+            "bytes": 421847,
+            "sha256": "54b49b0892f5d6257551e38f8b54d16d6ca64ac74a29065d2fceb08ca4771a5a"
+          }
+        }
+      },
+      "financial": {
+        "cases": 69,
+        "evaluations": 162,
+        "matrix_files": 325,
+        "stage1_files": 12,
+        "stage2_files": 36,
+        "unique_reference_files": 373,
+        "source_and_installed_small_demo_files_each": 48,
+        "full_bytes_and_run_ids_equal": true
+      },
+      "release_source_manifest_files": 331
+    },
+    {
+      "python": "3.14.10 (main, Oct 26 2026, 14:09:22) [Clang 23.1.3 ]",
+      "profile": "core",
+      "status": "PASS",
+      "verification": {
+        "path": "/workspace/validation-gate2-evidence/release-core-py314/verification.json",
+        "bytes": 1461901,
+        "sha256": "eb4deb12f326126e83a595dd5947c19ba264a30933cd0a1dbf0c3792f66d88a6"
+      },
+      "full875": "NOT_RUN_BY_DESIGN"
+    },
+    {
+      "python": "3.14.10 (main, Oct 26 2026, 14:09:22) [Clang 23.1.3 ]",
+      "profile": "auth-only",
+      "status": "PASS",
+      "verification": {
+        "path": "/workspace/validation-gate2-evidence/release-auth-only-py314/verification.json",
+        "bytes": 5297129,
+        "sha256": "162e0cc29f21b2bfd51df2e0f3d31af9827dd37b6ada54d4f40a9cb308af49e5"
+      },
+      "full875": "NOT_RUN_BY_DESIGN"
+    }
+  ],
+  "research": [
+    {
+      "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+      "methods": 134,
+      "status": "PASS",
+      "summary": {
+        "path": "/workspace/validation-gate2-evidence/research/py312/summary.json",
+        "bytes": 38491,
+        "sha256": "ed6beab7fba4b5f50fe92d561973a621d7c464f3a09038f6929d83ec54751147"
+      }
+    },
+    {
+      "python": "3.14.10 (main, Oct 26 2026, 14:09:22) [Clang 23.1.3 ]",
+      "methods": 134,
+      "status": "PASS",
+      "summary": {
+        "path": "/workspace/validation-gate2-evidence/research/py314/summary.json",
+        "bytes": 38491,
+        "sha256": "3f9819c4dc137a4052f2dbbbdd3cf310681bbd7914f6c87f1d7bbcd26d028e81"
+      }
+    }
+  ],
+  "earlier_attempts_preserved": {
+    "py314": "release-full-py314/verification.json: ERROR in new AST proof preflight, zero tests",
+    "py312": "release-full-py312/termination.json: ABORTED_BY_CONTROLLER, actual exit-15; never PASS"
+  },
+  "remote_ci": "NOT_RUN_AT_LOCAL_SUMMARY",
+  "source_identity": "Build source manifests and research inventory identify actual working-tree bytes; later Git head is a seal, not retroactive execution."
+}

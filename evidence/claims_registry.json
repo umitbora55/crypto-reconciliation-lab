@@ -1,0 +1,486 @@
+{
+  "format": "claims-registry-v1",
+  "request_sha256": "1608f382161c27e9583325b1e9a5042b529729fa5d2d455e46c1eb4bb2b48685",
+  "allowed_decisions": [
+    "SUPPORTED",
+    "SUPPORTED_ONLY_IN_LAB",
+    "INCONCLUSIVE",
+    "REFUTED",
+    "NOT_TESTED",
+    "UNVERIFIABLE_WITH_PUBLIC_DATA"
+  ],
+  "claims": [
+    {
+      "claim_id": "FIN-001",
+      "category": "financial correctness",
+      "claim": "Finite independent integer expectations agree with actual engine quantities and verdicts.",
+      "population_and_grain": "264 controlled cases / 12 seed-factor groups",
+      "success_metric": "zero unexplained quantity or financial verdict disagreement",
+      "comparator": "independent integer/literal oracle",
+      "time_window": "2026-11-16 local finite validation; data source periods separately preregistered",
+      "preregistered_acceptance": "zero unexplained quantity or financial verdict disagreement",
+      "acceptance_origin": "user request plus module protocols; this registry is assembled after some runs and is not claimed independently timestamped before them",
+      "external_reference": "Repository model/replay contracts and declared module protocols; detailed paths in reports.",
+      "experiment_command": {
+        "observed_argv": [
+          "/workspace/crypto-reconciliation-lab/.venv-validation/bin/python",
+          "scripts/verify_release.py",
+          "--profile",
+          "full",
+          "--financial",
+          "--output",
+          "/workspace/validation-evidence/release-full-py312"
+        ],
+        "cwd": "/workspace/crypto-reconciliation-lab",
+        "note": "Original recorded argv; shell reproduction instructions are in docs/validation/REPRODUCE.md."
+      },
+      "raw_evidence": [
+        "/workspace/validation-evidence/properties/run-004/summary.json",
+        "/workspace/validation-evidence/release-full-py312/verification.json"
+      ],
+      "result": {
+        "canonical_cases": 264,
+        "financial_disagreements": 0,
+        "financial_matrix_cases": 69,
+        "evaluations": 162,
+        "reference_files": 373
+      },
+      "decision": "SUPPORTED_ONLY_IN_LAB",
+      "confounders": [
+        "One shared Linux cloud host; no production institution population."
+      ],
+      "limitations": [
+        "Finite generated population and same-engine historical reference; no institutional ground truth."
+      ]
+    },
+    {
+      "claim_id": "REAL-001",
+      "category": "real data suitability",
+      "claim": "At least one public Treasury cash equality is verified from downloaded official bytes.",
+      "population_and_grain": "five preregistered periods; daily TGA aggregates",
+      "success_metric": "at least one source-verified equality with documented unit/rounding/field mapping",
+      "comparator": "independent integer and SQLite arithmetic",
+      "time_window": "2026-11-16 local finite validation; data source periods separately preregistered",
+      "preregistered_acceptance": "at least one source-verified equality with documented unit/rounding/field mapping",
+      "acceptance_origin": "user request plus module protocols; this registry is assembled after some runs and is not claimed independently timestamped before them",
+      "external_reference": [
+        "https://fiscaldata.treasury.gov/datasets/daily-treasury-statement/operating-cash-balance",
+        "https://www.sec.gov/data-research/sec-markets-data/fails-deliver-data"
+      ],
+      "experiment_command": [
+        {
+          "command": ".venv/bin/python -B scripts/validation/fetch_public_data.py --fetch --output /workspace/validation-evidence/public-data/attempt-01",
+          "exit": 0,
+          "outcome": "17 DATA_UNAVAILABLE; zero downloaded bytes",
+          "stdout_stderr": "/workspace/validation-evidence-public-fetch-01.log"
+        },
+        {
+          "command": ".venv/bin/python -B scripts/validation/fetch_public_data.py --fetch --only bis-pfmi --only bis-bcbs239-2026 --output /workspace/validation-evidence/public-data/bis-attempt-01",
+          "exit": 0,
+          "outcome": "2 DATA_UNAVAILABLE; zero downloaded bytes",
+          "stdout_stderr": "/workspace/validation-evidence/public-data/bis-fetch-01.log"
+        }
+      ],
+      "raw_evidence": [
+        "/workspace/validation-evidence/public-data/attempt-01/source-register.json",
+        "/workspace/validation-evidence/public-data/bis-attempt-01/source-register.json"
+      ],
+      "result": {
+        "status": "REAL_DATA_UNVERIFIED",
+        "official_requests_blocked": 19,
+        "actual_real_rows": 0,
+        "verified_equalities": 0
+      },
+      "decision": "NOT_TESTED",
+      "confounders": [
+        "One shared Linux cloud host; no production institution population."
+      ],
+      "limitations": [
+        "Proxy tunnel403; source field dictionaries, usage terms and equality unverified."
+      ]
+    },
+    {
+      "claim_id": "DET-001",
+      "category": "error detection",
+      "claim": "Count-only manifests detect same-count identity substitution.",
+      "population_and_grain": "12 controlled identity substitutions with unchanged economic effects",
+      "success_metric": "all 12 substitutions produce an explicit anomaly alert",
+      "comparator": "known injected identity labels",
+      "time_window": "2026-11-16 local finite validation; data source periods separately preregistered",
+      "preregistered_acceptance": "all 12 substitutions produce an explicit anomaly alert",
+      "acceptance_origin": "user request plus module protocols; this registry is assembled after some runs and is not claimed independently timestamped before them",
+      "external_reference": "Repository model/replay contracts and declared module protocols; detailed paths in reports.",
+      "experiment_command": {
+        "observed_argv": [
+          "/workspace/crypto-reconciliation-lab/validation_lab/properties.py",
+          "--output",
+          "/workspace/validation-evidence/properties/run-004"
+        ],
+        "cwd": "/workspace/crypto-reconciliation-lab",
+        "note": "Original recorded argv; shell reproduction instructions are in docs/validation/REPRODUCE.md."
+      },
+      "raw_evidence": [
+        "/workspace/validation-evidence/properties/run-004/cases.jsonl"
+      ],
+      "result": {
+        "injected": 12,
+        "detected": 0,
+        "FN": 12
+      },
+      "decision": "REFUTED",
+      "confounders": [
+        "One shared Linux cloud host; no production institution population."
+      ],
+      "limitations": [
+        "Count manifests do not establish source-record identity; substituted records preserve economic amounts."
+      ]
+    },
+    {
+      "claim_id": "DET-002",
+      "category": "error detection",
+      "claim": "Finite synthetic detection metrics are reproducible by family and retained labels.",
+      "population_and_grain": "264 labelled controls/injections; 12 dependent groups",
+      "success_metric": "complete case inventory, explicit FN/FP, group uncertainty; no real-world interpretation",
+      "comparator": "literal injection labels",
+      "time_window": "2026-11-16 local finite validation; data source periods separately preregistered",
+      "preregistered_acceptance": "complete case inventory, explicit FN/FP, group uncertainty; no real-world interpretation",
+      "acceptance_origin": "user request plus module protocols; this registry is assembled after some runs and is not claimed independently timestamped before them",
+      "external_reference": "Repository model/replay contracts and declared module protocols; detailed paths in reports.",
+      "experiment_command": {
+        "observed_argv": [
+          "/workspace/crypto-reconciliation-lab/validation_lab/properties.py",
+          "--output",
+          "/workspace/validation-evidence/properties/run-004"
+        ],
+        "cwd": "/workspace/crypto-reconciliation-lab",
+        "note": "Original recorded argv; shell reproduction instructions are in docs/validation/REPRODUCE.md."
+      },
+      "raw_evidence": [
+        "/workspace/validation-evidence/properties/run-004/summary.json",
+        "/workspace/validation-evidence/properties/run-004/cases.jsonl"
+      ],
+      "result": {
+        "TP": 132,
+        "FP": 0,
+        "TN": 120,
+        "FN": 12,
+        "precision": 1.0,
+        "recall": 0.9166666666666666,
+        "specificity": 1.0
+      },
+      "decision": "SUPPORTED_ONLY_IN_LAB",
+      "confounders": [
+        "One shared Linux cloud host; no production institution population."
+      ],
+      "limitations": [
+        "FULLY_SYNTHETIC labels,12 dependent groups; degenerate bootstrap intervals do not imply zero risk."
+      ]
+    },
+    {
+      "claim_id": "CAP-001",
+      "category": "capacity",
+      "claim": "100000-event direct ingestion/reconciliation completes within the declared local profile budget.",
+      "population_and_grain": "100k complete additive synthetic events; five paired repetitions",
+      "success_metric": "all required repetitions complete without oracle disagreement within resource budget",
+      "comparator": "bounded static arithmetic baseline",
+      "time_window": "2026-11-16 local finite validation; data source periods separately preregistered",
+      "preregistered_acceptance": "all required repetitions complete without oracle disagreement within resource budget",
+      "acceptance_origin": "user request plus module protocols; this registry is assembled after some runs and is not claimed independently timestamped before them",
+      "external_reference": "Repository model/replay contracts and declared module protocols; detailed paths in reports.",
+      "experiment_command": {
+        "observed_argv": [
+          "/workspace/crypto-reconciliation-lab/validation_lab/benchmark.py",
+          "--mode",
+          "full",
+          "--output",
+          "/workspace/validation-evidence/benchmark/canonical-full"
+        ],
+        "cwd": "/workspace/crypto-reconciliation-lab",
+        "note": "Original recorded argv; shell reproduction instructions are in docs/validation/REPRODUCE.md."
+      },
+      "raw_evidence": [
+        "/workspace/validation-evidence/benchmark/canonical-full/results.json"
+      ],
+      "result": {
+        "status": "PARTIAL",
+        "largest_five_repeat_profile": 10000,
+        "attempted_events": 100000,
+        "attempt_outcome": "TIMEOUT",
+        "wall_timeout_seconds": 60.065,
+        "completed_100k": 0
+      },
+      "decision": "INCONCLUSIVE",
+      "confounders": [
+        "One shared Linux cloud host; no production institution population."
+      ],
+      "limitations": [
+        "Capacity hypothesis inconclusive: one censored100k attempt, remaining profile not run. Not offline replay."
+      ]
+    },
+    {
+      "claim_id": "LAT-001",
+      "category": "end-to-end latency",
+      "claim": "The application has a comparative runtime advantage at equal full semantics.",
+      "population_and_grain": "full validation, history, persistence and export semantics",
+      "success_metric": "semantic parity and five paired repetitions; interval supports advantage",
+      "comparator": "SQLite integer and stdlib integer baselines",
+      "time_window": "2026-11-16 local finite validation; data source periods separately preregistered",
+      "preregistered_acceptance": "semantic parity and five paired repetitions; interval supports advantage",
+      "acceptance_origin": "user request plus module protocols; this registry is assembled after some runs and is not claimed independently timestamped before them",
+      "external_reference": "Repository model/replay contracts and declared module protocols; detailed paths in reports.",
+      "experiment_command": {
+        "observed_argv": [
+          "/workspace/crypto-reconciliation-lab/validation_lab/benchmark.py",
+          "--mode",
+          "full",
+          "--output",
+          "/workspace/validation-evidence/benchmark/canonical-full"
+        ],
+        "cwd": "/workspace/crypto-reconciliation-lab",
+        "note": "Original recorded argv; shell reproduction instructions are in docs/validation/REPRODUCE.md."
+      },
+      "raw_evidence": [
+        "/workspace/validation-evidence/benchmark/canonical-full/results.json"
+      ],
+      "result": {
+        "full_semantic_parity": false,
+        "p50_seconds_at_10k": {
+          "application": 21.03574,
+          "stdlib": 13.567914,
+          "sqlite": 12.854782
+        }
+      },
+      "decision": "INCONCLUSIVE",
+      "confounders": [
+        "One shared Linux cloud host; no production institution population."
+      ],
+      "limitations": [
+        "NARROWER_SCOPE references persist/export fewer details; observed application times are higher, not equivalent-product comparison."
+      ]
+    },
+    {
+      "claim_id": "COST-001",
+      "category": "workload cost",
+      "claim": "Measured local runtime implies lower institutional operating costs.",
+      "population_and_grain": "institution-private cost population",
+      "success_metric": "actual equivalent institution workload and measured cost data",
+      "comparator": "institution production system unavailable",
+      "time_window": "2026-11-16 local finite validation; data source periods separately preregistered",
+      "preregistered_acceptance": "actual equivalent institution workload and measured cost data",
+      "acceptance_origin": "user request plus module protocols; this registry is assembled after some runs and is not claimed independently timestamped before them",
+      "external_reference": "Repository model/replay contracts and declared module protocols; detailed paths in reports.",
+      "experiment_command": {
+        "observed_argv": [
+          "/workspace/crypto-reconciliation-lab/validation_lab/benchmark.py",
+          "--mode",
+          "full",
+          "--output",
+          "/workspace/validation-evidence/benchmark/canonical-full"
+        ],
+        "cwd": "/workspace/crypto-reconciliation-lab",
+        "note": "Original recorded argv; shell reproduction instructions are in docs/validation/REPRODUCE.md."
+      },
+      "raw_evidence": [
+        "/workspace/validation-evidence/benchmark/canonical-full/results.json"
+      ],
+      "result": {
+        "institutional_cost_savings": "NOT_PROVEN",
+        "measured_program_wall_seconds": 334.824,
+        "worker_cpu_seconds": 104.393,
+        "controller_cpu_seconds": 3.453
+      },
+      "decision": "UNVERIFIABLE_WITH_PUBLIC_DATA",
+      "confounders": [
+        "One shared Linux cloud host; no production institution population."
+      ],
+      "limitations": [
+        "No monetary prices, institution-private workload, staff cost or incident economics."
+      ]
+    },
+    {
+      "claim_id": "RES-001",
+      "category": "resilience RTO/RPO",
+      "claim": "Finite named process interruption and owned SQLite controls preserve documented boundaries.",
+      "population_and_grain": "existing crash controls plus 33 bounded additional probes",
+      "success_metric": "literal expected states and no unexplained false success; scope-specific only",
+      "comparator": "pre/post barrier expectations",
+      "time_window": "2026-11-16 local finite validation; data source periods separately preregistered",
+      "preregistered_acceptance": "literal expected states and no unexplained false success; scope-specific only",
+      "acceptance_origin": "user request plus module protocols; this registry is assembled after some runs and is not claimed independently timestamped before them",
+      "external_reference": "Repository model/replay contracts and declared module protocols; detailed paths in reports.",
+      "experiment_command": {
+        "observed_argv": [
+          "/workspace/crypto-reconciliation-lab/validation_lab/resilience.py",
+          "--output",
+          "/workspace/validation-evidence/resilience/run-001"
+        ],
+        "cwd": "/workspace/crypto-reconciliation-lab",
+        "note": "Original recorded argv; shell reproduction instructions are in docs/validation/REPRODUCE.md."
+      },
+      "raw_evidence": [
+        "/workspace/validation-evidence/resilience/run-001/summary.json",
+        "/workspace/validation-evidence/release-full-py312/verification.json"
+      ],
+      "result": {
+        "additional_probes": 33,
+        "fixed_recovery_scenarios": 21,
+        "formal_rto_rpo": "NOT_MEASURED"
+      },
+      "decision": "SUPPORTED_ONLY_IN_LAB",
+      "confounders": [
+        "One shared Linux cloud host; no production institution population."
+      ],
+      "limitations": [
+        "Finite local SIGKILL and SQLite quota controls; no power/disk-loss or distributed exactly-once claim."
+      ]
+    },
+    {
+      "claim_id": "PROV-001",
+      "category": "provenance",
+      "claim": "Selected recorded-context and replay identity contradictions are rejected.",
+      "population_and_grain": "protected legacy tests and bounded replay probes",
+      "success_metric": "preserved expected IDs, executed assertions and exact evidence inventories",
+      "comparator": "external pin / independent literal contradiction",
+      "time_window": "2026-11-16 local finite validation; data source periods separately preregistered",
+      "preregistered_acceptance": "preserved expected IDs, executed assertions and exact evidence inventories",
+      "acceptance_origin": "user request plus module protocols; this registry is assembled after some runs and is not claimed independently timestamped before them",
+      "external_reference": "Repository model/replay contracts and declared module protocols; detailed paths in reports.",
+      "experiment_command": {
+        "observed_argv": [
+          "/workspace/crypto-reconciliation-lab/.venv-validation314/bin/python",
+          "scripts/verify_release.py",
+          "--profile",
+          "core",
+          "--source",
+          "/workspace/validation-evidence/release-full-py314/build/sdist/crypto_reconciliation_lab-0.11.1",
+          "--wheel",
+          "/workspace/validation-evidence/release-full-py314/build/dist/crypto_reconciliation_lab-0.11.1-py3-none-any.whl",
+          "--output",
+          "/workspace/validation-evidence/core-py314"
+        ],
+        "cwd": "/workspace/crypto-reconciliation-lab",
+        "note": "Original recorded argv; shell reproduction instructions are in docs/validation/REPRODUCE.md."
+      },
+      "raw_evidence": [
+        "/workspace/validation-evidence/release-full-py312/verification.json",
+        "/workspace/validation-evidence/installed-py314/verification.json"
+      ],
+      "result": {
+        "protected_replay_source_tests": "PASS_PY312",
+        "installed_tests": "PASS_BOTH_MINORS",
+        "fixed_replay_cases": 7
+      },
+      "decision": "SUPPORTED_ONLY_IN_LAB",
+      "confounders": [
+        "One shared Linux cloud host; no production institution population."
+      ],
+      "limitations": [
+        "Replay uses the same engine and an external identity pin; no independent financial truth or institutional source identity."
+      ]
+    },
+    {
+      "claim_id": "SEC-001",
+      "category": "security",
+      "claim": "Selected file, size, timeout and evidence-boundary negatives are controlled.",
+      "population_and_grain": "finite local inputs, no external penetration test",
+      "success_metric": "positive/negative/boundary results match recorded expectations",
+      "comparator": "bounded adversarial controls",
+      "time_window": "2026-11-16 local finite validation; data source periods separately preregistered",
+      "preregistered_acceptance": "positive/negative/boundary results match recorded expectations",
+      "acceptance_origin": "user request plus module protocols; this registry is assembled after some runs and is not claimed independently timestamped before them",
+      "external_reference": "Repository model/replay contracts and declared module protocols; detailed paths in reports.",
+      "experiment_command": {
+        "observed_argv": [
+          "/workspace/crypto-reconciliation-lab/validation_lab/resilience.py",
+          "--output",
+          "/workspace/validation-evidence/resilience/run-001"
+        ],
+        "cwd": "/workspace/crypto-reconciliation-lab",
+        "note": "Original recorded argv; shell reproduction instructions are in docs/validation/REPRODUCE.md."
+      },
+      "raw_evidence": [
+        "/workspace/validation-evidence/resilience/run-001/summary.json",
+        "/workspace/validation-evidence/resilience/run-001/source-triage.json"
+      ],
+      "result": {
+        "finite_boundary_probes": 33,
+        "live_cve_scan": "NOT_RUN"
+      },
+      "decision": "SUPPORTED_ONLY_IN_LAB",
+      "confounders": [
+        "One shared Linux cloud host; no production institution population."
+      ],
+      "limitations": [
+        "Selected local input boundaries only. Secret-pattern triage and SBOM are not comprehensive security assurance."
+      ]
+    },
+    {
+      "claim_id": "REP-001",
+      "category": "reproducibility",
+      "claim": "Protected baseline bytes and all875 test identities remain preserved.",
+      "population_and_grain": "330 original tracked files; 94 protected test files /875 IDs",
+      "success_metric": "exact original SHA256 inventory and strict existing scope verifier",
+      "comparator": "accepted main b48021273405128c67e2969fd4b46f8d7e876a99",
+      "time_window": "2026-11-16 local finite validation; data source periods separately preregistered",
+      "preregistered_acceptance": "exact original SHA256 inventory and strict existing scope verifier",
+      "acceptance_origin": "user request plus module protocols; this registry is assembled after some runs and is not claimed independently timestamped before them",
+      "external_reference": "Repository model/replay contracts and declared module protocols; detailed paths in reports.",
+      "experiment_command": {
+        "command": "python3 -B scripts/validation/summarize_coverage.py --evidence-root /workspace/validation-evidence --output evidence/coverage-results.json",
+        "cwd": "/workspace/crypto-reconciliation-lab"
+      },
+      "raw_evidence": [
+        "/workspace/validation-evidence/setup/baseline-files.json",
+        "/workspace/validation-evidence/inventory/test-scope-preflight.json",
+        "/workspace/validation-evidence/release-full-py314/source_tests.json"
+      ],
+      "result": {
+        "original_files": 330,
+        "protected_files": 94,
+        "protected_ids": 875,
+        "source314_open_test_race": true
+      },
+      "decision": "SUPPORTED",
+      "confounders": [
+        "One shared Linux cloud host; no production institution population."
+      ],
+      "limitations": [
+        "Byte preservation is established; one source3.14 execution failed due to a diagnosed unrepaired test synchronization race."
+      ]
+    },
+    {
+      "claim_id": "RISK-001",
+      "category": "institutional risk",
+      "claim": "Laboratory resilience proxies demonstrate lower real institutional incident loss.",
+      "population_and_grain": "private institution operations",
+      "success_metric": "actual institution incident and loss data with comparable exposure",
+      "comparator": "no public transaction ground truth",
+      "time_window": "2026-11-16 local finite validation; data source periods separately preregistered",
+      "preregistered_acceptance": "actual institution incident and loss data with comparable exposure",
+      "acceptance_origin": "user request plus module protocols; this registry is assembled after some runs and is not claimed independently timestamped before them",
+      "external_reference": "Repository model/replay contracts and declared module protocols; detailed paths in reports.",
+      "experiment_command": {
+        "observed_argv": [
+          "/workspace/crypto-reconciliation-lab/validation_lab/resilience.py",
+          "--output",
+          "/workspace/validation-evidence/resilience/run-001"
+        ],
+        "cwd": "/workspace/crypto-reconciliation-lab",
+        "note": "Original recorded argv; shell reproduction instructions are in docs/validation/REPRODUCE.md."
+      },
+      "raw_evidence": [
+        "/workspace/validation-evidence/resilience/run-001/summary.json"
+      ],
+      "result": {
+        "institutional_risk_reduction": "NOT_PROVEN"
+      },
+      "decision": "UNVERIFIABLE_WITH_PUBLIC_DATA",
+      "confounders": [
+        "One shared Linux cloud host; no production institution population."
+      ],
+      "limitations": [
+        "No real institution incident, loss, SLA, operational exposure or approved pilot data."
+      ]
+    }
+  ]
+}

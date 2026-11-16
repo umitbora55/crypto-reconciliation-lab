@@ -155,14 +155,12 @@ class ProtocolValidationTests(unittest.TestCase):
         code='from pathlib import Path;import json,time;root=Path('+repr(str(trial))+');root.joinpath("result.json").write_text(json.dumps(dict(status="CORRECTNESS_FAILED",oracle=dict(passed=False))));'
         code+='\nwhile not Path('+repr(str(ready))+').exists(): time.sleep(.005)\n'
         code+='root.joinpath("result.json").write_text("{");root.joinpath("phase.json").write_text(json.dumps(dict(phase="done",started_monotonic=time.monotonic()-5)));time.sleep(3)'
-        def rss(pid):
-            p=trial/'result.json'
-            if p.exists():
-                try:
-                    if json.loads(p.read_text()).get('status')=='CORRECTNESS_FAILED':ready.write_text('parent sampled readable failure')
-                except json.JSONDecodeError:pass
-            return 1024
-        with patch('crypto_reconciliation_lab.lab.watchdog.current_rss',side_effect=rss):r=supervise([sys.executable,'-c',code],self.root,trial,self.root,Budgets(phase_seconds=2,total_seconds=3,poll_seconds=.01))
+        def observed_load(path):
+            child=load(path)
+            if path==trial/'result.json' and child.get('status')=='CORRECTNESS_FAILED':
+                ready.write_text('correctness sampler returned readable failure')
+            return child
+        with patch('crypto_reconciliation_lab.lab.watchdog.load',side_effect=observed_load),patch('crypto_reconciliation_lab.lab.watchdog.current_rss',return_value=1024):r=supervise([sys.executable,'-c',code],self.root,trial,self.root,Budgets(phase_seconds=2,total_seconds=3,poll_seconds=.01))
         self.assertEqual(r['correctness'],'FAILED');self.assertEqual(r['completion_state'],'TIMED_OUT');self.assertIsNotNone(r['observed_correctness_failure']);self.assertIsNotNone(r['result_parse_error'])
 
 if __name__=='__main__':unittest.main()

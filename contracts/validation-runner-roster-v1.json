@@ -1,0 +1,81 @@
+{
+  "format": "validation-runner-roster-v1",
+  "origin": "Predeclared finite research families and boundary cases, copied independently of observed result files for the outer acceptance gate",
+  "property_families": [
+    "clean",
+    "delivery_permutation",
+    "exact_redelivery",
+    "split_merge",
+    "reciprocal_transfer",
+    "future_exclusion",
+    "offset_equivalence",
+    "missing_event",
+    "missing_custody",
+    "wrong_amount",
+    "stale_report",
+    "invalid_zero",
+    "invalid_negative",
+    "invalid_precision",
+    "invalid_unknown_asset",
+    "same_version_conflict",
+    "newer_revision",
+    "same_count_substitution",
+    "cross_asset_error",
+    "late_state_machine",
+    "void_state_machine",
+    "replace_state_machine"
+  ],
+  "property_factors": [
+    {
+      "precision": 0,
+      "custody": "platform"
+    },
+    {
+      "precision": 0,
+      "custody": "external"
+    },
+    {
+      "precision": 2,
+      "custody": "platform"
+    },
+    {
+      "precision": 2,
+      "custody": "external"
+    }
+  ],
+  "resilience_ids": [
+    "read-bytes-16777215",
+    "read-bytes-16777216",
+    "read-bytes-16777217",
+    "public-api-oversize",
+    "input-symlink",
+    "input-fifo",
+    "json-depth-1023",
+    "json-depth-1024",
+    "json-depth-1025",
+    "sqlite-identity-9007199254740993",
+    "sqlite-identity-9223372036854775807",
+    "sqlite-identity-9223372036854775808",
+    "sqlite-identity-True",
+    "sqlite-identity-0",
+    "receipt-count-9999",
+    "receipt-count-10000",
+    "receipt-count-10001",
+    "captured-row-count-49999",
+    "captured-row-count-50000",
+    "captured-row-count-50001",
+    "timeout-default",
+    "timeout-invalid-0",
+    "timeout-invalid-61",
+    "timeout-invalid-True",
+    "sqlite-quota-full",
+    "quota-rollback-retains-anchor",
+    "quota-integrity",
+    "quota-recovered-write",
+    "backup-exact-logical-rows",
+    "backup-integrity",
+    "restore-readable-count",
+    "sqlite-busy",
+    "busy-retry-exact-count"
+  ]
+}

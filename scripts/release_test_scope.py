@@ -51,6 +51,16 @@ SEMANTIC_FIXTURE_PATH = 'tests/fixtures/admission-semantic-report-v2.json'
 CONTRACT_BYTES = 254949
 CONTRACT_SHA256 = 'dc0f5a41934bfee4669df79fba6cd62535e795c99cf3869bf1e79248ea9559b6'
 
+# Gate 2 composes an explicit reviewed fixture exception; no historical pin moves.
+GATE2_EXCEPTION_PATH = 'contracts/validation-gate2-test-exception.json'
+GATE2_EXCEPTION_BYTES = 7360
+GATE2_EXCEPTION_SHA256 = 'c4cef1efe054561daf139a272e75e97455f15d91dc6c57cac7f8c9b1b62dbddc'
+GATE2_FIXTURE_PATHS = frozenset({
+    'tests/test_lab_contract_validation.py',
+    'tests/test_execution_replay_scope.py',
+    'tests/test_replay_maintenance_scope.py',
+})
+
 # Stage 12 permission is finite: current version/schema metadata and genuine
 # historical schema-5 setup only. Every changed old byte is reversibly pinned.
 EXECUTION_FIXTURE_PATHS = frozenset({
@@ -375,6 +385,10 @@ def validate_fixture_exception(exception):
 def restore_fixture_source(data, exception):
     """Reversal proves every byte outside the listed fixture changes is intact."""
     validate_fixture_exception(exception)
+    # First reverse the separately pinned Gate 2 projection, then apply the
+    # historical metadata reversal. byte_identity always hashes its actual input.
+    if exception.get('path') in GATE2_FIXTURE_PATHS and byte_identity(data) != exception['current']:
+        data = restore_gate2_fixture_source(Path(__file__).resolve().parents[1], exception['path'], data)
     require(byte_identity(data) == exception['current'], 'current fixture file identity differs')
     original = data.decode('utf-8')
     if exception.get('kind') == 'report-fixture-function-v1':
@@ -706,6 +720,110 @@ def load_test_scope(root):
         raise ValueError('TEST_SCOPE: cannot read required contract: ' + str(error)) from error
 
 
+def gate2_exception_identity():
+    return {'path': GATE2_EXCEPTION_PATH, 'bytes': GATE2_EXCEPTION_BYTES,
+            'sha256': GATE2_EXCEPTION_SHA256, 'format': 'validation-gate2-test-exception-v1'}
+
+
+def gate2_ast_dump(node):
+    """Keep Python 3.12's explicit empty-list fields on newer AST renderers."""
+    try:
+        return ast.dump(node, include_attributes=False, show_empty=True)
+    except TypeError:  # Python 3.12 predates show_empty and already includes lists.
+        return ast.dump(node, include_attributes=False)
+
+
+def load_gate2_test_exception(root):
+    """Require the reviewed three-file exception, never candidate-authored pins."""
+    root = Path(root).resolve()
+    document = checked_document(root, GATE2_EXCEPTION_PATH, GATE2_EXCEPTION_BYTES, GATE2_EXCEPTION_SHA256)
+    historical = checked_document(root, CONTRACT_PATH, CONTRACT_BYTES, CONTRACT_SHA256)
+    require(document.get('format') == 'validation-gate2-test-exception-v1'
+            and document.get('historical_scope') == identity()
+            and document.get('historical_test_count') == historical['current']['test_count'] == 875
+            and document.get('historical_file_count') == historical['current']['file_count'] == 94,
+            'Gate 2 historical binding differs')
+    rows = document.get('files')
+    require(type(rows) is list and len(rows) == 3
+            and {row.get('path') for row in rows} == GATE2_FIXTURE_PATHS,
+            'Gate 2 fixture inventory differs')
+    for row in rows:
+        name = row['path']
+        require(row.get('original') == historical['current']['files'][name],
+                'Gate 2 original differs from immutable historical bytes')
+        check_files({name: row['current']})
+        edits = row.get('changes')
+        edit_count = 2 if name == 'tests/test_replay_maintenance_scope.py' else 1
+        require(type(edits) is list and len(edits) == edit_count, 'Gate 2 exact replacement count differs')
+        for edit in edits:
+            require(set(edit) == {'old_text', 'new_text', 'count'}
+                    and type(edit['count']) is int and edit['count'] == 1
+                    and type(edit['old_text']) is str and type(edit['new_text']) is str
+                    and edit['old_text'] and edit['new_text'] and edit['old_text'] != edit['new_text'],
+                    'Gate 2 replacement differs')
+        kind = ('correctness-sampler-synchronization-v1' if name == 'tests/test_lab_contract_validation.py'
+                else 'explicit-historical-input-projection-v1')
+        require(row.get('kind') == kind, 'Gate 2 fixture kind differs')
+    return document
+
+
+def restore_gate2_fixture_source(root, name, data):
+    """Return real pre-Gate-2 bytes for an admitted file, not an aliased hash."""
+    if name not in GATE2_FIXTURE_PATHS:
+        return data
+    document = load_gate2_test_exception(root)
+    row = next(item for item in document['files'] if item['path'] == name)
+    require(byte_identity(data) == row['current'], 'Gate 2 current fixture bytes differ: ' + name)
+    current = data.decode('utf-8')
+    original = current
+    for edit in reversed(row['changes']):
+        require(original.count(edit['new_text']) == 1, 'Gate 2 replacement missing or duplicated: ' + name)
+        original = original.replace(edit['new_text'], edit['old_text'], 1)
+    original = original.encode('utf-8')
+    require(byte_identity(original) == row['original'], 'Gate 2 reversal exceeds reviewed bytes: ' + name)
+    before, after = ast.parse(original), ast.parse(data)
+    test_ids = lambda tree: [cls.name + '.' + node.name for cls in tree.body
+                            if isinstance(cls, ast.ClassDef) for node in cls.body
+                            if isinstance(node, ast.FunctionDef) and node.name.startswith('test')]
+    assertions = lambda tree: [gate2_ast_dump(node) for node in ast.walk(tree)
+                              if isinstance(node, ast.Assert) or (isinstance(node, ast.Call)
+                              and isinstance(node.func, ast.Attribute) and isinstance(node.func.value, ast.Name)
+                              and node.func.value.id == 'self' and node.func.attr.startswith('assert'))]
+    require(test_ids(before) == test_ids(after) == row['test_ids'], 'Gate 2 test identities changed')
+    old_assertions, new_assertions = assertions(before), assertions(after)
+    require(len(old_assertions) == len(new_assertions) == row['assertion_count'], 'Gate 2 assertion count changed')
+    for values, label in ((old_assertions, 'original'), (new_assertions, 'current')):
+        digest = hashlib.sha256(json.dumps(values, separators=(',', ':')).encode('utf-8')).hexdigest()
+        require(digest == row['assertion_ast_' + label + '_sha256'], 'Gate 2 assertion AST differs')
+    if row['kind'] == 'correctness-sampler-synchronization-v1':
+        require(old_assertions == new_assertions and row['assertion_ast_identical'] is True,
+                'Gate 2 synchronization changed a behavioral assertion')
+    else:
+        class RemoveExplicitProjection(ast.NodeTransformer):
+            count = 0
+
+            def visit_Call(self, node):
+                if (isinstance(node.func, ast.Attribute) and isinstance(node.func.value, ast.Name)
+                        and node.func.value.id == 'scope' and node.func.attr == 'restore_gate2_fixture_source'):
+                    require(len(node.args) == 3 and not node.keywords
+                            and ast.dump(node.args[0]) == "Name(id='ROOT', ctx=Load())"
+                            and ast.dump(node.args[1]) in (
+                                "Name(id='name', ctx=Load())",
+                                "Subscript(value=Name(id='row', ctx=Load()), slice=Constant(value='path'), ctx=Load())"),
+                            'Gate 2 historical projection arguments differ')
+                    self.count += 1
+                    return node.args[2]
+                return self.generic_visit(node)
+
+        projection = RemoveExplicitProjection()
+        projected = projection.visit(after)
+        expected_projections = 2 if name == 'tests/test_replay_maintenance_scope.py' else 1
+        require(projection.count == expected_projections and ast.dump(projected) == ast.dump(before)
+                and row['assertion_ast_identical'] is False,
+                'Gate 2 scope test changed beyond its explicit historical input projection')
+    return original
+
+
 def validate_test_files(root, scope=None):
     """Preflight without importing tests or optional AI dependencies (also core-safe)."""
     root = Path(root).resolve()
@@ -723,11 +841,14 @@ def validate_test_files(root, scope=None):
                 require(path.is_file(), 'non-file in Python test inventory')
                 name = path.relative_to(root).as_posix()
                 actual[name] = byte_identity(file_bytes(path))
-        expected = scope['current']['files']
+        gate2 = load_gate2_test_exception(root)
+        expected = scope['current']['files'] | {row['path']: row['current'] for row in gate2['files']}
         missing, extra = sorted(set(expected)-set(actual)), sorted(set(actual)-set(expected))
         require(not missing and not extra, 'test file inventory differs; missing=' + repr(missing) + '; extra=' + repr(extra))
         changed = sorted(name for name in expected if actual[name] != expected[name])
         require(not changed, 'test file bytes differ: ' + repr(changed))
+        for row in gate2['files']:
+            restore_gate2_fixture_source(root, row['path'], file_bytes(root / row['path']))
         for exception in scope['fixture_exceptions']:
             restore_fixture_source(file_bytes(root / exception['path']), exception)
         for exception in scope['previous_release']['fixture_exceptions']:
@@ -749,6 +870,8 @@ def validate_test_files(root, scope=None):
         return {'status': 'PASS', 'scope_identity': identity(), 'baseline': scope['baseline'],
                 'expected_count': scope['current']['test_count'], 'file_count': len(actual),
                 'files': actual, 'expected_ids': scope['current']['test_ids'],
+                'gate2_fixture_exception_identity': gate2_exception_identity(),
+                'gate2_restored_files': {row['path']: row['original'] for row in gate2['files']},
                 'fixture_exceptions': scope['fixture_exceptions']}
     except (OSError, UnicodeError) as error:
         raise ValueError('TEST_SCOPE: cannot read test source: ' + str(error)) from error

@@ -1,0 +1,122 @@
+{
+  "format": "gate3-nonclaims-and-unexecuted-scope-v1",
+  "entries": [
+    {
+      "id": "TREASURY_LEGACY_FOUR_TOTAL_EQUATIONS",
+      "status": "NOT_RUN",
+      "count": 32,
+      "reason": "The modern four-row mapping is not established for 21 January 2019 and 11 pre-transition April 2022 dates."
+    },
+    {
+      "id": "FULL_EVIDENCE_HISTORY_REFERENCE",
+      "status": "COMPARATOR_NOT_AVAILABLE",
+      "reason": "No reference supplies equivalent temporal eligibility, corrections, receipt history, saved results, audit/capture context and offline replay. No dummy comparator was implemented."
+    },
+    {
+      "id": "INDEPENDENT_TWO_PARTY_RECORDS",
+      "status": "NOT_AVAILABLE",
+      "reason": "No independently authorized liability ledger and custodian confirmation pair was acquired. The acquisition protocol remains unfulfilled."
+    },
+    {
+      "id": "NATURAL_ERROR_PRECISION_RECALL",
+      "status": "NOT_MEASURABLE",
+      "reason": "The real public data has no independent natural-error ground truth. Controlled labels are separate research populations."
+    },
+    {
+      "id": "REAL_PROVIDER_MONETARY_COST",
+      "status": "NOT_AVAILABLE",
+      "reason": "No comparable real infrastructure pricing, institutional workload or operating-cost basis was measured."
+    },
+    {
+      "id": "OPERATIONAL_RTO_RPO",
+      "status": "NOT_MEASURABLE",
+      "reason": "Stopped-trial SQLite readback is not a production recovery commitment."
+    },
+    {
+      "id": "100K_OFFLINE_REPLAY",
+      "status": "NOT_RUN",
+      "reason": "Ordinary ingestion does not change the replay contract: 10000 eligible receipts and a default 30-second worker."
+    },
+    {
+      "id": "PRODUCTION_OPTIMIZATION",
+      "status": "NOT_RUN",
+      "reason": "Gate 3 retains all production bytes and per-receipt durability semantics; measured diagnostics inform a bounded future proposal."
+    },
+    {
+      "id": "FROZEN_ML_TRAINING_AND_HOLDOUT",
+      "status": "NOT_RUN",
+      "reason": "Outside the authorized task."
+    },
+    {
+      "id": "OLD_GATE2_RESEARCH_SUITE",
+      "status": "NOT_RUN",
+      "reason": "The historical 134 research methods are not rerun or counted as new Gate 3 tests. Protected 875-ID release suites are separately executed."
+    },
+    {
+      "id": "CORE_AUTH_FULL_875_SUITE",
+      "status": "NOT_RUN",
+      "reason": "Core/auth-only profiles deliberately test dependency isolation and their own demonstrations; the full profiles execute the protected suite."
+    },
+    {
+      "id": "CI_PY312_FINANCIAL_MATRIX",
+      "status": "NOT_RUN_BY_WORKFLOW",
+      "reason": "The unchanged CI workflow runs the matrix on 3.14. Gate 3 local full profiles execute it on both 3.12 and 3.14."
+    },
+    {
+      "id": "PUBLICATION_VINTAGE",
+      "status": "UNKNOWN",
+      "reason": "Retrieval timestamps do not establish original publication vintage."
+    },
+    {
+      "id": "DEVICE_IO_AND_BILLING",
+      "status": "NOT_OBSERVABLE",
+      "reason": "Process /proc counters and logical file bytes on overlayfs are not physical-device measurements or billing."
+    },
+    {
+      "id": "INDEX_MAINTENANCE_EXCLUSIVE_TIME",
+      "status": "NOT_MEASURED",
+      "reason": "Index maintenance is inside SQLite inserts; nested inclusive timing cannot independently attribute it without a different instrumented engine."
+    },
+    {
+      "id": "KILLED_WORKER_FINAL_CPU_RSS",
+      "status": "NOT_MEASURED",
+      "reason": "Final per-worker values are unavailable after abrupt termination; last observed samples and aggregate waited-child usage are distinct."
+    },
+    {
+      "id": "SEC_AND_SITE_RAW_REDISTRIBUTION",
+      "status": "OMITTED",
+      "reason": "Original local bytes were audited. Redistribution permission is not established; exact hashes and manual import prerequisites are retained."
+    },
+    {
+      "id": "ENVIRONMENT_PUBLICATION_RELEASE_MERGE",
+      "status": "NOT_RUN",
+      "reason": "Not authorized. Only the normal task-branch push and existing draft PR update are in scope."
+    },
+    {
+      "id": "GATE2_LARGER_COMMON_DATABASE_REREAD",
+      "status": "NOT_RUN",
+      "reason": "The original 1000/10000-event trial DB/export bytes were omitted after original hashing; the 100-event artifacts are independently reread. Hashes do not replace absent originals."
+    },
+    {
+      "id": "GATE2_ADAPTED_60_ENGINE_RERUN",
+      "status": "NOT_RUN",
+      "reason": "The original 60 authored native-engine results and source links are retained. Gate3 independently recalculates raw Treasury equations, not another 60 engine runs."
+    },
+    {
+      "id": "GATE2_240_IDENTITY_AND_102_PARSER_RERUN",
+      "status": "NOT_RUN",
+      "reason": "Historical inventories remain preserved. Gate3 replays only the separately selected 24 LAB paired reference observations and new research tests."
+    },
+    {
+      "id": "GATE1_264_FULL_FINANCIAL_RERUN",
+      "status": "NOT_RUN",
+      "reason": "The original264 confusion ledger is independently recounted and preserved. The selected24 source-input/reference cases are a separate Gate3 replay."
+    },
+    {
+      "id": "FULL_PERSISTENCE_50K_100K_INSTRUMENTATION",
+      "status": "NOT_RUN",
+      "reason": "Full saved-run/evidence instrumentation covers10k and independently selected25k. Extended50k/100k attempts use the restricted originalcommon lane, not complete product history persistence."
+    }
+  ],
+  "dynamic_trial_inventory": "Capacity combined roster retains every original attempt and continuation, including the controller ERROR/orphan wait exit NOT_OBSERVED. capacity/run-001 and run-002 remain separate source/input-bound observations; see CAPACITY.md."
+}

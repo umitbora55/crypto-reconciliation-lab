@@ -1,0 +1,51 @@
+{
+  "format": "validation-benchmark-protocol-v1",
+  "frozen_before_measurement": true,
+  "data_class": "FULLY_SYNTHETIC",
+  "source_baseline": "b48021273405128c67e2969fd4b46f8d7e876a99",
+  "claim": "Measure local observed costs for an explicitly restricted additive task; never infer full product or institutional advantage.",
+  "profiles_events": [100, 1000, 10000, 100000],
+  "investors": 4,
+  "assets": 1,
+  "precision": "integer cents; ASCII decimal input; no float quantity arithmetic",
+  "events": "Repeated deposit(q), transfer(q), withdrawal(q); complete triples cancel, the zero/two partial suffix events have an analytic integer oracle. Four investors rotate. No corrections or revisions.",
+  "cut": "Single static economic and knowledge cut; every expected record visible.",
+  "repeats": 5,
+  "workload_seeds": [11, 29, 47, 71, 97],
+  "order": "Seeded random three-method order in even blocks, reversed previous order in odd blocks; matched by size/repeat/seed/input SHA-256.",
+  "warmup": "One 100-event process per method, recorded separately and excluded from summaries.",
+  "cold_warm": "Fresh database and interpreter each trial; OS page cache not dropped. Do not label cold-disk latency.",
+  "methods": ["stdlib_integer", "sqlite_integer", "production"],
+  "reference_independence": "Closed-form canceling-cycle oracle does not import production code. Stdlib event arithmetic and SQLite UNION/SUM are separate; reference ingestion and strict decimal parser are shared and this dependency limits independence.",
+  "parity": {
+    "identical_input_bytes": true,
+    "same_static_cut": true,
+    "complete_manifest_counts_on_selected_profiles": true,
+    "projected_integer_balances_custody_findings": true,
+    "full_validation_semantics": false,
+    "history_and_corrections": false,
+    "per_receipt_evidence_and_run_identifiers": false,
+    "full_persistence_and_export": false,
+    "overall": "NARROWER_SCOPE"
+  },
+  "timing": {
+    "phases": ["read_input", "initialize", "ingest", "reconcile", "persist_result", "export", "verification", "close"],
+    "production_reconcile": "Public reconcile call includes persistence; a test-owned Store subclass measures save_run and reports its duration separately without altering source or transactions.",
+    "end_to_end": "Child work from input read through correctness verification; parent subprocess wall includes interpreter startup and child artifact hashing, but excludes parent cleanup. Whole-program wall/CPU includes warmups, generation, hashing, cleanup and statistics. Phase progress logging is included instrumentation overhead. Do not add reconcile_including_persist to its two exclusive components.",
+    "metrics": ["wall_seconds", "cpu_seconds", "peak_rss_kib", "throughput_events_per_second", "database_bytes", "export_bytes"],
+    "rss": "Linux child ru_maxrss is KiB; includes interpreter/runtime and all phases, not isolated net allocations.",
+    "disk": "Logical file sizes; excludes filesystem metadata, block allocation and hardware writes. Not actual physical IO or monetary cost."
+  },
+  "statistics": {
+    "location": "median",
+    "p95": "Empirical nearest-rank percentile; n=5 means maximum and is not a reliable population tail estimate.",
+    "paired": "production minus baseline wall seconds and production/baseline ratio for matching size/repeat/seed",
+    "interval": "2000 seeded paired-block bootstrap median resamples; 2.5/97.5 percentiles; five blocks only, exploratory and unstable",
+    "outliers": "Retain every completed run; no outlier exclusion or replacement. Timeouts kept as censored outcomes, excluded from finite latency averages and explicitly counted."
+  },
+  "acceptance": "Every reported successful method's common result equals the closed-form integer oracle. Stop affected profile after any failure/timeout, retain evidence. Smaller profile failure blocks larger profiles. Fewer than five completed pairs yields INCONCLUSIVE.",
+  "budgets": {"total_seconds": 360, "child_wall_seconds": 60, "child_cpu_seconds": 60, "child_address_space_bytes": 1073741824, "child_single_file_bytes": 402653184, "parallel_workers": 1, "owned_disk_budget_bytes": 1073741824},
+  "retention": "100-event non-warmup databases/exports retained; larger and warmup files hashed and sized before removal. Input JSON, all commands/stdout/stderr, metrics, oracle result and retention inventory preserved. Timeout partial files are hashed before removal.",
+  "not_run": ["1000000 events", "months-long soak", "offline replay above contract bounds", "institution-private transactions", "paid cloud benchmark", "macOS absent accessible host"],
+  "decisions": {"COMPARATIVE_SPEED_ADVANTAGE": "INCONCLUSIVE", "INSTITUTIONAL_COST_SAVINGS": "NOT_PROVEN", "INSTITUTIONAL_RISK_REDUCTION": "NOT_PROVEN"}
+}

@@ -1,0 +1,85 @@
+{
+  "format": "gate3-evidence-index-v1",
+  "evidence_root": "/workspace/validation-gate3-evidence",
+  "records": [
+    {
+      "role": "intake",
+      "path": "intake-audit/attempt-003/audit-result.json",
+      "bytes": 3085,
+      "sha256": "964a11c05e44c97d9f955dea5049f2c693c8566f6aa3433f4680c076012111c1",
+      "scope": "Historical byte/identity audit"
+    },
+    {
+      "role": "release",
+      "path": "independent-review/local-final-001/audit-result.json",
+      "bytes": 6888,
+      "sha256": "f42bb7e8c2338af26f48f9973efbd1bfb3d95e542df72a7b3f9c68bc610f8202",
+      "scope": "875 source/installed on both runtimes plus69/162/373; intermediate47research preserved"
+    },
+    {
+      "role": "research",
+      "path": "independent-review/research-final-supplement-001/audit-result.json",
+      "bytes": 2849,
+      "sha256": "5af9066a327afc6eb6aef0a648e7fd9f58d47df1c0c6e650835c6731673c7e4a",
+      "scope": "Final51newresearch IDs,119source bindings; historical875separate"
+    },
+    {
+      "role": "public",
+      "path": "public-audit/raw-audit-002/result.json",
+      "bytes": 112546,
+      "sha256": "9f05a51119a38a32841fa241e22d222fd3f78f8060e4d87e988bd7a973ca5854",
+      "scope": "REAL_PUBLIC_DIRECT plus separately labelled research boundaries/injections"
+    },
+    {
+      "role": "comparison",
+      "path": "comparison/audit-003/audit.json",
+      "bytes": 1653053,
+      "sha256": "594b5443dfcc0f67f15073c4560ce972821a2412828dac5926083d09eecaea27",
+      "scope": "FULLY_SYNTHETIC historical45measurements; newindependentcalculation"
+    },
+    {
+      "role": "trust",
+      "path": "trust/run-001/trial-roster.json",
+      "bytes": 30178,
+      "sha256": "004a1839d5f9f489a45bd7d86dde416b0c1ff5aa9f9340a632d5878597ada8a9",
+      "scope": "FULLY_SYNTHETIC selected24LABreference replays"
+    },
+    {
+      "role": "adversarial",
+      "path": "verifier/red-green-comparison-003.json",
+      "bytes": 6792,
+      "sha256": "6bc33263c32c581fbef2fcef9e0264b7466b2985e5d9eb1ab64547292413f73e",
+      "scope": "24identical finitewitnesses,9repairedguards"
+    },
+    {
+      "role": "capacity",
+      "path": "capacity/combined-roster.json",
+      "bytes": 305185,
+      "sha256": "8c13c74b16c86e84543598a8f4e51846c631aa5b7c07ae9c0a4f3a817c307521",
+      "scope": "FULLY_SYNTHETIC14planned/attemptcells,10started; neverpooledwithpublicdata"
+    },
+    {
+      "role": "capacity_phases",
+      "path": "capacity/phase-analysis.json",
+      "bytes": 14570,
+      "sha256": "d1a6248838130ca59d183fbbe0d52291d525865966df239c80294d960c210ba5",
+      "scope": "Exact perreceipt/transactionCSV calculations"
+    },
+    {
+      "role": "capacity_resources",
+      "path": "capacity/capacity-resource-summary.json",
+      "bytes": 6018,
+      "sha256": "99a3e9b9cc0ae7ce1c699d1758c3015201fada6e68af055be18e00d4b9086539",
+      "scope": "Actualresourceobservationsandboundedunknowns"
+    },
+    {
+      "role": "capacity_independent",
+      "path": "trust/capacity-independent-outcome-003/summary.json",
+      "bytes": 2487,
+      "sha256": "a6aa802dbee3ddbc58c19ab0436c0ab6325f684a9cedc7930cc0d10196490af3",
+      "scope": "Independent source/input/artifact/DB/CSV/oracle audit"
+    }
+  ],
+  "trial_identity": "Every attempt is identified by attempt directory and trial ID. Repeated planned IDs across continuations are distinct attempts. Machine rosters retain input/source/expected/actual/status/exit/time/work-unit identities.",
+  "authority": "Hashes prove byte identity only. Preserve data classes and original-versus-continuation distinctions."
+}
