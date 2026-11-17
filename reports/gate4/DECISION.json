@@ -1,0 +1,42 @@
+{
+  "format": "gate4-decision-v1",
+  "decision": "NO_CHANGE",
+  "candidate": "CANDIDATE_WAL_FULL",
+  "candidate_acceptance": "CANDIDATE_NOT_ACCEPTED",
+  "production_changed": false,
+  "accepted_baseline_commit": "c08114e847b8b0ab58f28d41917ba386878fa873",
+  "baseline": "Unmodified DELETE journal, synchronous=FULL/2, one transaction and post-COMMIT return per receipt",
+  "decisive_observed_failure": "The existing financial review exporter rejects a checkpointed, cleanly closed WAL database with no sidecars: SNAPSHOT_UNSUPPORTED, header [2,2]. Baseline header [1,1] succeeds.",
+  "other_observed_portability_differences": [
+    "A precheckpoint WAL main-file-only copy contains zero of 30 acknowledged receipts; SQLite online backup and a quiescent complete sidecar copy preserve all 30.",
+    "Recorded readonly show on a clean closed WAL database creates WAL and SHM files in the source namespace."
+  ],
+  "process_crash_evidence": "Twenty fixed actual SIGKILL cells preserve the tested commit/ACK/retry semantics; all child exits are owned, observed -9 and reaped. This is not power-loss proof.",
+  "benchmark_protocol_deviation": "The first warmup failed before database creation because of an inherited hard address-space limit. Original ERROR/NOT_RUN records remain. A narrowly repaired, separately preregistered continuation retains original inputs, ordering, speed thresholds and cumulative budget. No primary measurement existed before the repair; original all-roster-PASS is nevertheless false.",
+  "statistics": {
+    "population": "Separate continuation; seven equivalent pairs per profile; every original failed/NOT_RUN observation retained",
+    "independent_raw_reread": "PASS: independent/comparison-001/audit-result.json",
+    "events10000": {
+      "baseline_median_seconds": 15.5758817370006,
+      "wal_median_seconds": 6.36925478700141,
+      "median_paired_reduction_seconds": 9.220240546994319,
+      "paired_reduction_bootstrap95_seconds": [8.909525682000094, 9.80508392599586],
+      "median_paired_gain_fraction": 0.595115583189341,
+      "paired_gain_bootstrap95": [0.579363706033269, 0.6286025998804259]
+    },
+    "events25000": {
+      "baseline_median_seconds": 39.988715863000834,
+      "wal_median_seconds": 17.961397892002424,
+      "median_paired_reduction_seconds": 22.81137774799572,
+      "paired_reduction_bootstrap95_seconds": [21.311328256997513, 23.907901605001825],
+      "median_paired_gain_fraction": 0.5594757136332345,
+      "paired_gain_bootstrap95": [0.5469653143430412, 0.5775645182039107]
+    },
+    "acceptance_limit": "The descriptive speed threshold is met; it cannot override failed portability or the original all-roster-PASS protocol deviation."
+  },
+  "source_report_status": "Engineering decision is NO_CHANGE; final evidence delivery status additionally requires exact-head CI observation and independent archive sealing, recorded outside this source commit.",
+  "authority": "Finite synthetic engineering research; no institutional superiority, deployment, cost saving, risk reduction, RTO/RPO or compliance conclusion.",
+  "historical_preservation": "All 445 accepted Gate3 files, original875 test identities, financial reference, Gate1 count-only12 false negatives and Gate1/2/3 failure records remain unchanged.",
+  "recommended_next_step_count": 1,
+  "recommended_next_step": "A separate design review of a WAL-compatible snapshot/export boundary, before considering any production patch."
+}

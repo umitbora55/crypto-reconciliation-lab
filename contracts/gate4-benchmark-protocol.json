@@ -1,0 +1,412 @@
+{
+  "baseline_commit": "c08114e847b8b0ab58f28d41917ba386878fa873",
+  "budgets": {
+    "cleanup_reserve_seconds": 30,
+    "controller_address_space_bytes": 1073741824,
+    "disk_reserve_bytes": 268435456,
+    "owned_disk_bytes": 6442450944,
+    "single_file_bytes": 536870912,
+    "total_cpu_seconds": 900,
+    "total_wall_seconds": 1800,
+    "worker_address_space_bytes": 1610612736,
+    "workers": 1
+  },
+  "controls": "One off/on10k pair each method, separate from primary7pairs; estimates incremental Recorder overhead, no reliable population bound. All methods retain common phase/receipt/progress/readback instrumentation.",
+  "data_class": "FULLY_SYNTHETIC",
+  "durability": "BASELINE observes DELETE/FULL2 unchanged; candidate requests WAL/FULL and observes2. FK1 and schema/triggers unchanged. Per-receipt commit then return preserved. WAL default autocheckpoint retained and observed; COMMIT timings include implicit checkpoint work. Explicit final checkpoint included. No physical power-loss proof.",
+  "eligibility": "Performance MATERIAL_GAIN is not candidate acceptance. A semantic, crash, portability or independent-read invariant gap yields CANDIDATE_NOT_ACCEPTED and unchanged production. Promising speed alone may support PROPOSAL_ONLY.",
+  "format": "gate4-benchmark-protocol-v1",
+  "inputs": [
+    {
+      "events": 10000,
+      "original_path": "/workspace/validation-gate3-evidence/capacity/run-001/inputs/events10000-seed11.json",
+      "proof": {
+        "bytes": 4596911,
+        "sha256": "c246c488a9845ad11e9628fd647cb1fb826ec6bc797bd3684781f247801926c2"
+      },
+      "seed": 11
+    },
+    {
+      "events": 25000,
+      "original_path": "/workspace/validation-gate3-evidence/capacity/run-001/inputs/events25000-seed29.json",
+      "proof": {
+        "bytes": 11516911,
+        "sha256": "8f8902a3e4970478da5d397d2141f7d534d2e097751d727578af38bbfb556a3f"
+      },
+      "seed": 29
+    }
+  ],
+  "methods": [
+    "BASELINE",
+    "CANDIDATE_WAL_FULL"
+  ],
+  "noise_policy": "No retries, refill, exclusions or tuning after timing. Every timeout/error/NOT_RUN retained. Both profiles must satisfy fixed gain/uncertainty thresholds; n7 empirical p95 is max. Paired bootstrap95 medians with replacement10,000 seed424271 indexes250 and9749. No host load-based post-hoc exclusions.",
+  "not_run": [
+    {
+      "id": "OPTIONAL_50000_FULL_PERSISTENCE",
+      "reason": "Preregistered omission to preserve correctness and fixed total budget.",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "POWER_LOSS_OR_FILESYSTEM_FAILURE",
+      "reason": "SIGKILL is not power interruption and managed overlay host cannot establish physical-media durability.",
+      "status": "NOT_RUN"
+    }
+  ],
+  "ordering": "For each pair1..7 run10k then25k; alternating method order by pair, reversed between profiles. Fresh owned DB each trial. Warmups first separate. Instrumentation controls last off/on BASELINE, on/off WAL.",
+  "primary_endpoint": "Controller parent_wall_seconds: interpreter startup, unchanged full Store/reconcile/save_run and canonical full JSON export, receipt identity/logical integrity checks, final TRUNCATE checkpoint and close/reopen included. No transaction batching or early ACK.",
+  "roster": [
+    {
+      "events": 100,
+      "id": "warmup-baseline",
+      "instrumented": false,
+      "method": "BASELINE",
+      "pair": null,
+      "role": "warmup",
+      "seed": 0,
+      "wall_cap": 30
+    },
+    {
+      "events": 100,
+      "id": "warmup-candidate_wal_full",
+      "instrumented": false,
+      "method": "CANDIDATE_WAL_FULL",
+      "pair": null,
+      "role": "warmup",
+      "seed": 0,
+      "wall_cap": 30
+    },
+    {
+      "events": 10000,
+      "id": "events10000-pair01-baseline",
+      "instrumented": false,
+      "method": "BASELINE",
+      "pair": 1,
+      "role": "paired",
+      "seed": 11,
+      "wall_cap": 90
+    },
+    {
+      "events": 10000,
+      "id": "events10000-pair01-candidate_wal_full",
+      "instrumented": false,
+      "method": "CANDIDATE_WAL_FULL",
+      "pair": 1,
+      "role": "paired",
+      "seed": 11,
+      "wall_cap": 90
+    },
+    {
+      "events": 25000,
+      "id": "events25000-pair01-candidate_wal_full",
+      "instrumented": false,
+      "method": "CANDIDATE_WAL_FULL",
+      "pair": 1,
+      "role": "paired",
+      "seed": 29,
+      "wall_cap": 150
+    },
+    {
+      "events": 25000,
+      "id": "events25000-pair01-baseline",
+      "instrumented": false,
+      "method": "BASELINE",
+      "pair": 1,
+      "role": "paired",
+      "seed": 29,
+      "wall_cap": 150
+    },
+    {
+      "events": 10000,
+      "id": "events10000-pair02-candidate_wal_full",
+      "instrumented": false,
+      "method": "CANDIDATE_WAL_FULL",
+      "pair": 2,
+      "role": "paired",
+      "seed": 11,
+      "wall_cap": 90
+    },
+    {
+      "events": 10000,
+      "id": "events10000-pair02-baseline",
+      "instrumented": false,
+      "method": "BASELINE",
+      "pair": 2,
+      "role": "paired",
+      "seed": 11,
+      "wall_cap": 90
+    },
+    {
+      "events": 25000,
+      "id": "events25000-pair02-baseline",
+      "instrumented": false,
+      "method": "BASELINE",
+      "pair": 2,
+      "role": "paired",
+      "seed": 29,
+      "wall_cap": 150
+    },
+    {
+      "events": 25000,
+      "id": "events25000-pair02-candidate_wal_full",
+      "instrumented": false,
+      "method": "CANDIDATE_WAL_FULL",
+      "pair": 2,
+      "role": "paired",
+      "seed": 29,
+      "wall_cap": 150
+    },
+    {
+      "events": 10000,
+      "id": "events10000-pair03-baseline",
+      "instrumented": false,
+      "method": "BASELINE",
+      "pair": 3,
+      "role": "paired",
+      "seed": 11,
+      "wall_cap": 90
+    },
+    {
+      "events": 10000,
+      "id": "events10000-pair03-candidate_wal_full",
+      "instrumented": false,
+      "method": "CANDIDATE_WAL_FULL",
+      "pair": 3,
+      "role": "paired",
+      "seed": 11,
+      "wall_cap": 90
+    },
+    {
+      "events": 25000,
+      "id": "events25000-pair03-candidate_wal_full",
+      "instrumented": false,
+      "method": "CANDIDATE_WAL_FULL",
+      "pair": 3,
+      "role": "paired",
+      "seed": 29,
+      "wall_cap": 150
+    },
+    {
+      "events": 25000,
+      "id": "events25000-pair03-baseline",
+      "instrumented": false,
+      "method": "BASELINE",
+      "pair": 3,
+      "role": "paired",
+      "seed": 29,
+      "wall_cap": 150
+    },
+    {
+      "events": 10000,
+      "id": "events10000-pair04-candidate_wal_full",
+      "instrumented": false,
+      "method": "CANDIDATE_WAL_FULL",
+      "pair": 4,
+      "role": "paired",
+      "seed": 11,
+      "wall_cap": 90
+    },
+    {
+      "events": 10000,
+      "id": "events10000-pair04-baseline",
+      "instrumented": false,
+      "method": "BASELINE",
+      "pair": 4,
+      "role": "paired",
+      "seed": 11,
+      "wall_cap": 90
+    },
+    {
+      "events": 25000,
+      "id": "events25000-pair04-baseline",
+      "instrumented": false,
+      "method": "BASELINE",
+      "pair": 4,
+      "role": "paired",
+      "seed": 29,
+      "wall_cap": 150
+    },
+    {
+      "events": 25000,
+      "id": "events25000-pair04-candidate_wal_full",
+      "instrumented": false,
+      "method": "CANDIDATE_WAL_FULL",
+      "pair": 4,
+      "role": "paired",
+      "seed": 29,
+      "wall_cap": 150
+    },
+    {
+      "events": 10000,
+      "id": "events10000-pair05-baseline",
+      "instrumented": false,
+      "method": "BASELINE",
+      "pair": 5,
+      "role": "paired",
+      "seed": 11,
+      "wall_cap": 90
+    },
+    {
+      "events": 10000,
+      "id": "events10000-pair05-candidate_wal_full",
+      "instrumented": false,
+      "method": "CANDIDATE_WAL_FULL",
+      "pair": 5,
+      "role": "paired",
+      "seed": 11,
+      "wall_cap": 90
+    },
+    {
+      "events": 25000,
+      "id": "events25000-pair05-candidate_wal_full",
+      "instrumented": false,
+      "method": "CANDIDATE_WAL_FULL",
+      "pair": 5,
+      "role": "paired",
+      "seed": 29,
+      "wall_cap": 150
+    },
+    {
+      "events": 25000,
+      "id": "events25000-pair05-baseline",
+      "instrumented": false,
+      "method": "BASELINE",
+      "pair": 5,
+      "role": "paired",
+      "seed": 29,
+      "wall_cap": 150
+    },
+    {
+      "events": 10000,
+      "id": "events10000-pair06-candidate_wal_full",
+      "instrumented": false,
+      "method": "CANDIDATE_WAL_FULL",
+      "pair": 6,
+      "role": "paired",
+      "seed": 11,
+      "wall_cap": 90
+    },
+    {
+      "events": 10000,
+      "id": "events10000-pair06-baseline",
+      "instrumented": false,
+      "method": "BASELINE",
+      "pair": 6,
+      "role": "paired",
+      "seed": 11,
+      "wall_cap": 90
+    },
+    {
+      "events": 25000,
+      "id": "events25000-pair06-baseline",
+      "instrumented": false,
+      "method": "BASELINE",
+      "pair": 6,
+      "role": "paired",
+      "seed": 29,
+      "wall_cap": 150
+    },
+    {
+      "events": 25000,
+      "id": "events25000-pair06-candidate_wal_full",
+      "instrumented": false,
+      "method": "CANDIDATE_WAL_FULL",
+      "pair": 6,
+      "role": "paired",
+      "seed": 29,
+      "wall_cap": 150
+    },
+    {
+      "events": 10000,
+      "id": "events10000-pair07-baseline",
+      "instrumented": false,
+      "method": "BASELINE",
+      "pair": 7,
+      "role": "paired",
+      "seed": 11,
+      "wall_cap": 90
+    },
+    {
+      "events": 10000,
+      "id": "events10000-pair07-candidate_wal_full",
+      "instrumented": false,
+      "method": "CANDIDATE_WAL_FULL",
+      "pair": 7,
+      "role": "paired",
+      "seed": 11,
+      "wall_cap": 90
+    },
+    {
+      "events": 25000,
+      "id": "events25000-pair07-candidate_wal_full",
+      "instrumented": false,
+      "method": "CANDIDATE_WAL_FULL",
+      "pair": 7,
+      "role": "paired",
+      "seed": 29,
+      "wall_cap": 150
+    },
+    {
+      "events": 25000,
+      "id": "events25000-pair07-baseline",
+      "instrumented": false,
+      "method": "BASELINE",
+      "pair": 7,
+      "role": "paired",
+      "seed": 29,
+      "wall_cap": 150
+    },
+    {
+      "events": 10000,
+      "id": "control-baseline-off",
+      "instrumented": false,
+      "method": "BASELINE",
+      "pair": null,
+      "role": "instrumentation_control",
+      "seed": 11,
+      "wall_cap": 90
+    },
+    {
+      "events": 10000,
+      "id": "control-baseline-on",
+      "instrumented": true,
+      "method": "BASELINE",
+      "pair": null,
+      "role": "instrumentation_control",
+      "seed": 11,
+      "wall_cap": 90
+    },
+    {
+      "events": 10000,
+      "id": "control-candidate_wal_full-on",
+      "instrumented": true,
+      "method": "CANDIDATE_WAL_FULL",
+      "pair": null,
+      "role": "instrumentation_control",
+      "seed": 11,
+      "wall_cap": 90
+    },
+    {
+      "events": 10000,
+      "id": "control-candidate_wal_full-off",
+      "instrumented": false,
+      "method": "CANDIDATE_WAL_FULL",
+      "pair": null,
+      "role": "instrumentation_control",
+      "seed": 11,
+      "wall_cap": 90
+    }
+  ],
+  "threshold": {
+    "all_roster_trials_must_pass": true,
+    "bootstrap_indices": [
+      250,
+      9749
+    ],
+    "bootstrap_lower_gain_fraction": 0.05,
+    "bootstrap_samples": 10000,
+    "bootstrap_seed": 424271,
+    "median_paired_gain_fraction": 0.15,
+    "minimum_complete_equivalent_pairs_each_profile": 7
+  }
+}

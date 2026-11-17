@@ -1,0 +1,72 @@
+{
+  "format": "gate4-not-run-and-limitations-v1",
+  "scope": "New Gate4 research only; original Gate1/2/3 records and failures retain their historical meaning.",
+  "items": [
+    {
+      "id": "EARLY_INDEPENDENT_UNIT001_UNIT002_SOURCE_SNAPSHOTS",
+      "status": "SOURCE_SNAPSHOT_NOT_RECORDED",
+      "reason": "Two early ten-method checker runs retain development stdout/stderr and tool-observed exit0, but no exact intermediate full source snapshots. They are DEVELOPMENT_ONLY, not final sealed validation. The final50-test inventories, input oracle, raw audit, control supplement and adversarial witnesses have their separate source bindings."
+    },
+    {
+      "id": "OPTIONAL_50000_FULL_PERSISTENCE",
+      "status": "NOT_RUN",
+      "reason": "Explicitly omitted before measurements to protect the fixed correctness and 10k/25k budget. Original larger synthetic input bytes exist; no capacity inference is made."
+    },
+    {
+      "id": "POWER_LOSS_TORN_WRITE_FILESYSTEM_FAILURE",
+      "status": "NOT_RUN",
+      "reason": "Owned-process SIGKILL preserves host power and does not establish storage-device flush or torn-write behavior."
+    },
+    {
+      "id": "OTHER_FILESYSTEMS_DEVICES_NETWORK_STORAGE",
+      "status": "NOT_RUN",
+      "reason": "Only the recorded managed Linux overlay filesystem was measured. No paid infrastructure or alternate device experiment was used."
+    },
+    {
+      "id": "CONCURRENT_READERS_LARGE_WAL_CRASH",
+      "status": "NOT_RUN",
+      "reason": "The finite crash catalog has one writer and small fixtures; it does not establish checkpoint starvation or crash behavior with concurrent readers and a large accumulated WAL."
+    },
+    {
+      "id": "PHYSICAL_FSYNC_LATENCY",
+      "status": "NOT_MEASURED",
+      "reason": "SQLite call timings include implicit work. Process I/O counters, sampled file sizes and wall time do not isolate physical-media latency."
+    },
+    {
+      "id": "NATIVE_REPLAY_EPHEMERAL_CONNECTION_PRAGMAS",
+      "status": "NOT_RETAINED",
+      "reason": "The unmodified native replay result is retained, but its ephemeral child's PRAGMAs are not. A separate retained child running the same computation is identified separately and does not retroactively instrument that invocation."
+    },
+    {
+      "id": "LOCAL_FULL_875_SOURCE_INSTALLED_PY312_PY314",
+      "status": "NOT_RUN",
+      "reason": "No production patch is made or accepted. Gate4 runs its own exact new research population. Historical Gate3 passes are not new Gate4 executions; any new automatic exact-head CI executions are reported separately."
+    },
+    {
+      "id": "LOCAL_FINANCIAL_69_162_373_PY312_PY314",
+      "status": "NOT_RUN",
+      "reason": "Research-only work preserves the immutable financial reference and all production bytes. Historical execution and current static identity are distinct; new automatic CI scope is separately observed."
+    },
+    {
+      "id": "INDEPENDENT_INSTITUTIONAL_TWO_PARTY_RECORDS",
+      "status": "UNAVAILABLE",
+      "reason": "No authorized institution-owned two-party records were supplied or fetched. Public Treasury/SEC and synthetic LAB fixtures do not supply them."
+    },
+    {
+      "id": "REPRESENTATIVE_NATURAL_ERROR_LABELS",
+      "status": "UNAVAILABLE",
+      "reason": "No representative naturally occurring errors with independent outcome labels exist in this experiment. Synthetic controls cannot estimate institutional precision, recall, loss or risk."
+    },
+    {
+      "id": "PUBLIC_DATA_REACQUISITION_AND_FROZEN_ML",
+      "status": "NOT_RUN",
+      "reason": "Prior data evidence and frozen model experiments remain historical and unchanged; they are outside this transaction experiment."
+    },
+    {
+      "id": "PRODUCTION_WAL_PATCH_DEPLOYMENT_RELEASE_ENVIRONMENT_PUBLICATION",
+      "status": "NOT_PERFORMED",
+      "reason": "Current WAL candidate fails an existing compatibility invariant. Production remains unchanged; no merge, main push, release, PyPI upload or environment publication is authorized."
+    }
+  ],
+  "attempt_ledger": "The original benchmark run-001 retains one warmup ERROR and 33 NOT_RUN cells. Separately preregistered continuation observations never overwrite those records; see COMPARISON.md and the complete combined ledger."
+}
