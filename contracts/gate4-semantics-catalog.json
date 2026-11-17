@@ -1,0 +1,572 @@
+{
+  "format": "gate4-semantics-catalog-v1",
+  "methods": [
+    "BASELINE",
+    "CANDIDATE_WAL_FULL"
+  ],
+  "base_commit": "c08114e847b8b0ab58f28d41917ba386878fa873",
+  "preregistered_before_candidate_execution": true,
+  "observed_at": "2026-11-12T00:00:00Z",
+  "limits": {
+    "wall_seconds": 240,
+    "cpu_seconds": 180,
+    "address_space_bytes": 1073741824,
+    "file_size_bytes": 67108864,
+    "owned_disk_bytes": 268435456,
+    "workers": 1
+  },
+  "oracle": "Literal expectations outside engine; fixture constructors input-only; independent stdlib canonical JSON SHA-256 for receipt request bindings. Does not claim independent financial model or external institutional truth.",
+  "ack_contract": "ACK means durable terminal transport disposition, including INVALID quarantine or REJECTED_FRAME; it does not mean valid economic admission. Exceptions and transport conflict/blocking must not ACK.",
+  "cases": [
+    {
+      "id": "clean",
+      "family": "financial",
+      "expected": {
+        "initial": {
+          "ASSET_A": {
+            "investor_balances": {
+              "I1": "7",
+              "I2": "4"
+            },
+            "liability": "11",
+            "custody_rollforward": {
+              "platform": "2",
+              "external": "9"
+            }
+          },
+          "ASSET_B": {
+            "investor_balances": {
+              "I1": "0.3",
+              "I2": "0.2"
+            },
+            "liability": "0.5",
+            "custody_rollforward": {
+              "platform": "0.05",
+              "external": "0.45"
+            }
+          }
+        },
+        "initial_all_matched": true
+      }
+    },
+    {
+      "id": "direct_redelivery",
+      "family": "financial",
+      "expected": {
+        "initial": {
+          "ASSET_A": {
+            "investor_balances": {
+              "I1": "7",
+              "I2": "4"
+            },
+            "liability": "11",
+            "custody_rollforward": {
+              "platform": "2",
+              "external": "9"
+            }
+          },
+          "ASSET_B": {
+            "investor_balances": {
+              "I1": "0.3",
+              "I2": "0.2"
+            },
+            "liability": "0.5",
+            "custody_rollforward": {
+              "platform": "0.05",
+              "external": "0.45"
+            }
+          }
+        },
+        "initial_all_matched": true
+      }
+    },
+    {
+      "id": "normalized_duplicate",
+      "family": "financial",
+      "expected": {
+        "initial": {
+          "ASSET_A": {
+            "investor_balances": {
+              "I1": "7",
+              "I2": "4"
+            },
+            "liability": "11",
+            "custody_rollforward": {
+              "platform": "2",
+              "external": "9"
+            }
+          },
+          "ASSET_B": {
+            "investor_balances": {
+              "I1": "0.3",
+              "I2": "0.2"
+            },
+            "liability": "0.5",
+            "custody_rollforward": {
+              "platform": "0.05",
+              "external": "0.45"
+            }
+          }
+        },
+        "initial_all_matched": true
+      }
+    },
+    {
+      "id": "same_key_conflict",
+      "family": "financial",
+      "expected": {
+        "initial": {
+          "ASSET_A": {
+            "investor_balances": {
+              "I1": "7",
+              "I2": "4"
+            },
+            "liability": "11",
+            "custody_rollforward": {
+              "platform": "2",
+              "external": "9"
+            }
+          },
+          "ASSET_B": {
+            "investor_balances": {
+              "I1": "0.3",
+              "I2": "0.2"
+            },
+            "liability": "0.5",
+            "custody_rollforward": {
+              "platform": "0.05",
+              "external": "0.45"
+            }
+          }
+        },
+        "initial_all_matched": true,
+        "later_A_data_state": "CONFLICT",
+        "later_A_issue": "EVENT_ID_CONFLICT"
+      }
+    },
+    {
+      "id": "invalid_quarantine",
+      "family": "financial",
+      "expected": {
+        "initial": {
+          "ASSET_A": {
+            "investor_balances": {
+              "I1": "7",
+              "I2": "4"
+            },
+            "liability": "11",
+            "custody_rollforward": {
+              "platform": "2",
+              "external": "9"
+            }
+          },
+          "ASSET_B": {
+            "investor_balances": {
+              "I1": "0.3",
+              "I2": "0.2"
+            },
+            "liability": "0.5",
+            "custody_rollforward": {
+              "platform": "0.05",
+              "external": "0.45"
+            }
+          }
+        },
+        "initial_all_matched": true,
+        "later_A_data_state": "INCOMPLETE",
+        "later": {
+          "ASSET_A": {
+            "investor_balances": {
+              "I1": "7",
+              "I2": "4"
+            },
+            "liability": "11",
+            "custody_rollforward": {
+              "platform": "2",
+              "external": "9"
+            }
+          },
+          "ASSET_B": {
+            "investor_balances": {
+              "I1": "0.3",
+              "I2": "0.2"
+            },
+            "liability": "0.5",
+            "custody_rollforward": {
+              "platform": "0.05",
+              "external": "0.45"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "correction_void",
+      "family": "financial",
+      "expected": {
+        "initial": {
+          "ASSET_A": {
+            "investor_balances": {
+              "I1": "7",
+              "I2": "4"
+            },
+            "liability": "11",
+            "custody_rollforward": {
+              "platform": "2",
+              "external": "9"
+            }
+          },
+          "ASSET_B": {
+            "investor_balances": {
+              "I1": "0.3",
+              "I2": "0.2"
+            },
+            "liability": "0.5",
+            "custody_rollforward": {
+              "platform": "0.05",
+              "external": "0.45"
+            }
+          }
+        },
+        "initial_all_matched": true,
+        "later": {
+          "ASSET_A": {
+            "investor_balances": {
+              "I1": "5",
+              "I2": "4"
+            },
+            "liability": "9",
+            "custody_rollforward": {
+              "platform": "2",
+              "external": "7"
+            }
+          },
+          "ASSET_B": {
+            "investor_balances": {
+              "I1": "0.3",
+              "I2": "0.2"
+            },
+            "liability": "0.5",
+            "custody_rollforward": {
+              "platform": "0.05",
+              "external": "0.45"
+            }
+          }
+        },
+        "later_A_differences": {
+          "I1": "-2",
+          "I2": "0",
+          "customer_liability": "-2"
+        },
+        "correction_effects": 1
+      }
+    },
+    {
+      "id": "correction_replace",
+      "family": "financial",
+      "expected": {
+        "initial": {
+          "ASSET_A": {
+            "investor_balances": {
+              "I1": "7",
+              "I2": "4"
+            },
+            "liability": "11",
+            "custody_rollforward": {
+              "platform": "2",
+              "external": "9"
+            }
+          },
+          "ASSET_B": {
+            "investor_balances": {
+              "I1": "0.3",
+              "I2": "0.2"
+            },
+            "liability": "0.5",
+            "custody_rollforward": {
+              "platform": "0.05",
+              "external": "0.45"
+            }
+          }
+        },
+        "initial_all_matched": true,
+        "later": {
+          "ASSET_A": {
+            "investor_balances": {
+              "I1": "8",
+              "I2": "4"
+            },
+            "liability": "12",
+            "custody_rollforward": {
+              "platform": "2",
+              "external": "10"
+            }
+          },
+          "ASSET_B": {
+            "investor_balances": {
+              "I1": "0.3",
+              "I2": "0.2"
+            },
+            "liability": "0.5",
+            "custody_rollforward": {
+              "platform": "0.05",
+              "external": "0.45"
+            }
+          }
+        },
+        "later_A_differences": {
+          "I1": "1",
+          "I2": "0",
+          "customer_liability": "1"
+        },
+        "correction_effects": 2
+      }
+    },
+    {
+      "id": "late_event",
+      "family": "financial",
+      "expected": {
+        "initial": {
+          "ASSET_A": {
+            "investor_balances": {
+              "I1": "7",
+              "I2": "5"
+            },
+            "liability": "12",
+            "custody_rollforward": {
+              "platform": "2",
+              "external": "10"
+            }
+          },
+          "ASSET_B": {
+            "investor_balances": {
+              "I1": "0.3",
+              "I2": "0.2"
+            },
+            "liability": "0.5",
+            "custody_rollforward": {
+              "platform": "0.05",
+              "external": "0.45"
+            }
+          }
+        },
+        "initial_all_matched": false,
+        "later": {
+          "ASSET_A": {
+            "investor_balances": {
+              "I1": "7",
+              "I2": "4"
+            },
+            "liability": "11",
+            "custody_rollforward": {
+              "platform": "2",
+              "external": "9"
+            }
+          },
+          "ASSET_B": {
+            "investor_balances": {
+              "I1": "0.3",
+              "I2": "0.2"
+            },
+            "liability": "0.5",
+            "custody_rollforward": {
+              "platform": "0.05",
+              "external": "0.45"
+            }
+          }
+        },
+        "initial_A_data_state": "INCOMPLETE",
+        "initial_A_liability_difference": "1",
+        "later_all_matched": true
+      }
+    },
+    {
+      "id": "one_asset",
+      "family": "financial",
+      "expected": {
+        "initial": {
+          "ASSET_A": {
+            "investor_balances": {
+              "I1": "7",
+              "I2": "4"
+            },
+            "liability": "11",
+            "custody_rollforward": {
+              "platform": "2",
+              "external": "9"
+            }
+          }
+        },
+        "initial_all_matched": true
+      }
+    },
+    {
+      "id": "cross_asset",
+      "family": "financial",
+      "expected": {
+        "initial": {
+          "ASSET_A": {
+            "investor_balances": {
+              "I1": "7",
+              "I2": "4"
+            },
+            "liability": "11",
+            "custody_rollforward": {
+              "platform": "2",
+              "external": "9"
+            }
+          },
+          "ASSET_B": {
+            "investor_balances": {
+              "I1": "0.3",
+              "I2": "0.2"
+            },
+            "liability": "0.5",
+            "custody_rollforward": {
+              "platform": "0.05",
+              "external": "0.45"
+            }
+          }
+        },
+        "initial_all_matched": false,
+        "initial_differences": {
+          "ASSET_A": "1",
+          "ASSET_B": "-1"
+        }
+      }
+    },
+    {
+      "id": "exact_replay",
+      "family": "transport",
+      "expected": {
+        "dispositions": [
+          "ACCEPTED",
+          "ACCEPTED"
+        ],
+        "outcomes": [
+          "COMMITTED",
+          "REPLAY"
+        ],
+        "receipts": 1,
+        "records": 1
+      }
+    },
+    {
+      "id": "duplicate_sequence",
+      "family": "transport",
+      "expected": {
+        "dispositions": [
+          "ACCEPTED",
+          "DUPLICATE"
+        ],
+        "outcomes": [
+          "COMMITTED",
+          "COMMITTED"
+        ],
+        "receipts": 2,
+        "records": 1
+      }
+    },
+    {
+      "id": "conflicting_key",
+      "family": "transport",
+      "expected": {
+        "dispositions": [
+          "ACCEPTED",
+          "CONFLICT"
+        ],
+        "outcomes": [
+          "COMMITTED",
+          "COMMITTED"
+        ],
+        "receipts": 2,
+        "records": 2
+      }
+    },
+    {
+      "id": "invalid_types",
+      "family": "transport",
+      "expected": {
+        "receipts": 5,
+        "records": 0,
+        "all_disposition": "INVALID"
+      }
+    },
+    {
+      "id": "frame_errors",
+      "family": "transport",
+      "expected": {
+        "receipts": 0,
+        "records": 0,
+        "all_disposition": "REJECTED_FRAME"
+      }
+    },
+    {
+      "id": "transport_conflict",
+      "family": "transport",
+      "expected": {
+        "receipts": 1,
+        "records": 1,
+        "outcomes": [
+          "COMMITTED",
+          "TRANSPORT_CONFLICT",
+          "BLOCKED"
+        ],
+        "acks": [
+          true,
+          false,
+          false
+        ]
+      }
+    },
+    {
+      "id": "aborted_prefix",
+      "family": "transport",
+      "expected": {
+        "receipts": 30,
+        "records": 30,
+        "rollback_receipts": 1,
+        "recovered_all_matched": true
+      }
+    },
+    {
+      "id": "changed_partial_file",
+      "family": "transport",
+      "expected": {
+        "receipts": 1,
+        "records": 1,
+        "outcome": "PLAN_CONFLICT",
+        "ack": false,
+        "pending_sequences": [
+          2
+        ]
+      }
+    },
+    {
+      "id": "snapshot_malformed",
+      "family": "transport",
+      "expected": {
+        "receipts": 0,
+        "records": 0,
+        "explicit_errors": 8
+      }
+    },
+    {
+      "id": "protocol_bad_types",
+      "family": "transport",
+      "expected": {
+        "receipts": 0,
+        "records": 0,
+        "explicit_errors": 7
+      }
+    }
+  ],
+  "not_in_this_component": [
+    "SIGKILL process barriers (separate Gate4 crash evidence)",
+    "protected source auth and policy history (separate portability evidence)",
+    "product show/provenance/five-file exports and replay/migration/backup (separate portability evidence)",
+    "power-loss durability",
+    "institutional two-party truth",
+    "875 test suite and 373 references rerun: research-only no production patch"
+  ]
+}

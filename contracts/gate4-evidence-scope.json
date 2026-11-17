@@ -1,0 +1,68 @@
+{
+  "format": "gate4-independent-evidence-scope-v1",
+  "accepted_head": "c08114e847b8b0ab58f28d41917ba386878fa873",
+  "input_profile_order": [
+    [
+      10000,
+      11
+    ],
+    [
+      25000,
+      29
+    ]
+  ],
+  "input_pins": [
+    {
+      "events": 10000,
+      "seed": 11,
+      "bytes": 4596911,
+      "sha256": "c246c488a9845ad11e9628fd647cb1fb826ec6bc797bd3684781f247801926c2",
+      "ordered_receipt_ids_sha256": "b54dab4b82461e339d7f898a2ffad66a0c9e59ec618bdbbf8dc6497fab08b160",
+      "residual_cents": 45
+    },
+    {
+      "events": 25000,
+      "seed": 29,
+      "bytes": 11516911,
+      "sha256": "8f8902a3e4970478da5d397d2141f7d534d2e097751d727578af38bbfb556a3f",
+      "ordered_receipt_ids_sha256": "736346fc7ed1f8cec3821b619082749844e962881dcd5a73627ccdbfd751bc8b",
+      "residual_cents": 22
+    }
+  ],
+  "input_coverage": "Every ordered event E0 through E(n-1), six opening rows, six reports and five manifests, all raw fields and every physical receipt/content identity.",
+  "independence": "Only Python standard library imports; no production or benchmark parser, normalizer, arithmetic, result projector or statistics helper.",
+  "oracle_unit": "Exact integer cents from decimal characters; fixed final residuals 45 and 22 cents, all five findings MATCHED.",
+  "paired_trials": 28,
+  "repeats_each_profile": 7,
+  "primary_metric": "parent_wall_seconds",
+  "minimum_median_paired_gain": 0.15,
+  "minimum_bootstrap95_lower_gain_exclusive": 0.05,
+  "p95_rule": "Nearest rank at n=7 is the observed maximum; not a stable tail estimate.",
+  "historical_count_only_false_negatives": 12,
+  "source_signature_authority": "LAB_NOT_INSTITUTION",
+  "not_claimed": [
+    "Institutional counterparty truth",
+    "Natural financial error labels",
+    "Power-loss durability",
+    "Full production eligibility from performance alone"
+  ],
+  "bootstrap": {
+    "samples": 10000,
+    "seed": 424271,
+    "sorted_indexes": [
+      250,
+      9749
+    ],
+    "statistic": "median paired baseline-minus-candidate and gain=(baseline-candidate)/baseline"
+  },
+  "fixed_order": "Pairs1..7:10k then25k; reverse methods on evenpair10k and oddpair25k",
+  "benchmark_protocol_pin": {
+    "bytes": 11275,
+    "sha256": "3b1ec65cde995cf95f12498f5a614448d45c96884e2fed14aac806a9484134b2"
+  },
+  "continuation_protocol_pin": {
+    "bytes": 13922,
+    "sha256": "12ad614d1ae6992fa91c5222cee2d5fbca0b3180d2a8029dfd0f9c818fe4afca"
+  },
+  "continuation_scope": "Preserve original1ERROR33NOT_RUN; pre-DB warmup bootstrap repair. Original no-retry/all34PASS criterion not met. Continuation28pairs descriptive only; combined68cell-attempt roster; total1800wall900CPU6GiBdisk."
+}

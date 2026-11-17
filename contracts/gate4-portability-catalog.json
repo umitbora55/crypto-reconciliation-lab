@@ -1,0 +1,69 @@
+{
+  "acceptance_policy": "Any failure or untested required invariant => CANDIDATE_NOT_ACCEPTED. Legacy review WAL incompatibility already predicted from static source; no production accommodation in this task. Host-only SIGKILL/device tests do not establish power-loss or network-filesystem guarantees. Network/device portability remains NOT_RUN.",
+  "budgets": {
+    "address_space_bytes": 805306368,
+    "eligible_receipts": 30,
+    "maximum_eligible_receipts": 10000,
+    "method_cpu_seconds": 120,
+    "method_wall_seconds": 180,
+    "per_file_bytes": 67108864,
+    "replay_timeout_seconds": 30,
+    "total_owned_disk_bytes": 268435456
+  },
+  "cases": [
+    {
+      "expect": "Protection rejects unsigned Store.ingest and ingest_delivery; one old-key receipt, rotation, historical replay of that receipt plus denial of unseen old-key suffix; new key resumes same stream; all 30 receipts present, first acceptance epoch1 and remaining epoch2; old recorded context unchanged.",
+      "id": "auth_history"
+    },
+    {
+      "expect": "Truncated/aborted/corrupted/bad-type/oversized-value snapshots are denied with explicit reasons and zero new core receipts; rejection audits retained.",
+      "id": "malformed_auth"
+    },
+    {
+      "expect": "Stored read and exact five-file export preserve original context/run bytes and logical source state; repeat output and DB/sidecar namespace collisions rejected; read existing WAL and DELETE after reopen; record any physical sidecar changes.",
+      "id": "recorded_read_export"
+    },
+    {
+      "expect": "Original thirty-receipt context reproduces within default30-second worker bound; wrong external ID, truncated context and existing output reject. Record native API result and independently observed in-memory worker PRAGMAs without altering production code.",
+      "id": "offline_replay"
+    },
+    {
+      "expect": "BASELINE closed database review export succeeds. WAL live sidecars and closed WAL header currently reject SNAPSHOT_UNSUPPORTED; confirmed rejection is an acceptance-invariant FAILURE, not semantic equivalence.",
+      "id": "legacy_review"
+    },
+    {
+      "expect": "Online SQLite backup and quiescent DB+WAL copy retain exact logical state. WAL DB-only copy without checkpoint may omit committed receipts and must not be sold as a backup. Record original/sidecar bytes, checkpoint elapsed/returned frame counts and reopening settings.",
+      "id": "wal_sidecars_backup"
+    },
+    {
+      "expect": "Real schema5 ->6 migration preserves all old tables, columns, objects and run payload; injected before-COMMIT failure fully rolls back; restored schema5 backup equals original; duplicate backup target is rejected without overwrite.",
+      "id": "migration_restore"
+    },
+    {
+      "expect": "Exact original financial run, canonical five-file export, auth/history/audit/capture logical tables and ordered receipts agree across methods. SQLite pages need not agree.",
+      "id": "cross_method_equivalence"
+    }
+  ],
+  "data_class": "FULLY_SYNTHETIC_PUBLIC_TEST_KEYS",
+  "export_roster": [
+    "context.json",
+    "execution.json",
+    "run.json",
+    "summary.json",
+    "summary.md"
+  ],
+  "format": "gate4-portability-catalog-v1",
+  "methods": [
+    "BASELINE",
+    "CANDIDATE_WAL_FULL"
+  ],
+  "source_bindings": {
+    "crypto_reconciliation_lab/execution/reader.py": "7f3a25825016dc041605e11d10fcc6660bf7c8291a483b35c06f7e2f720e0a45",
+    "crypto_reconciliation_lab/migrations.py": "d97f1ebcad314de89cc576ddfb270a2026168e26ed467979a072f73bcb9b44a5",
+    "crypto_reconciliation_lab/replay/api.py": "dee3a73035cd69ccbba6c7d9d80bd8b1a95c81be38299bcd99800d010f2e7c1a",
+    "crypto_reconciliation_lab/review/adapter.py": "64eefab1929aababb28f2d9f7e2c351d6b925d82433d2131be8c995fe362c7c1",
+    "crypto_reconciliation_lab/source_auth/fixtures.py": "8c5cdc8912902f1d11aebae457f45dcdb263af1685e3ed448285437ad1530e65"
+  },
+  "starting_head": "c08114e847b8b0ab58f28d41917ba386878fa873",
+  "status": "PREREGISTERED_BEFORE_EXECUTION"
+}

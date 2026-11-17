@@ -1,0 +1,24 @@
+{
+  "format": "gate4-crash-catalog-v1",
+  "scope": "research-only process interruption; unchanged production Store",
+  "methods": ["BASELINE", "CANDIDATE_WAL_FULL"],
+  "apis": ["ordinary_ingest", "restartable_ingest_delivery"],
+  "stages": ["before_begin", "after_begin", "after_insert_before_commit", "after_commit_before_ack", "after_ack"],
+  "trials": 20,
+  "repeat_policy": "one preregistered cell per method/api/stage; retain failures; no refill",
+  "budgets": {"whole_wall_seconds": 120, "child_wall_seconds": 5, "child_cpu_seconds": 5, "child_address_space_bytes": 536870912, "owned_disk_bytes": 1073741824},
+  "initial_database": "One shared DELETE/FULL schema-6 database: clean two-asset demo excluding A3 withdrawal, 29 receipts, saved initial run. Identical initial database bytes copied for every cell.",
+  "request": "The exact original A3 withdrawal envelope, canonical JSON plus LF, same request bytes in every cell; restartable stream Gate4Crash sequence 1 with one-line immutable plan.",
+  "barrier": "Research SQLite Connection subclass delegates all operations unchanged and emits pipe events. Child blocks on an event pipe only at selected exact SQL/ACK boundary. Controller observes that event, sends SIGKILL to its owned PID and wait()s the actual return code.",
+  "ack_boundary": "After unchanged API returns following COMMIT, research client writes exact response/request binding to external ACK ledger, fsyncs file and containing directory, then signals after_ack. No external ACK exists at earlier gates.",
+  "precommit_stages": ["before_begin", "after_begin", "after_insert_before_commit"],
+  "postcommit_stages": ["after_commit_before_ack", "after_ack"],
+  "oracle": {
+    "before": {"ASSET_A": {"I1": "7", "I2": "5", "liability": "12", "platform": "2", "external": "10"}, "ASSET_B": {"I1": "0.3", "I2": "0.2", "liability": "0.5", "platform": "0.05", "external": "0.45"}},
+    "after": {"ASSET_A": {"I1": "7", "I2": "4", "liability": "11", "platform": "2", "external": "9"}, "ASSET_B": {"I1": "0.3", "I2": "0.2", "liability": "0.5", "platform": "0.05", "external": "0.45"}},
+    "ordinary_retry": "If interrupted before commit, ACCEPTED and total 30 receipts. If committed, DUPLICATE and total 31 receipts; original logical record and receipt hash retained.",
+    "restartable_retry": "If interrupted before commit, COMMITTED with one receipt/effect/attempt. If committed, REPLAY with same original result, one receipt/effect and two attempts. Total core receipts 30 in both cases."
+  },
+  "required_checks": ["actual -9 exit and owned/reaped PID", "FULL=2/FK=1 journal readback in child and every reopened Store", "external ACK only after commit", "raw database plus journal/WAL/shm preserved before recovery", "direct reopen equals independently copied recovery", "all logical tables and receipt order equal finite successful reference", "literal financial oracle", "original request bytes, receipt identity and saved preexisting run unchanged", "selected evidence and saved result equality", "ordinary versus restartable retry distinction"],
+  "exclusions": ["No host power removal, filesystem fault injection, torn-write or device cache guarantee", "No claim of institutional RPO/RTO, power-loss equivalence or production deployment approval", "Unsigned restartable admission here; signed source-auth/policy witnesses belong to separate Gate4 portability catalog"]
+}
